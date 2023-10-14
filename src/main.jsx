@@ -15,7 +15,7 @@ if (localStorage.getItem('token')) {
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <HashRouter>
+  <BrowserRouter>
     <Provider store={store}>
       <App />
     </Provider>
