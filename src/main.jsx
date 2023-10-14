@@ -4,7 +4,7 @@ import App from './App.jsx'
 import './index.css'
 import { store } from './redux/store.jsx'
 import { Provider } from 'react-redux'
-import {  BrowserRouter } from 'react-router-dom'
+import { BrowserRouter } from 'react-router-dom'
 import axios from 'axios'
 
 //axios.defaults.baseURL = 'http://api.ayagimagelsin.com.tr';
@@ -15,9 +15,9 @@ if (localStorage.getItem('token')) {
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <BrowserRouter>
+  <HashRouter>
     <Provider store={store}>
       <App />
     </Provider>
   </BrowserRouter>
-);
+)
