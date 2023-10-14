@@ -8,9 +8,7 @@ import { BrowserRouter } from 'react-router-dom'
 import axios from 'axios'
 
 //axios.defaults.baseURL = 'https://api.ayagimagelsin.com.tr';
-if(process.env.NODE_ENV !== "development") {
-  axios.defaults.baseURL = 'https://api.ayagimagelsin.com.tr';
-}
+
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 if (localStorage.getItem('token')) {
   axios.defaults.headers.get['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
