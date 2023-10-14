@@ -4,28 +4,25 @@ import React from 'react'
 
 const HomePage = () => {
   const fetchData = async () => {
-    let data = JSON.stringify({
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    var raw = JSON.stringify({
       "username": "asda@asd.asd",
       "password": "123"
     });
 
-    let config = {
-      method: 'post',
-      maxBodyLength: Infinity,
-      url: 'https://api.ayagimagelsin.com.tr/auth/login',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      data: data
+    var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow'
     };
 
-    await axios.request(config)
-      .then((response) => {
-        console.log(JSON.stringify(response.data));
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    await fetch("https://api.ayagimagelsin.com.tr/auth/login", requestOptions)
+      .then(response => response.text())
+      .then(result => console.log(result))
+      .catch(error => console.log('error', error));
   }
   return (
     <div>

@@ -4,8 +4,11 @@ import AboutUs from "./pages/AboutUs"
 import Navbar from "./components/Navbar"
 import SignUpPage from "./pages/SignUpPage"
 import SignInPage from "./pages/SignInPage"
+import React from "react"
 
 function App() {
+  React.useEffect(() => {
+    document.title = "Ayağıma Gelsin";   }, []);
   return (
     <Routes>
       <Route path='/' element={<Navbar />}>
