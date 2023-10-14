@@ -4,7 +4,7 @@ import { STATUS } from "../components/Status";
 
 export const userLogin = createAsyncThunk("auth/login", async (data) => {
     console.log(data);
-    const res = await axios.post("/api/auth/login", {
+    const res = await axios.post("/auth/login", {
         username: data.username,
         password: data.password
     }).then(function (response) {
@@ -15,7 +15,7 @@ export const userLogin = createAsyncThunk("auth/login", async (data) => {
 });
 
 export const userRegister = createAsyncThunk("auth/register", async (data) => {
-    const res = await axios.post("/api/auth/register", data).then(function (response) {
+    const res = await axios.post("/auth/register", data).then(function (response) {
         console.log(response)
         return response;
     })
