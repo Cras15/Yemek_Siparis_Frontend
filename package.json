@@ -1,6 +1,5 @@
 {
   "name": "etic-app",
-  "proxy": "https://api.ayagimagelsin.com.tr",
   "private": true,
   "version": "1.0.0",
   "type": "module",
