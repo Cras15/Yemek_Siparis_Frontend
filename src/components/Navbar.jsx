@@ -1,4 +1,4 @@
-import { Avatar, Button, Collapse, Popover, Snackbar, Stack } from '@mui/material'
+import { Avatar, Button, Collapse, Popover, Snackbar, Stack, Typography } from '@mui/material'
 import { deepPurple } from '@mui/material/colors';
 import React from 'react'
 import { Link, Outlet } from 'react-router-dom'
@@ -41,9 +41,30 @@ const Navbar = () => {
               </button>
             </div>
             <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-              <div className="flex flex-shrink-0 items-center">
-                <img className="h-8 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500" alt="Your Company" />
-              </div>
+              <Typography
+                variant="h6"
+                noWrap
+                component="a"
+                href="#app-bar-with-responsive-menu"
+                sx={{
+                  mr: 2,
+                  display: { xs: 'none', md: 'flex' },
+                  fontFamily: 'monospace',
+                  fontWeight: 700,
+                  textDecoration: 'none',
+                  borderRadius: 2,
+                  pl: 1,
+                  pr: 1,
+                  color: 'rgb(209,213,  219)',
+                  "&:hover": {
+                    bgcolor: "rgb(55,65,81)",
+                    color: "white"
+                  }
+                  
+                }}
+              >
+                Ayağıma Gelsin
+              </Typography>
               <div className="hidden sm:ml-6 sm:block">
                 <div className="flex space-x-4">
 
@@ -120,7 +141,7 @@ const Navbar = () => {
           </Collapse>
         </div >
       </nav >
-      
+
       <Outlet />
     </>
   )
