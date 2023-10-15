@@ -1,9 +1,10 @@
-import { Avatar, Button, Collapse, Popover, Snackbar, Stack, Typography } from '@mui/material'
+import { Button, Collapse, Popover, Snackbar, Stack, Typography } from '@mui/material'
 import { deepPurple } from '@mui/material/colors';
 import React from 'react'
 import { Link, Outlet } from 'react-router-dom'
 import PersonIcon from '@mui/icons-material/Person';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import { Avatar, Dropdown, IconButton, Menu, MenuButton, MenuItem } from '@mui/joy';
 
 const Navbar = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -60,7 +61,7 @@ const Navbar = () => {
                     bgcolor: "rgb(55,65,81)",
                     color: "white"
                   }
-                  
+
                 }}
               >
                 Ayağıma Gelsin
@@ -85,29 +86,23 @@ const Navbar = () => {
                 </button>
 
                 <div className="relative ml-3">
-                  <div onClick={handleClick}>
-                    <Avatar sx={{ bgcolor: deepPurple[500], cursor: "pointer" }}>MY</Avatar>
-                  </div>
-
-                  <Popover
-                    id={id}
-                    open={open}
-                    anchorEl={anchorEl}
-                    onClose={handleClose}
-                    anchorOrigin={{
-                      vertical: 'bottom',
-                      horizontal: 'left',
-                    }}
-                    className='mt-2'
-                  >
-                    <div className="w-48 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5">
-                      <a href="#" className="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabIndex="-1" id="user-menu-item-0">Profil</a>
-                      <a href="#" className="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabIndex="-1" id="user-menu-item-1">Ayarlar</a>
-                      <a onClick={() => localStorage.removeItem('token')} className="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabIndex="-1" id="user-menu-item-2">Çıkış Yap</a>
-                    </div>
-                  </Popover>
-
-
+                  <Dropdown>
+                    <MenuButton
+                      slots={{ root: IconButton }}
+                      sx={{
+                        "&:hover": {
+                          background: "transparent"
+                        }
+                      }}
+                    >
+                      <Avatar sx={{ bgcolor: deepPurple[500], cursor: "pointer", color: "white" }}>MY</Avatar>
+                    </MenuButton>
+                    <Menu>
+                      <MenuItem>Profil</MenuItem>
+                      <MenuItem>Ayarlar</MenuItem>
+                      <MenuItem onClick={() => localStorage.removeItem('token')}>Çıkış Yap</MenuItem>
+                    </Menu>
+                  </Dropdown>
                 </div>
               </div>
               : <>
