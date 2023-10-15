@@ -5,6 +5,8 @@ import Navbar from "./components/Navbar"
 import SignUpPage from "./pages/SignUpPage"
 import SignInPage from "./pages/SignInPage"
 import React from "react"
+import '@fontsource/inter';
+
 
 function App() {
   React.useEffect(() => {

@@ -1,21 +1,17 @@
 import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
+import Button from '@mui/joy/Button';
 import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
+import Checkbox from '@mui/joy/Checkbox';
 import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
+import Box from '@mui/joy/Box';
+import Typography from '@mui/joy/Typography';
 import Container from '@mui/material/Container';
 import Copyright from '../components/Copyright';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { userLogin } from '../redux/userSlice';
+import { Divider, FormControl, FormLabel, GlobalStyles, Input, Stack } from '@mui/joy';
+import GoogleIcon from '../components/GoogleIcon'
 
 const SignUpPage = () => {
   const navigate = useNavigate();
@@ -42,64 +38,99 @@ const SignUpPage = () => {
       navigate("/home");
   });
   return (
-    <Container component="main" maxWidth="xs">
+    <Container component="main" maxWidth="sm">
       <CssBaseline />
       {localStorage.getItem('token') == "null" || localStorage.getItem == "undefined" || !localStorage.getItem('token') &&
         <Box
           sx={{
-            marginTop: 8,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-          }}
-        >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Giriş Yap
-          </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email Adresi"
-              name="email"
-              autoComplete="email"
-              autoFocus
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Şifre"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Giriş Yap
-            </Button>
-            <Grid container>
-              <Grid item xs>
-                <Link href="#" variant="body2">
-                  Şifremi unuttum
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link href="kayit" variant="body2">
-                  {"Hesabın yok mu? Kayıt Ol"}
-                </Link>
-              </Grid>
-            </Grid>
+          }} >
+          <Box
+            sx={{
+              width:
+                'clamp(100vw - var(--Cover-width), (var(--Collapsed-breakpoint) - 100vw) * 999, 100vw)',
+              transition: 'width var(--Transition-duration)',
+              transitionDelay: 'calc(var(--Transition-duration) + 0.1s)',
+              position: 'relative',
+              zIndex: 1,
+              display: 'flex',
+              justifyContent: 'flex-end',
+              backdropFilter: 'blur(12px)',
+              //backgroundColor: 'rgba(255 255 255 / 0.2)',
+            }}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                minHeight: '100dvh',
+                width:
+                  'clamp(var(--Form-maxWidth), (var(--Collapsed-breakpoint) - 100vw) * 999, 100%)',
+                maxWidth: '100%',
+                px: 2,
+              }}>
+              <Box
+                component="main"
+                sx={{
+                  my: 'auto',
+                  py: 2,
+                  pb: 5,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 2,
+                  width: 400,
+                  maxWidth: '100%',
+                  mx: 'auto',
+                  borderRadius: 'sm',
+                  '& form': {
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 2,
+                  },
+                }} >
+                <Stack gap={4} sx={{ mt: 2 }}>
+                  <form
+                    onSubmit={(event) => { handleSubmit(event) }}>
+                    <FormControl required>
+                      <FormLabel>Email</FormLabel>
+                      <Input type="email" name="email" />
+                    </FormControl>
+                    <FormControl required>
+                      <FormLabel>Şifre</FormLabel>
+                      <Input type="password" name="password" />
+                    </FormControl>
+                    <Stack gap={4} sx={{ mt: 2 }}>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <Checkbox size="sm" label="Beni hatırla" name="persistent" />
+                        <Link level="title-sm" href="#">
+                          Şifreni mi unuttun?
+                        </Link>
+                      </Box>
+                      <Button type="submit" fullWidth>
+                        Giriş Yap
+                      </Button>
+                    </Stack>
+                  </form>
+                </Stack>
+                <Divider>
+                  ya da
+                </Divider>
+                <Button
+                  variant="soft"
+                  color="neutral"
+                  fullWidth
+                  startDecorator={<GoogleIcon />}>
+                  Google ile devam et
+                </Button>
+              </Box>
+            </Box>
           </Box>
         </Box>
       }

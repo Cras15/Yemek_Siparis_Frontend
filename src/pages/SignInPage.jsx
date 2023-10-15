@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { userRegister } from '../redux/userSlice';
 import { Alert, CircularProgress, Snackbar } from '@mui/material';
 import { STATUS } from '../components/Status';
+import { useNavigate } from 'react-router-dom';
 
 const SignInPage = () => {
   const [open, setOpen] = React.useState(false);
@@ -24,6 +25,7 @@ const SignInPage = () => {
   const [sevenery, setSevenery] = React.useState('');
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { status } = useSelector((state) => state.user);
 
   const handleSubmit = (event) => {
@@ -31,9 +33,11 @@ const SignInPage = () => {
     const data = new FormData(event.currentTarget);
     if (data.get('firstname') && data.get('lastname') && data.get('email') != "" && data.get('password') != "") {
       dispatch(userRegister({ firstname: data.get('firstname'), lastname: data.get('lastname'), email: data.get('email'), password: data.get('password') })).then((res => {
+        console.log(res);
         setAlertText(res.payload.data != "undefined" ? res.payload.data : "Kayıt olurken bir hata oluştu!");
         setSevenery(res.payload.status == 200 ? "success" : "error");
         setOpen(true);
+        if(res.payload.status == 200) navigate('/giris');
       }));
     }
   };
