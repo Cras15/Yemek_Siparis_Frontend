@@ -25,13 +25,6 @@ const SignUpPage = () => {
       dispatch(userLogin({ username: data.get('email'), password: data.get('password') })).then((res) => {
         dispatch(getUserProfile());
       });
-      /*axios.post("/api/auth/login", {
-        username: data.get('email'),
-        password: data.get('password')
-      },).then(function (response) {
-        localStorage.setItem('token', response.data);
-        navigate("/home");
-      })*/
     }
   };
 
@@ -40,11 +33,12 @@ const SignUpPage = () => {
       navigate("/home");
   });
   return (
-    <Container component="main" maxWidth="sm">
+    <Container component="main" maxWidth="xs">
       <CssBaseline />
       {localStorage.getItem('token') == "null" || localStorage.getItem == "undefined" || !localStorage.getItem('token') &&
         <Box
           sx={{
+            mt: 8,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -66,7 +60,7 @@ const SignUpPage = () => {
               sx={{
                 display: 'flex',
                 flexDirection: 'column',
-                minHeight: '100dvh',
+                minHeight: '50dvh',
                 width:
                   'clamp(var(--Form-maxWidth), (var(--Collapsed-breakpoint) - 100vw) * 999, 100%)',
                 maxWidth: '100%',
@@ -81,7 +75,7 @@ const SignUpPage = () => {
                   display: 'flex',
                   flexDirection: 'column',
                   gap: 2,
-                  width: 400,
+                  width: 325,
                   maxWidth: '100%',
                   mx: 'auto',
                   borderRadius: 'sm',
@@ -137,6 +131,7 @@ const SignUpPage = () => {
         </Box>
       }
       <Copyright />
+
     </Container>
   )
 }
