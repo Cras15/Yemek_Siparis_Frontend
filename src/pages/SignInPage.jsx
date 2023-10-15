@@ -26,7 +26,7 @@ const SignInPage = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { status } = useSelector((state) => state.user);
+  const { status, user } = useSelector((state) => state.user);
 
   const handleSubmit = (event) => {
     event.preventDefault();

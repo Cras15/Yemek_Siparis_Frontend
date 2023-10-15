@@ -9,7 +9,7 @@ import Container from '@mui/material/Container';
 import Copyright from '../components/Copyright';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { userLogin } from '../redux/userSlice';
+import { getUserProfile, userLogin } from '../redux/userSlice';
 import { Divider, FormControl, FormLabel, GlobalStyles, Input, Stack } from '@mui/joy';
 import GoogleIcon from '../components/GoogleIcon'
 
@@ -22,7 +22,9 @@ const SignUpPage = () => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     if (data.get('email') != "" && data.get('password') != "") {
-      dispatch(userLogin({ username: data.get('email'), password: data.get('password') }));
+      dispatch(userLogin({ username: data.get('email'), password: data.get('password') })).then((res) => {
+        dispatch(getUserProfile());
+      });
       /*axios.post("/api/auth/login", {
         username: data.get('email'),
         password: data.get('password')

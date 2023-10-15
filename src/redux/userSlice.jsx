@@ -22,13 +22,32 @@ export const userRegister = createAsyncThunk("auth/register", async (data) => {
     return res;
 });
 
+export const getUserProfile = createAsyncThunk("auth/user/profile", async (data) => {
+    const res = await axios.get("/auth/user/profile", {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+    }).then(function (response) {
+        console.log(response)
+        return response;
+    })
+    return res;
+});
+
 const userSlice = createSlice({
     name: "user",
     initialState: {
         error: null,
         status: "",
         statusCode: null,
-        errorMessage: ""
+        errorMessage: "",
+        user: [],
+    },
+    reducers: {
+        userLogout(state, action) {
+            state.user = [];
+            localStorage.removeItem('token');
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -55,7 +74,21 @@ const userSlice = createSlice({
                 state.status = "error";
                 console.log(action.error);
             });
+        builder
+            .addCase(getUserProfile.pending, (state) => {
+                state.status = "loading";
+            })
+            .addCase(getUserProfile.fulfilled, (state, action) => {
+                state.status = "completed";
+                state.user = action.payload.data;
+                console.log(action.payload.data)
+            })
+            .addCase(getUserProfile.rejected, (state, action) => {
+                state.status = "error";
+                console.log(action.error);
+            });
     },
 });
 
+export const { userLogout } = userSlice.actions
 export default userSlice.reducer;

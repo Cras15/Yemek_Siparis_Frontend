@@ -4,11 +4,17 @@ import React from 'react'
 import { Link, Outlet } from 'react-router-dom'
 import PersonIcon from '@mui/icons-material/Person';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import { Avatar, Dropdown, IconButton, Menu, MenuButton, MenuItem } from '@mui/joy';
+import { Avatar, Dropdown, IconButton, ListDivider, ListItemDecorator, Menu, MenuButton, MenuItem } from '@mui/joy';
+import { Logout, LogoutOutlined, Person, PersonOutline, Settings, SettingsOutlined } from '@mui/icons-material';
+import { useDispatch, useSelector } from 'react-redux';
+import { userLogout } from '../redux/userSlice';
 
 const Navbar = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [active, setActive] = React.useState(false);
+
+  const dispatch = useDispatch();
+  const { status, user } = useSelector((state) => state.user);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -17,6 +23,11 @@ const Navbar = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const logout = () => {
+    dispatch(userLogout());
+  }
+
   //const items = JSON.parse(localStorage.getItem('items'));
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
@@ -75,7 +86,7 @@ const Navbar = () => {
                 </div>
               </div>
             </div>
-            {localStorage.getItem('token') != null && localStorage.getItem('token') != "undefined" ?
+            {user != "" ?
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                 <button type="button" className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                   <span className="absolute -inset-1.5"></span>
@@ -95,12 +106,25 @@ const Navbar = () => {
                         }
                       }}
                     >
-                      <Avatar sx={{ bgcolor: deepPurple[500], cursor: "pointer", color: "white" }}>MY</Avatar>
+                      <Avatar sx={{ bgcolor: deepPurple[500], cursor: "pointer", color: "white" }}>{user.firstname.toUpperCase().charAt(0)}{user.lastname.toUpperCase().charAt(0)}</Avatar>
                     </MenuButton>
-                    <Menu>
-                      <MenuItem>Profil</MenuItem>
-                      <MenuItem>Ayarlar</MenuItem>
-                      <MenuItem onClick={() => localStorage.removeItem('token')}>Çıkış Yap</MenuItem>
+                    <Menu sx={{ minWidth: 160, '--ListItemDecorator-size': '24px' }} placement="bottom-end">
+                      <MenuItem>
+                        <ListItemDecorator sx={{ mr: 1 }}>
+                          <PersonOutline />
+                        </ListItemDecorator>{' '}Profil
+                      </MenuItem>
+                      <MenuItem>
+                        <ListItemDecorator sx={{ mr: 1 }}>
+                          <SettingsOutlined />
+                        </ListItemDecorator>{' '}Ayarlar
+                      </MenuItem>
+                      <ListDivider />
+                      <MenuItem onClick={() => logout()}>
+                        <ListItemDecorator sx={{ mr: 1 }}>
+                          <LogoutOutlined />
+                        </ListItemDecorator>{' '}Çıkış Yap
+                      </MenuItem>
                     </Menu>
                   </Dropdown>
                 </div>
