@@ -6,6 +6,7 @@ import { store } from './redux/store.jsx'
 import { Provider } from 'react-redux'
 import { BrowserRouter } from 'react-router-dom'
 import axios from 'axios'
+import { GoogleOAuthProvider } from '@react-oauth/google'
 
 axios.defaults.baseURL = 'https://api.ayagimagelsin.com.tr';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
@@ -17,7 +18,9 @@ if (localStorage.getItem('token')) {
 ReactDOM.createRoot(document.getElementById('root')).render(
   <BrowserRouter>
     <Provider store={store}>
-      <App />
+      <GoogleOAuthProvider clientId='711966364839-742q3cumeeg14lalepnlsavb1cup74i6.apps.googleusercontent.com'>
+        <App />
+      </GoogleOAuthProvider>
     </Provider>
   </BrowserRouter>
 )

@@ -12,8 +12,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getUserProfile, userLogin } from '../redux/userSlice';
 import { Divider, FormControl, FormLabel, GlobalStyles, Input, Stack } from '@mui/joy';
 import GoogleIcon from '../components/GoogleIcon'
+import { useGoogleLogin } from '@react-oauth/google';
+import axios from 'axios';
 
 const SignUpPage = () => {
+  const [googleMail, setGoogleMail] = React.useState('');
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { status } = useSelector((state) => state.user);
@@ -28,9 +31,20 @@ const SignUpPage = () => {
     }
   };
 
+  const loginWithGoogle = useGoogleLogin({
+    onSuccess: async tokenResponse => {
+      const userInfo = await axios
+        .get('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+        })
+        .then(res => res.data);
+      setGoogleMail(userInfo.email);
+    }
+  });
+
   React.useEffect(() => {
     if (localStorage.getItem('token') != null && localStorage.getItem != "undefined")
-      navigate("/home");
+      navigate("/");
   });
   return (
     <Container component="main" maxWidth="xs">
@@ -90,7 +104,7 @@ const SignUpPage = () => {
                     onSubmit={(event) => { handleSubmit(event) }}>
                     <FormControl required>
                       <FormLabel>Email</FormLabel>
-                      <Input type="email" name="email" />
+                      <Input type="email" name="email" value={googleMail} onChange={(e) => setGoogleMail(e.target.value)} />
                     </FormControl>
                     <FormControl required>
                       <FormLabel>Şifre</FormLabel>
@@ -122,6 +136,7 @@ const SignUpPage = () => {
                   variant="soft"
                   color="neutral"
                   fullWidth
+                  onClick={loginWithGoogle}
                   startDecorator={<GoogleIcon />}>
                   Google ile devam et
                 </Button>
