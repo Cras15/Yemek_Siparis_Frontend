@@ -2,11 +2,56 @@ import { Button } from '@mui/material'
 import axios from 'axios'
 import React from 'react'
 import ShopsCard from '../components/ShopsCard'
+import { AspectRatio, Card, Skeleton, Stack, Typography } from '@mui/joy'
+import { InfoOutlined } from '@mui/icons-material'
 
 const HomePage = () => {
+  const [shops, setShops] = React.useState([]);
+  const [status, setStatus] = React.useState('');
+
+  const getShops = async () => {
+    await setStatus('pending');
+    await axios.get("/shop/getAll").then((res) => {
+      console.log(res);
+      setShops(res.data);
+      setStatus('success');
+    }).catch((error) => {
+      setStatus('error');
+    })
+  }
+
+  React.useEffect(() => {
+    getShops();
+  }, []);
   return (
-    <div className='ml-10 mt-10'>
-      <ShopsCard />
+    <div className='mx-8 mt-4 md:m-16  text-center'>
+      {status !== 'pending' ?
+        <Stack spacing={5} direction="row" flexWrap="wrap" useFlexGap>
+          {shops.length != 0 ?
+            shops.map((data, i) => (
+              <ShopsCard key={i} data={data} />
+            ))
+            :
+            <Typography startDecorator={<InfoOutlined />} justifyContent="center" textAlign="center" level="h3">Bu bölgede henüz hizmet veremiyoruz.</Typography>
+          }
+        </Stack> :
+        <Card variant="outlined" sx={{ width: 343, display: 'flex', gap: 2 }}>
+          <AspectRatio ratio="21/9">
+            <Skeleton variant="overlay">
+              <img
+                alt=""
+                src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+              />
+            </Skeleton>
+          </AspectRatio>
+          <Typography>
+            <Skeleton>
+              Lorem ipsum is placeholder text commonly used in the graphic, print, and
+              publishing industries.
+            </Skeleton>
+          </Typography>
+        </Card>
+      }
     </div>
   )
 }

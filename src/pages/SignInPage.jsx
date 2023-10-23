@@ -14,7 +14,7 @@ import { Divider, FormControl, FormLabel, GlobalStyles, Input, Stack } from '@mu
 import GoogleIcon from '../components/GoogleIcon'
 import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
-import { EmailRounded } from '@mui/icons-material';
+import { EmailRounded, Key, Mail } from '@mui/icons-material';
 
 const SignInPage = () => {
   const [googleMail, setGoogleMail] = React.useState('');
@@ -51,6 +51,12 @@ const SignInPage = () => {
       setlastName(userInfo.family_name);
     }
   });
+  
+  React.useEffect(() => {
+    if (localStorage.getItem('token') != null && localStorage.getItem != "undefined")
+      navigate("/");
+  });
+
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -119,11 +125,11 @@ const SignInPage = () => {
                     </Stack>
                     <FormControl required>
                       <FormLabel>Email</FormLabel>
-                      <Input placeholder='E-Mail' type="email" name="email" value={googleMail} onChange={(e) => setGoogleMail(e.target.value)} />
+                      <Input startDecorator={<Mail />} placeholder='E-Mail' type="email" name="email" value={googleMail} onChange={(e) => setGoogleMail(e.target.value)} />
                     </FormControl>
                     <FormControl required>
                       <FormLabel>Şifre</FormLabel>
-                      <Input placeholder='Şifre' type="password" name="password" />
+                      <Input startDecorator={<Key/>} placeholder='Şifre' type="password" name="password" />
                     </FormControl>
                     <Stack gap={4} sx={{ mt: 2 }}>
                       <Box

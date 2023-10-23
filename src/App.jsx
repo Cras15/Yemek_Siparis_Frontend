@@ -1,6 +1,5 @@
 import { Route, Routes, Outlet } from "react-router-dom"
 import HomePage from "./pages/HomePage"
-import AboutUs from "./pages/AboutUs"
 import Navbar from "./components/Navbar"
 import SignUpPage from "./pages/SignUpPage"
 import SignInPage from "./pages/SignInPage"

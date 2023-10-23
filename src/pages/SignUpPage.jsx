@@ -14,6 +14,7 @@ import { Divider, FormControl, FormLabel, GlobalStyles, Input, Stack } from '@mu
 import GoogleIcon from '../components/GoogleIcon'
 import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
+import { Key, Mail } from '@mui/icons-material';
 
 const SignUpPage = () => {
   const [googleMail, setGoogleMail] = React.useState('');
@@ -104,11 +105,11 @@ const SignUpPage = () => {
                     onSubmit={(event) => { handleSubmit(event) }}>
                     <FormControl required>
                       <FormLabel>Email</FormLabel>
-                      <Input type="email" name="email" value={googleMail} onChange={(e) => setGoogleMail(e.target.value)} />
+                      <Input startDecorator={<Mail />} placeholder='E-Mail' type="email" name="email" value={googleMail} onChange={(e) => setGoogleMail(e.target.value)} />
                     </FormControl>
                     <FormControl required>
                       <FormLabel>Şifre</FormLabel>
-                      <Input type="password" name="password" />
+                      <Input startDecorator={<Key/>} placeholder='Şifre' type="password" name="password" />
                     </FormControl>
                     <Stack gap={4} sx={{ mt: 2 }}>
                       <Box
