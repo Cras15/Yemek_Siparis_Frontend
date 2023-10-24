@@ -5,6 +5,7 @@ import SignUpPage from "./pages/SignUpPage"
 import SignInPage from "./pages/SignInPage"
 import React from "react"
 import '@fontsource/inter';
+import { Shops } from "./pages/Shops"
 
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
         <Route index element={<HomePage />} />
         <Route path="/kayit" element={<SignInPage />} />
         <Route path="/giris" element={<SignUpPage />} />
+        <Route path="/shop/:id" element={<Shops />} />
       </Route>
     </Routes>
   )

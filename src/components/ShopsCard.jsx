@@ -10,8 +10,10 @@ import Typography from '@mui/joy/Typography';
 import Link from '@mui/joy/Link';
 import Favorite from '@mui/icons-material/Favorite';
 import { Rating } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const ShopsCard = ({ data }) => {
+  const navigate = useNavigate();
   return (
     <Card
       variant="plain"
@@ -21,14 +23,15 @@ const ShopsCard = ({ data }) => {
         maxWidth: 400,
         bgcolor: 'initial',
         p: 0,
+
       }}
     >
-      <Box sx={{ position: 'relative', width: "100%"}}>
+      <Box sx={{ position: 'relative', width: "100%" }}>
         <AspectRatio ratio="4/3">
           <figure>
             <img
               src="https://images.deliveryhero.io/image/fd-tr/LH/h6km-listing.jpg?width=400&height=292&quot;"
-              srcSet="https://images.unsplash.com/photo-1515825838458-f2a94b20105a?auto=format&fit=crop&w=300&dpr=2 2x"
+              srcSet="https://images.deliveryhero.io/image/fd-tr/LH/h6km-listing.jpg?width=400&height=292&quot; 2x"
               loading="lazy"
               alt="Yosemite by Casey Horner"
             />
@@ -60,7 +63,7 @@ const ShopsCard = ({ data }) => {
             >
               <Typography level="h2" noWrap sx={{ fontSize: 'lg', color: "#fff" }}>
                 <Link
-                  href="#dribbble-shot"
+                  href={`/shop/${data.shopId}`}
                   overlay
                   underline="none"
                   sx={{
