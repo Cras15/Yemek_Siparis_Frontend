@@ -1,18 +1,18 @@
 import { Badge, Button, Collapse, Popover, Snackbar, Stack, Typography } from '@mui/material'
 import { deepPurple } from '@mui/material/colors';
 import React from 'react'
-import { Link, Outlet } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
 import PersonIcon from '@mui/icons-material/Person';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import { AspectRatio, Avatar, Box, Card, CardContent, Chip, Dropdown, IconButton, ListDivider, ListItemDecorator, Menu, MenuButton, MenuItem } from '@mui/joy';
-import { Add, Logout, LogoutOutlined, Person, PersonOutline, Remove, Settings, SettingsOutlined, ShoppingBasket } from '@mui/icons-material';
+import { Add, Home, Logout, LogoutOutlined, Person, PersonOutline, Remove, Settings, SettingsOutlined, ShoppingBasket } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { userLogout } from '../redux/userSlice';
 import { addBasket, removeBasket } from '../redux/basketSlice';
 
 const Navbar = () => {
   const [active, setActive] = React.useState(false);
-
+  const navigate =useNavigate();
   const dispatch = useDispatch();
   const { status, user } = useSelector((state) => state.user);
   const { baskets } = useSelector((state) => state.basket);
@@ -27,9 +27,18 @@ const Navbar = () => {
         <div className="mx-auto px-2 sm:px-6 lg:px-8 mr-10">
           <div className="relative flex h-16 items-center justify-between">
             <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
-
-              <button onClick={() => setActive(!active)} type="button" className="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
+              <IconButton onClick={()=>navigate('/')} size='sm' sx={{
+                color: 'rgb(209,213,  219)',
+                "&:hover": {
+                  bgcolor: "rgb(55,65,81)",
+                  color: "white"
+                }
+              }}>
+                <Home />
+              </IconButton>
+              {/*<button onClick={() => setActive(!active)} type="button" className="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
                 <span className="absolute -inset-0.5"></span>
+
                 <span className="sr-only">Ana menüyü aç</span>
 
                 <svg className="block h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true">
@@ -39,7 +48,7 @@ const Navbar = () => {
                 <svg className="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
-              </button>
+              </button>*/}
             </div>
             <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
               <Typography
@@ -82,68 +91,68 @@ const Navbar = () => {
                 </Badge>
               </MenuButton>
               <Menu>
-                {baskets.length >0 ?
-                 baskets.map((data) => (
-                  <Card
-                    variant="plain"
-                    orientation="horizontal"
-                    key={data.productsId}
-                    sx={{
-                      width: 320,
-                    }}>
-                    <AspectRatio ratio="1" sx={{ width: 90 }}>
-                      <img
-                        src={data.imageUrl}
-                        srcSet="https://images.deliveryhero.io/image/fd-tr/LH/h6km-listing.jpg?width=400&height=292&quot;"
-                        loading="lazy"
-                        alt=""
-                      />
-                    </AspectRatio>
-                    <CardContent>
-                      <Typography level="title-lg" id="card-description">
-                        {data.productName}
-                      </Typography>
-                      <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                        <Chip
-                          variant="outlined"
-                          color="primary"
-                          size="sm"
-                          sx={{ pointerEvents: 'none' }}
-                        >
-                          {data.price}₺
-                        </Chip>
-                        <IconButton
-                          aria-label="Sepete Ekle"
-                          component="button"
-                          sx={{
-                            ml: 'auto',
-                            borderRadius: 20,
-                            color: "#4393E4",
-                            "&:hover":
-                              { color: "#0B6BCB" }
-                          }}
-                          onClick={() => dispatch(removeBasket(data))}
-                        >
-                          <Remove />
-                        </IconButton>
-                        <Typography>{data.unit}</Typography>
-                        <IconButton
-                          aria-label="Sepete Ekle"
-                          component="button"
-                          sx={{
-                            borderRadius: 20,
-                            color: "#4393E4",
-                            "&:hover":
-                              { color: "#0B6BCB" }
-                          }}
-                          onClick={() => dispatch(addBasket(data))}
-                        >
-                          <Add />
-                        </IconButton>
-                      </Box>
-                    </CardContent>
-                  </Card>
-                )): <Typography sx={{padding:1, px:4}}>Sepetin boş</Typography>}
+                {baskets.length > 0 ?
+                  baskets.map((data) => (
+                    <Card
+                      variant="plain"
+                      orientation="horizontal"
+                      key={data.productsId}
+                      sx={{
+                        width: 320,
+                      }}>
+                      <AspectRatio ratio="1" sx={{ width: 90 }}>
+                        <img
+                          src={data.imageUrl}
+                          srcSet={data.imageUrl != null ? data.imageUrl : "https://images.deliveryhero.io/image/fd-tr/LH/h6km-listing.jpg?width=400&height=292&quot;"}
+                          loading="lazy"
+                          alt=""
+                        />
+                      </AspectRatio>
+                      <CardContent>
+                        <Typography level="title-lg" id="card-description">
+                          {data.productName}
+                        </Typography>
+                        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                          <Chip
+                            variant="outlined"
+                            color="primary"
+                            size="sm"
+                            sx={{ pointerEvents: 'none' }}
+                          >
+                            {data.price}₺
+                          </Chip>
+                          <IconButton
+                            aria-label="Sepete Ekle"
+                            component="button"
+                            sx={{
+                              ml: 'auto',
+                              borderRadius: 20,
+                              color: "#4393E4",
+                              "&:hover":
+                                { color: "#0B6BCB" }
+                            }}
+                            onClick={() => dispatch(removeBasket(data))}
+                          >
+                            <Remove />
+                          </IconButton>
+                          <Typography>{data.unit}</Typography>
+                          <IconButton
+                            aria-label="Sepete Ekle"
+                            component="button"
+                            sx={{
+                              borderRadius: 20,
+                              color: "#4393E4",
+                              "&:hover":
+                                { color: "#0B6BCB" }
+                            }}
+                            onClick={() => dispatch(addBasket(data))}
+                          >
+                            <Add />
+                          </IconButton>
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  )) : <Typography sx={{ padding: 1, px: 4 }}>Sepetin boş</Typography>}
               </Menu>
             </Dropdown>
             {user != "" ?
@@ -209,13 +218,13 @@ const Navbar = () => {
               </>}
           </div>
 
-          <Collapse in={active}>
+          {/* <Collapse in={active}>
             <div className="sm:hidden" id="mobile-menu">
               <div className="space-y-1 px-2 pb-3 pt-2">
 
               </div>
             </div>
-          </Collapse>
+                </Collapse>*/}
         </div >
       </nav >
 

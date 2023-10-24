@@ -20,8 +20,8 @@ export const ProductsCard = ({ data }) => {
     >
       <AspectRatio ratio="1" sx={{ width: 90 }}>
         <img
-          src={data.imageUrl}
-          srcSet="https://images.deliveryhero.io/image/fd-tr/LH/h6km-listing.jpg?width=400&height=292&quot;"
+          src={data.imageUrl != null ? data.imageUrl : "https://images.deliveryhero.io/image/fd-tr/LH/h6km-listing.jpg?width=400&height=292&quot;"}
+          srcSet={data.imageUrl != null ? data.imageUrl : "https://images.deliveryhero.io/image/fd-tr/LH/h6km-listing.jpg?width=400&height=292&quot;"}
           loading="lazy"
           alt=""
         />

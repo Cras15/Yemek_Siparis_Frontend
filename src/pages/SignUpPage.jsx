@@ -20,7 +20,7 @@ const SignUpPage = () => {
   const [googleMail, setGoogleMail] = React.useState('');
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { status } = useSelector((state) => state.user);
+  const { status,user } = useSelector((state) => state.user);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -44,7 +44,7 @@ const SignUpPage = () => {
   });
 
   React.useEffect(() => {
-    if (localStorage.getItem('token') != null && localStorage.getItem != "undefined")
+    if (user != "")
       navigate("/");
   });
   return (

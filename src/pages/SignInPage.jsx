@@ -51,9 +51,9 @@ const SignInPage = () => {
       setlastName(userInfo.family_name);
     }
   });
-  
+
   React.useEffect(() => {
-    if (localStorage.getItem('token') != null && localStorage.getItem != "undefined")
+    if (user != "")
       navigate("/");
   });
 
@@ -116,11 +116,11 @@ const SignInPage = () => {
                     <Stack direction="row" spacing={1}>
                       <FormControl required>
                         <FormLabel>Ad</FormLabel>
-                        <Input sx={{maxWidth: 160}} placeholder="Ad" type="text" name="firstname" value={firstName} onChange={(e) => setfirstName(e.target.value)} />
+                        <Input sx={{ maxWidth: 160 }} placeholder="Ad" type="text" name="firstname" value={firstName} onChange={(e) => setfirstName(e.target.value)} />
                       </FormControl>
                       <FormControl required>
                         <FormLabel>Soyad</FormLabel>
-                        <Input sx={{maxWidth: 160}} placeholder="Soyad" type="text" name="lastname" value={lastName} onChange={(e) => setlastName(e.target.value)} />
+                        <Input sx={{ maxWidth: 160 }} placeholder="Soyad" type="text" name="lastname" value={lastName} onChange={(e) => setlastName(e.target.value)} />
                       </FormControl>
                     </Stack>
                     <FormControl required>
@@ -129,7 +129,7 @@ const SignInPage = () => {
                     </FormControl>
                     <FormControl required>
                       <FormLabel>Şifre</FormLabel>
-                      <Input startDecorator={<Key/>} placeholder='Şifre' type="password" name="password" />
+                      <Input startDecorator={<Key />} placeholder='Şifre' type="password" name="password" />
                     </FormControl>
                     <Stack gap={4} sx={{ mt: 2 }}>
                       <Box
