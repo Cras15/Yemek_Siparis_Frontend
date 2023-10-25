@@ -4,7 +4,6 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Checkbox from '@mui/joy/Checkbox';
 import Link from '@mui/material/Link';
 import Box from '@mui/joy/Box';
-import Typography from '@mui/joy/Typography';
 import Container from '@mui/material/Container';
 import Copyright from '../components/Copyright';
 import { useNavigate } from 'react-router-dom';

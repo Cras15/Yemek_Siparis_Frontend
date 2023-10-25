@@ -9,13 +9,19 @@ import axios from 'axios'
 import { GoogleOAuthProvider } from '@react-oauth/google'
 import { PersistGate } from 'redux-persist/integration/react'
 
-//axios.defaults.baseURL = 'https://api.ayagimagelsin.com.tr';
-/*if (process.env.NODE_ENV !== 'production')
-  axios.defaults.baseURL = 'http://localhost:8080';
-else*/
-axios.defaults.baseURL = 'https://api.ayagimagelsin.com.tr';
+//http://localhost:8080
+//https://api.ayagimagelsin.com.tr
+const local = "http://localhost:8080";
+const product = "https://api.ayagimagelsin.com.tr";
+
+if (process.env.NODE_ENV !== 'production')
+  axios.defaults.baseURL = product;
+else
+  axios.defaults.baseURL = product;
 
 axios.defaults.headers.post['Content-Type'] = 'application/json';
+
+
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <BrowserRouter>

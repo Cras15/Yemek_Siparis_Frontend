@@ -1,21 +1,20 @@
-import { Badge, Button, Collapse, Popover, Snackbar, Stack, Typography } from '@mui/material'
+import { Button, Stack } from '@mui/material'
 import { deepPurple } from '@mui/material/colors';
 import React from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import PersonIcon from '@mui/icons-material/Person';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import { AspectRatio, Avatar, Box, Card, CardContent, Chip, Dropdown, IconButton, ListDivider, ListItemDecorator, Menu, MenuButton, MenuItem } from '@mui/joy';
-import { Add, Home, Logout, LogoutOutlined, Person, PersonOutline, Remove, Settings, SettingsOutlined, ShoppingBasket } from '@mui/icons-material';
+import { Avatar, Typography, Dropdown, IconButton, ListDivider, ListItemDecorator, Menu, MenuButton, MenuItem } from '@mui/joy';
+import { Home, LogoutOutlined, PersonOutline, SettingsOutlined } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { userLogout } from '../redux/userSlice';
-import { addBasket, removeBasket } from '../redux/basketSlice';
+import {  BasketDropdown } from './BasketDropdown';
 
 const Navbar = () => {
   const [active, setActive] = React.useState(false);
-  const navigate =useNavigate();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { status, user } = useSelector((state) => state.user);
-  const { baskets } = useSelector((state) => state.basket);
 
   const logout = () => {
     dispatch(userLogout());
@@ -27,7 +26,7 @@ const Navbar = () => {
         <div className="mx-auto px-2 sm:px-6 lg:px-8 mr-10">
           <div className="relative flex h-16 items-center justify-between">
             <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
-              <IconButton onClick={()=>navigate('/')} size='sm' sx={{
+              <IconButton onClick={() => navigate('/')} size='sm' sx={{
                 color: 'rgb(209,213,  219)',
                 "&:hover": {
                   bgcolor: "rgb(55,65,81)",
@@ -74,89 +73,14 @@ const Navbar = () => {
 
                 }}
               >
-                Ayağıma Gelsin
+                Ayağımagelsin
               </Typography>
 
             </div>
-            <Dropdown>
-              <MenuButton color="neutral" sx={{
-                mr: 2, color: 'rgb(209,213,  219)',
-                "&:hover": {
-                  bgcolor: "rgb(55,65,81)",
-                  color: "white"
-                }
-              }} slots={{ root: IconButton }} >
-                <Badge badgeContent={baskets.length} showZero={false} color="primary" size='sm' variant="solid">
-                  <ShoppingBasket sx={{ color: "rgb(156 163 175)" }} />
-                </Badge>
-              </MenuButton>
-              <Menu>
-                {baskets.length > 0 ?
-                  baskets.map((data) => (
-                    <Card
-                      variant="plain"
-                      orientation="horizontal"
-                      key={data.productsId}
-                      sx={{
-                        width: 320,
-                      }}>
-                      <AspectRatio ratio="1" sx={{ width: 90 }}>
-                        <img
-                          src={data.imageUrl}
-                          srcSet={data.imageUrl != null ? data.imageUrl : "https://images.deliveryhero.io/image/fd-tr/LH/h6km-listing.jpg?width=400&height=292&quot;"}
-                          loading="lazy"
-                          alt=""
-                        />
-                      </AspectRatio>
-                      <CardContent>
-                        <Typography level="title-lg" id="card-description">
-                          {data.productName}
-                        </Typography>
-                        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                          <Chip
-                            variant="outlined"
-                            color="primary"
-                            size="sm"
-                            sx={{ pointerEvents: 'none' }}
-                          >
-                            {data.price * data.unit}₺
-                          </Chip>
-                          <IconButton
-                            aria-label="Sepete Ekle"
-                            component="button"
-                            sx={{
-                              ml: 'auto',
-                              borderRadius: 20,
-                              color: "#4393E4",
-                              "&:hover":
-                                { color: "#0B6BCB" }
-                            }}
-                            onClick={() => dispatch(removeBasket(data))}
-                          >
-                            <Remove />
-                          </IconButton>
-                          <Typography>{data.unit}</Typography>
-                          <IconButton
-                            aria-label="Sepete Ekle"
-                            component="button"
-                            sx={{
-                              borderRadius: 20,
-                              color: "#4393E4",
-                              "&:hover":
-                                { color: "#0B6BCB" }
-                            }}
-                            onClick={() => dispatch(addBasket(data))}
-                          >
-                            <Add />
-                          </IconButton>
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  )) : <Typography sx={{ padding: 1, px: 4 }}>Sepetin boş</Typography>}
-              </Menu>
-            </Dropdown>
+            
             {user != "" ?
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                <Basket />
                 <button type="button" className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                   <span className="absolute -inset-1.5"></span>
                   <span className="sr-only">View notifications</span>
@@ -200,6 +124,7 @@ const Navbar = () => {
               </div>
               : <>
                 <Stack spacing={2} direction="row">
+                <BasketDropdown />
                   <Button sx={{
                     color: 'rgb(209,213,  219)',
                     "&:hover": {
