@@ -5,8 +5,8 @@ import SignUpPage from "./pages/SignUpPage"
 import SignInPage from "./pages/SignInPage"
 import React from "react"
 import '@fontsource/inter';
-import { Shops } from "./pages/Shops"
-import { Basket } from "./pages/Basket"
+import Shops from "./pages/Shops"
+import Basket from "./pages/Basket"
 
 
 function App() {
