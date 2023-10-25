@@ -31,14 +31,14 @@ export const ProductsCard = ({ data }) => {
           {etcString(data.productName, 14)}
         </Typography>
         <Typography level="body-sm" aria-describedby="card-description" mb={1}>
-          <Link
+          <Typography
             overlay
             underline="none"
             href="#"
             sx={{ color: 'text.tertiary' }}
           >
             {etcString("İskender, Ayran, Patates Kızartması", 18)}
-          </Link>
+          </Typography>
         </Typography>
         <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
           <Chip

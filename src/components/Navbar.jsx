@@ -119,7 +119,7 @@ const Navbar = () => {
                             size="sm"
                             sx={{ pointerEvents: 'none' }}
                           >
-                            {data.price}₺
+                            {data.price * data.unit}₺
                           </Chip>
                           <IconButton
                             aria-label="Sepete Ekle"
