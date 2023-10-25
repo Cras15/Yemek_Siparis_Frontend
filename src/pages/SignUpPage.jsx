@@ -50,7 +50,7 @@ const SignUpPage = () => {
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
-      {localStorage.getItem('token') == "null" || localStorage.getItem == "undefined" || !localStorage.getItem('token') || user!="" &&
+      {user=="" &&
         <Box
           sx={{
             mt: 8,

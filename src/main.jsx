@@ -9,9 +9,9 @@ import axios from 'axios'
 import { GoogleOAuthProvider } from '@react-oauth/google'
 
 //axios.defaults.baseURL = 'https://api.ayagimagelsin.com.tr';
-if (process.env.NODE_ENV !== 'production')
+/*if (process.env.NODE_ENV !== 'production')
   axios.defaults.baseURL = 'http://localhost:8080';
-else
+else*/
   axios.defaults.baseURL = 'https://api.ayagimagelsin.com.tr';
 
 axios.defaults.headers.post['Content-Type'] = 'application/json';
