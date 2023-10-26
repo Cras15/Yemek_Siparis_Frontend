@@ -26,7 +26,7 @@ const ShopsPage = () => {
   }, []);
 
   return (
-    <div className='mx-8 mt-4 md:m-16'>
+    <div className='mx-8 mt-4 md:m-16 bg-white'>
       {status !== "pending" ?
         <Stack spacing={5} direction="row" flexWrap="wrap" useFlexGap>
           {shop != "" && shop.products.length > 0 ?
