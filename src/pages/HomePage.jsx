@@ -24,9 +24,9 @@ const HomePage = () => {
     getShops();
   }, []);
   return (
-    <div className='mx-8 mt-4 md:m-16  text-center'>
+    <div className='mx-8 mt-4 md:mx-32  text-center'>
       {status !== 'pending' ?
-        <Stack spacing={5} direction="row" flexWrap="wrap" useFlexGap>
+        <div /*spacing={5} direction="row" flexWrap="wrap" useFlexGap */ className='grid gap-3 grid-flow-row-dense xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 grid-cols-1'>
           {shops.length != 0 ?
             shops.map((data, i) => (
               <ShopsCard key={i} data={data} />
@@ -34,7 +34,7 @@ const HomePage = () => {
             :
             <Typography startDecorator={<InfoOutlined />} justifyContent="center" textAlign="center" level="h3">Bu bölgede henüz hizmet veremiyoruz.</Typography>
           }
-        </Stack> :
+        </div> :
         <Card variant="outlined" sx={{ width: 343, display: 'flex', gap: 2 }}>
           <AspectRatio ratio="21/9">
             <Skeleton variant="overlay">

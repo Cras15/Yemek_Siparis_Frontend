@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 
 const Copyright = () => {
     return (
-        <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 5 }} >
+        <Typography variant="body2" color="text.secondary" align="center">
             {'Copyright © '}
             <Link color="inherit" href="https://ayagimagelsin.com.tr/">
                 Ayağıma Gelsin

@@ -8,7 +8,7 @@ import { Avatar, Typography, Dropdown, IconButton, ListDivider, ListItemDecorato
 import { Home, LogoutOutlined, PersonOutline, SettingsOutlined } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { userLogout } from '../redux/userSlice';
-import {  BasketDropdown } from './BasketDropdown';
+import BasketDropdown from './BasketDropdown';
 
 const Navbar = () => {
   const [active, setActive] = React.useState(false);
@@ -77,10 +77,10 @@ const Navbar = () => {
               </Typography>
 
             </div>
-            
+
             {user != "" ?
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                <Basket />
+                <BasketDropdown />
                 <button type="button" className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                   <span className="absolute -inset-1.5"></span>
                   <span className="sr-only">View notifications</span>
@@ -124,7 +124,7 @@ const Navbar = () => {
               </div>
               : <>
                 <Stack spacing={2} direction="row">
-                <BasketDropdown />
+                  <BasketDropdown />
                   <Button sx={{
                     color: 'rgb(209,213,  219)',
                     "&:hover": {

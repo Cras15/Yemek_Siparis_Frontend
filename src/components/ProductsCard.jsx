@@ -5,8 +5,9 @@ import { useDispatch } from 'react-redux'
 import { addBasket } from '../redux/basketSlice'
 import { etcString } from './Utils'
 
-export const ProductsCard = ({ data }) => {
+const ProductsCard = ({ data }) => {
   const dispatch = useDispatch();
+  
   return (
     <Card
       variant="outlined"
@@ -14,7 +15,6 @@ export const ProductsCard = ({ data }) => {
       sx={{
         width: 'auto!important',
         minWidth: 320,
-
         '&:hover': { boxShadow: 'md', borderColor: 'neutral.outlinedHoverBorder', cursor: 'pointer' },
       }}
     >
@@ -59,3 +59,5 @@ export const ProductsCard = ({ data }) => {
     </Card>
   )
 }
+
+export default ProductsCard;

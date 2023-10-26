@@ -18,12 +18,12 @@ const ShopsCard = ({ data }) => {
     <Card
       variant="plain"
       sx={{
-        minWidth: 300,
+        minWidth: 220,
         width: 'auto',
-        maxWidth: 400,
+        maxWidth: 450,
         bgcolor: 'initial',
         p: 0,
-
+        mt:4,
       }}
     >
       <Box sx={{ position: 'relative', width: "100%" }}>

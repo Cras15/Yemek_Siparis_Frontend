@@ -1,11 +1,11 @@
 import React from 'react'
 import { useParams } from 'react-router-dom';
-import { ProductsCard } from '../components/ProductsCard';
 import axios from 'axios';
 import { AspectRatio, Card, CardContent, Skeleton, Stack, Typography } from '@mui/joy';
 import { InfoOutlined } from '@mui/icons-material';
+import ProductsCard from '../components/ProductsCard';
 
-export const Shops = () => {
+const ShopsPage = () => {
   const [shop, setShop] = React.useState([]);
   const [status, setStatus] = React.useState([]);
   const { id } = useParams();
@@ -59,3 +59,5 @@ export const Shops = () => {
     </div>
   )
 }
+
+export default ShopsPage;

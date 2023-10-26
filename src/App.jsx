@@ -5,24 +5,27 @@ import SignUpPage from "./pages/SignUpPage"
 import SignInPage from "./pages/SignInPage"
 import React from "react"
 import '@fontsource/inter';
-import Shops from "./pages/Shops"
-import Basket from "./pages/Basket"
-
+import ShopsPage from "./pages/ShopsPage"
+import BasketPage from "./pages/BasketPage"
+import Footer from "./components/Footer"
 
 function App() {
   React.useEffect(() => {
     document.title = "Ayağıma Gelsin";
   }, []);
   return (
-    <Routes>
-      <Route path='/' element={<Navbar />}>
-        <Route index element={<HomePage />} />
-        <Route path="/kayit" element={<SignInPage />} />
-        <Route path="/giris" element={<SignUpPage />} />
-        <Route path="/shop/:id" element={<Shops />} />
-        <Route path="/basket" element={<Basket />} />
-      </Route>
-    </Routes>
+    <div>
+      <Routes>
+        <Route path='/' element={<Navbar />}>
+          <Route index element={<HomePage />} />
+          <Route path="/kayit" element={<SignInPage />} />
+          <Route path="/giris" element={<SignUpPage />} />
+          <Route path="/shop/:id" element={<ShopsPage />} />
+          <Route path="/basket" element={<BasketPage />} />
+        </Route>
+      </Routes>
+      <Footer />
+    </div>
   )
 }
 

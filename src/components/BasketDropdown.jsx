@@ -1,11 +1,11 @@
 import React from 'react'
 import { AspectRatio, Badge, Box, Button, Card, CardContent, Chip, Divider, Dropdown, IconButton, Link, Menu, MenuButton, Stack, Typography } from '@mui/joy';
-import { Add, Remove, ShoppingBasket } from '@mui/icons-material';
+import { Add, Delete, Remove, ShoppingBasket } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { addBasket, removeBasket } from '../redux/basketSlice';
 import { useNavigate } from 'react-router-dom';
 
-export const BasketDropdown = () => {
+const BasketDropdown = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { baskets } = useSelector((state) => state.basket);
@@ -65,7 +65,7 @@ export const BasketDropdown = () => {
                                         }}
                                         onClick={() => dispatch(removeBasket(data))}
                                     >
-                                        <Remove />
+                                        {data.unit > 1 ? <Remove /> : <Delete />}
                                     </IconButton>
                                     <Typography>{data.unit}</Typography>
                                     <IconButton
@@ -94,3 +94,5 @@ export const BasketDropdown = () => {
         </Dropdown>
     )
 }
+
+export default BasketDropdown;
