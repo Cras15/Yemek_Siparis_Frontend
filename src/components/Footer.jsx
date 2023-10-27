@@ -85,32 +85,30 @@ const Footer = () => {
 
 
                 {/* mobile */}
-                <section style={{ background: "white", width: "100%" }} className="flex items-center justify-between lg:hidden w-full h-full ">
+                <section className="flex items-center justify-between lg:hidden w-full h-full bg-white">
                     <Stack spacing={0} style={{ width: "100%" }}>
-                        <Item>
-                            <div style={{ width: "100%" }}>
-                                <AccordionGroup >
-                                    <Accordion>
-                                        <AccordionSummary>Keşfet</AccordionSummary>
-                                        <AccordionDetails>
-                                            <FooterLinks title={""} data={kesfet} />
-                                        </AccordionDetails>
-                                    </Accordion>
-                                    <Accordion>
-                                        <AccordionSummary>Yardım</AccordionSummary>
-                                        <AccordionDetails>
-                                            <FooterLinks title={""} data={yardim} />
-                                        </AccordionDetails>
-                                    </Accordion>
-                                    <Accordion>
-                                        <AccordionSummary>Hakkımızda</AccordionSummary>
-                                        <AccordionDetails>
-                                            <FooterLinks title={""} data={bilgi} />
-                                        </AccordionDetails>
-                                    </Accordion>
-                                </AccordionGroup>
-                            </div>
-                        </Item>
+                        <div className='w-full'>
+                            <AccordionGroup >
+                                <Accordion>
+                                    <AccordionSummary>Keşfet</AccordionSummary>
+                                    <AccordionDetails>
+                                        <FooterLinks title={""} data={kesfet} />
+                                    </AccordionDetails>
+                                </Accordion>
+                                <Accordion>
+                                    <AccordionSummary>Yardım</AccordionSummary>
+                                    <AccordionDetails>
+                                        <FooterLinks title={""} data={yardim} />
+                                    </AccordionDetails>
+                                </Accordion>
+                                <Accordion>
+                                    <AccordionSummary>Hakkımızda</AccordionSummary>
+                                    <AccordionDetails>
+                                        <FooterLinks title={""} data={bilgi} />
+                                    </AccordionDetails>
+                                </Accordion>
+                            </AccordionGroup>
+                        </div>
                         <div className='w-full text-center pb-4'>
                             <Divider sx={{ mb: 3 }} />
                             <div className='grid gap-3 grid-flow-row'>
