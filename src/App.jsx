@@ -12,9 +12,7 @@ import LoginPage from "./pages/LoginPage"
 import { CssBaseline } from "@mui/joy"
 
 function App() {
-  React.useEffect(() => {
-    document.title = "Ayağıma Gelsin";
-  }, []);
+
   return (
     <div>
       <CssBaseline />

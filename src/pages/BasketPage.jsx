@@ -6,12 +6,14 @@ import { etcString } from '../components/Utils';
 import { Box } from '@mui/material';
 import BasketPaymentItem from '../components/BasketPaymentItem';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const BasketPage = () => {
   const [discount, setDiscount] = useState(0);
   const [total, setTotal] = useState(0);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { baskets } = useSelector((state) => state.basket);
 
   useEffect(() => {
@@ -100,7 +102,7 @@ const BasketPage = () => {
               {(total - discount + total * 0.18)}₺
             </Typography>
           </CardActions>
-          <Button color='primary' endDecorator={<KeyboardArrowRight />}>Sepeti Onayla</Button>
+          <Button color='primary' endDecorator={<KeyboardArrowRight />} onClick={()=>navigate('/odeme')}>Sepeti Onayla</Button>
         </Card>
 
       </div>
