@@ -83,10 +83,10 @@ const BasketPage = () => {
           <Typography level="h3">Sipariş Özeti</Typography>
           <Divider inset="none" />
           <List size="sm" sx={{ mx: 'calc(-1 * var(--ListItem-paddingX))' }}>
-            <BasketPaymentItem title="Ara Toplam" price={total} />
+            <BasketPaymentItem title="Ara Toplam" price={`${total}₺`} />
             <BasketPaymentItem title="Gönderim Tutarı" price="Ücretsiz" />
-            <BasketPaymentItem title="KDV(%20)" price={(total * 0.20).toFixed(1)} />
-            <BasketPaymentItem title="İndirim" price={`${discount}TL`} />
+            <BasketPaymentItem title="KDV(%20)" price={(total * 0.20).toFixed(1)+ '₺'} />
+            <BasketPaymentItem title="İndirim" price={`${discount}₺`} />
           </List>
           <Divider inset="none" />
           <CardActions>
@@ -97,7 +97,7 @@ const BasketPage = () => {
               </Typography>
             </Typography>
             <Typography>
-              {(total - discount + total * 0.18)}TL
+              {(total - discount + total * 0.18)}₺
             </Typography>
           </CardActions>
           <Button color='primary' endDecorator={<KeyboardArrowRight />}>Sepeti Onayla</Button>

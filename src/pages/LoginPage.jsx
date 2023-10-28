@@ -10,12 +10,12 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserProfile, userLogin } from '../redux/userSlice';
 import { Divider, FormControl, FormLabel, GlobalStyles, Input, Stack } from '@mui/joy';
-import GoogleIcon from '../components/GoogleIcon'
+import GoogleIcon from '../assets/GoogleIcon'
 import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
 import { Key, Mail } from '@mui/icons-material';
 
-const SignUpPage = () => {
+const LoginPage = () => {
   const [googleMail, setGoogleMail] = React.useState('');
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -145,10 +145,9 @@ const SignUpPage = () => {
           </Box>
         </Box>
       }
-      <Copyright />
 
     </Container>
   )
 }
 
-export default SignUpPage
+export default LoginPage

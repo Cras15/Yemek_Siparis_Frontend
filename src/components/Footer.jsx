@@ -8,15 +8,18 @@ import InstagramIcon from '@mui/icons-material/Instagram';
 import styled from '@emotion/styled';
 import { Accordion, AccordionDetails, AccordionGroup, AccordionSummary, Divider, IconButton, Typography } from '@mui/joy';
 import Copyright from './Copyright';
+import AppStoreIcon from '../assets/AppStoreIcon';
+import GooglePlayIcon from '../assets/GooglePlayIcon';
+import HuaweiStoreIcon from '../assets/HuaweiStoreIcon';
 
 function createData(name, link) {
     return { name, link };
 }
 
 const indir = [
-    createData(<img src="https://getir.com/_next/static/images/appstore-tr-141ed939fceebdcee96af608fa293b31.svg" />, "#"),
-    createData(<img src="https://getir.com/_next/static/images/googleplay-tr-6b0c941b7d1a65d781fb4b644498be75.svg" />, "#"),
-    createData(<img src="https://getir.com/_next/static/images/huawei-appgallery-tr-4b890fa3167bc62f9069edaf45aa7f30.svg" />, "#"),
+    createData(<AppStoreIcon />, "#"),
+    createData(<GooglePlayIcon />, "#"),
+    createData(<HuaweiStoreIcon />, "#"),
 ];
 
 const kesfet = [
@@ -50,6 +53,7 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 const Footer = () => {
+    const instaLink = "https://www.instagram.com/ayagima.gelsin";
     return (
         <div style={{ width: "100%" }} className='mt-16'>
             <Divider />
@@ -74,7 +78,7 @@ const Footer = () => {
                                     <IconButton onClick={() => window.open('http://twitter.com', "_blank")} sx={{ "&:hover": { color: '#1DA1F2' } }}>
                                         <TwitterIcon />
                                     </IconButton>
-                                    <IconButton onClick={() => window.open('http://instagram.com', "_blank")} sx={{ "&:hover": { color: '#FD1D1D' } }}>
+                                    <IconButton onClick={() => window.open(instaLink, "_blank")} sx={{ "&:hover": { color: '#FD1D1D' } }}>
                                         <InstagramIcon />
                                     </IconButton>
                                 </div>
@@ -120,7 +124,7 @@ const Footer = () => {
                                     <IconButton onClick={() => window.open('http://twitter.com', "_blank")} sx={{ "&:hover": { color: '#1DA1F2' } }}>
                                         <TwitterIcon />
                                     </IconButton>
-                                    <IconButton onClick={() => window.open('http://instagram.com', "_blank")} sx={{ "&:hover": { color: '#FD1D1D' } }}>
+                                    <IconButton onClick={() => window.open(instaLink, "_blank")} sx={{ "&:hover": { color: '#FD1D1D' } }}>
                                         <InstagramIcon />
                                     </IconButton>
                                 </div>

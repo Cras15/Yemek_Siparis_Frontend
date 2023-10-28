@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserProfile, userLogin, userRegister } from '../redux/userSlice';
 import { Divider, FormControl, FormLabel, GlobalStyles, Input, Stack } from '@mui/joy';
-import GoogleIcon from '../components/GoogleIcon'
+import GoogleIcon from '../assets/GoogleIcon'
 import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
 import { EmailRounded, Key, Mail } from '@mui/icons-material';
