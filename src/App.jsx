@@ -10,6 +10,10 @@ import Footer from "./components/Footer"
 import PaymentPage from "./pages/PaymentPage"
 import LoginPage from "./pages/LoginPage"
 import { CssBaseline } from "@mui/joy"
+import ManagerShopPage from "./pages/manager/ManagerShopPage"
+import ErrorPage404 from "./pages/ErrorPage404"
+import ManagerIndexPage from "./pages/manager/ManagerIndexPage"
+import ManagerShopEditPage from "./pages/manager/ManagerShopEditPage"
 
 function App() {
 
@@ -24,7 +28,13 @@ function App() {
           <Route path="/shop/:id" element={<ShopsPage />} />
           <Route path="/sepet" element={<BasketPage />} />
           <Route path="/odeme" element={<PaymentPage />} />
+          <Route path="/manager" element={<ManagerIndexPage />} />
+          <Route path='/manager' element={<Outlet />}>
+            <Route path='magazalarim' element={<ManagerShopPage />} />
+            <Route path='magaza/:id' element={<ManagerShopEditPage />} />
+          </Route>
         </Route>
+        <Route path='*' element={<ErrorPage404 />} />
       </Routes>
       <Footer />
     </div>

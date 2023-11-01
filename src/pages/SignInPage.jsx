@@ -15,6 +15,7 @@ import GoogleIcon from '../assets/GoogleIcon'
 import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
 import { EmailRounded, Key, Mail } from '@mui/icons-material';
+import { STATUS } from '../components/Status';
 
 const SignInPage = () => {
   const [googleMail, setGoogleMail] = React.useState('');
@@ -141,7 +142,7 @@ const SignInPage = () => {
                       >
                         <Checkbox size="sm" label="Kullanıcı Sözleşmesi" name="persistent" />
                       </Box>
-                      <Button type="submit" fullWidth>
+                      <Button type="submit" fullWidth loading={status== STATUS.LOADING}>
                         Kayıt Ol
                       </Button>
                     </Stack>

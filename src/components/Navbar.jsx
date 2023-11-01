@@ -4,8 +4,8 @@ import React from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import PersonIcon from '@mui/icons-material/Person';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import { Avatar, Typography, Dropdown, IconButton, ListDivider, ListItemDecorator, Menu, MenuButton, MenuItem } from '@mui/joy';
-import { Home, LogoutOutlined, PersonOutline, SettingsOutlined } from '@mui/icons-material';
+import { Avatar, Typography, Dropdown, IconButton, ListDivider, ListItemDecorator, Menu, MenuButton, MenuItem, Divider } from '@mui/joy';
+import { Home, LogoutOutlined, PersonOutline, SettingsOutlined, SupervisorAccountOutlined } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { userLogout } from '../redux/userSlice';
 import BasketDropdown from './BasketDropdown';
@@ -22,7 +22,7 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="bg-gray-800">
+      <nav className="bg-gray-800 shadow-lg">
         <div className="mx-auto px-2 sm:px-6 lg:px-8 mr-10">
           <div className="relative flex h-16 items-center justify-between">
             <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
@@ -102,6 +102,14 @@ const Navbar = () => {
                       <Avatar sx={{ bgcolor: deepPurple[500], cursor: "pointer", color: "white" }}>{user.firstname.toUpperCase().charAt(0)}{user.lastname.toUpperCase().charAt(0)}</Avatar>
                     </MenuButton>
                     <Menu sx={{ minWidth: 160, '--ListItemDecorator-size': '24px' }} placement="bottom-end">
+                      {user.role == "MANAGER" &&
+                        <>
+                          <MenuItem onClick={() => navigate('/manager')}>
+                            <ListItemDecorator sx={{ mr: 1 }}><SupervisorAccountOutlined /></ListItemDecorator> Yetkili Paneli
+                          </MenuItem>
+                          <Divider />
+                        </>
+                      }
                       <MenuItem>
                         <ListItemDecorator sx={{ mr: 1 }}>
                           <PersonOutline />

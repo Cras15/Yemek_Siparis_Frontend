@@ -14,12 +14,13 @@ import GoogleIcon from '../assets/GoogleIcon'
 import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
 import { Key, Mail } from '@mui/icons-material';
+import { STATUS } from '../components/Status';
 
 const LoginPage = () => {
   const [googleMail, setGoogleMail] = React.useState('');
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { status,user } = useSelector((state) => state.user);
+  const { status, user } = useSelector((state) => state.user);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -49,7 +50,7 @@ const LoginPage = () => {
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
-      {user=="" &&
+      {user == "" &&
         <Box
           sx={{
             mt: 8,
@@ -108,7 +109,7 @@ const LoginPage = () => {
                     </FormControl>
                     <FormControl required>
                       <FormLabel>Şifre</FormLabel>
-                      <Input startDecorator={<Key/>} placeholder='Şifre' type="password" name="password" />
+                      <Input startDecorator={<Key />} placeholder='Şifre' type="password" name="password" />
                     </FormControl>
                     <Stack gap={4} sx={{ mt: 2 }}>
                       <Box
@@ -123,7 +124,7 @@ const LoginPage = () => {
                           Şifreni mi unuttun?
                         </Link>
                       </Box>
-                      <Button type="submit" fullWidth>
+                      <Button type="submit" fullWidth loading={status== STATUS.LOADING}>
                         Giriş Yap
                       </Button>
                     </Stack>
