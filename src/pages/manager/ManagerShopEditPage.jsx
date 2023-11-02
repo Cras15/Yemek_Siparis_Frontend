@@ -1,5 +1,5 @@
 import { Alert, Box, Button, CircularProgress, DialogActions, DialogContent, DialogTitle, Divider, FormControl, FormLabel, Input, LinearProgress, Modal, ModalDialog, Stack, Typography } from '@mui/joy';
-import { DataGrid, GridActionsCell, GridActionsCellItem, GridToolbar, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarExport, GridToolbarFilterButton } from '@mui/x-data-grid';
+import { DataGrid, GridActionsCell, GridActionsCellItem, GridToolbar, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarExport, GridToolbarFilterButton, GridToolbarQuickFilter } from '@mui/x-data-grid';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { GRID_EDITED_LOCALE_TEXT } from '../../components/GridLocaleText';
@@ -59,6 +59,7 @@ const ManagerShopEditPage = () => {
                 <GridToolbarFilterButton />
                 <GridToolbarDensitySelector />
                 <GridToolbarExport />
+                <GridToolbarQuickFilter sx={{ml: 'auto', mr : 2}}/>
             </GridToolbarContainer>
         );
     }
