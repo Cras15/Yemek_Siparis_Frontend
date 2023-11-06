@@ -1,38 +1,91 @@
-import { createSlice, current } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, current } from "@reduxjs/toolkit";
+import { selectUserToken } from "./userSlice";
+import { STATUS } from "../components/Status";
+import axios from "axios";
+
+export const addBasketItem = createAsyncThunk("basket/add", async (data, { getState }) => {
+    const token = selectUserToken(getState());
+    const res = await axios.post(`/basket/add/${data.productId}`, {}, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }).then(function (response) {
+        return response;
+    })
+    return res;
+});
+
+export const removeBasketItem = createAsyncThunk("basket/remove", async (data, { getState }) => {
+    const token = selectUserToken(getState());
+    const res = await axios.post(`/basket/remove/${data.productId}`, {}, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }).then(function (response) {
+        return response;
+    })
+    return res;
+});
+
+
+export const getBasket = createAsyncThunk("basket/getMyBasket", async (data, { getState }) => {
+    const token = selectUserToken(getState());
+    const res = await axios.get("/basket/getMyBasket", {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }).then(function (response) {
+        return response;
+    })
+    return res;
+});
 
 const basketSlice = createSlice({
     name: "basket",
     initialState: {
-        baskets: []
+        baskets: [],
+        status: "",
     },
-    reducers: {
-        addBasket(state, action) {
-            if (state.baskets.some(item => action.payload.productsId === item.productsId))
-                state.baskets = state.baskets.map(item => {
-                    if (item.productsId === action.payload.productsId)
-                        return { ...item, unit: item?.unit + 1 };
-                    return item;
-                })
-            else {
-                if (action.payload.unit == null || action.payload.unit == undefined)
-                    action.payload.unit = 1;
-                state.baskets.push(action.payload);
-            }
-            console.log((state.baskets));
-        },
-        removeBasket(state, action) {
-            if (state.baskets.some(item => action.payload.productsId === item.productsId))
-                if (action.payload.unit > 1)
-                    state.baskets = state.baskets.map(item => {
-                        if (item.productsId === action.payload.productsId)
-                            return { ...item, unit: item?.unit - 1 };
-                        return item;
-                    })
-                else
-                    state.baskets = state.baskets.filter(item => item.productsId !== action.payload.productsId)
-        }
-    }
+    extraReducers: (builder) => {
+        builder
+            .addCase(addBasketItem.pending, (state) => {
+                state.status = STATUS.LOADING;
+            })
+            .addCase(addBasketItem.fulfilled, (state, action) => {
+                state.status = STATUS.COMPLETED;
+                console.log(action.payload.data);
+            })
+            .addCase(addBasketItem.rejected, (state, action) => {
+                state.status = STATUS.ERROR;
+                console.log(action.error);
+            });
+        builder
+            .addCase(removeBasketItem.pending, (state) => {
+                state.status = STATUS.LOADING;
+            })
+            .addCase(removeBasketItem.fulfilled, (state, action) => {
+                state.status = STATUS.COMPLETED;
+                console.log(action)
+            })
+            .addCase(removeBasketItem.rejected, (state, action) => {
+                state.status = STATUS.ERROR;
+                console.log(action.error);
+            });
+        builder
+            .addCase(getBasket.pending, (state) => {
+                state.status = STATUS.LOADING;
+            })
+            .addCase(getBasket.fulfilled, (state, action) => {
+                state.status = STATUS.COMPLETED;
+                state.baskets = action.payload.data;
+                console.log(action.payload.data)
+            })
+            .addCase(getBasket.rejected, (state, action) => {
+                state.status = STATUS.ERROR;
+                console.log(action.error);
+            });
+    },
 });
 
-export const { addBasket, removeBasket } = basketSlice.actions
+export const { addBasket, removeBasket, removeAllBasket } = basketSlice.actions
 export default basketSlice.reducer;

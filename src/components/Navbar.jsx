@@ -1,20 +1,21 @@
-import { Button, Stack } from '@mui/material'
+import { Button, Snackbar, Stack } from '@mui/material'
 import { deepPurple } from '@mui/material/colors';
 import React from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import PersonIcon from '@mui/icons-material/Person';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import { Avatar, Typography, Dropdown, IconButton, ListDivider, ListItemDecorator, Menu, MenuButton, MenuItem, Divider } from '@mui/joy';
+import { Avatar, Typography, Dropdown, IconButton, ListDivider, ListItemDecorator, Menu, MenuButton, MenuItem, Divider, Alert } from '@mui/joy';
 import { Home, LogoutOutlined, PersonOutline, SettingsOutlined, SupervisorAccountOutlined } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { userLogout } from '../redux/userSlice';
 import BasketDropdown from './BasketDropdown';
+import { setSnackbar } from '../redux/snackbarSlice';
 
 const Navbar = () => {
-  const [active, setActive] = React.useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { status, user } = useSelector((state) => state.user);
+  const { snackbar } = useSelector((state) => state.snackbar);
 
   const logout = () => {
     dispatch(userLogout());
@@ -160,7 +161,16 @@ const Navbar = () => {
                 </Collapse>*/}
         </div >
       </nav >
-
+      {!!snackbar && (
+        <Snackbar
+          open
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+          onClose={() => dispatch(setSnackbar(null))}
+          autoHideDuration={4000}
+        >
+          <Alert {...snackbar} onClose={() => dispatch(setSnackbar(null))} />
+        </Snackbar>
+      )}
       <Outlet />
     </>
   )

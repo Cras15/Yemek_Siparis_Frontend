@@ -1,20 +1,26 @@
-import React from 'react'
-import { AspectRatio, Badge, Box, Button, Card, CardContent, Chip, Divider, Dropdown, IconButton, Link, Menu, MenuButton, MenuItem, Stack, Typography } from '@mui/joy';
+import React, { useEffect } from 'react'
+import { AspectRatio, Badge, Box, Button, Card, CardContent, Chip, CircularProgress, Divider, Dropdown, IconButton, Link, Menu, MenuButton, MenuItem, Stack, Typography } from '@mui/joy';
 import { Add, Delete, Remove, ShoppingBasket } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
-import { addBasket, removeBasket } from '../redux/basketSlice';
+import { addBasket, addBasketItem, getBasket, removeBasket, removeBasketItem } from '../redux/basketSlice';
 import { useNavigate } from 'react-router-dom';
+import { STATUS } from './Status';
 
 const BasketDropdown = () => {
     const [open, setOpen] = React.useState(false);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { baskets } = useSelector((state) => state.basket);
+    const { baskets, status } = useSelector((state) => state.basket);
 
     const handleOpenChange = React.useCallback((event, isOpen) => {
         setOpen(isOpen);
     }, []);
+
+    React.useEffect(() => {
+        dispatch(getBasket());
+    }, []);
+
     return (
         <Dropdown open={open} onOpenChange={handleOpenChange}>
             <MenuButton
@@ -26,19 +32,19 @@ const BasketDropdown = () => {
                         color: "white"
                     }
                 }} slots={{ root: IconButton }} >
-                <Badge badgeContent={baskets.length} showZero={false} color="primary" size='sm' variant="solid">
+                <Badge badgeContent={baskets.basketItems?.length} showZero={false} color="primary" size='sm' variant="solid">
                     <ShoppingBasket sx={{ color: "rgb(156 163 175)" }} />
                 </Badge>
             </MenuButton>
             <Menu>
                 <MenuItem sx={{ width: 0, height: 0, p: 0, m: 0, position: 'absolute' }} />
                 <div className='overflow-y-auto max-h-64'>
-                    {baskets.length > 0 ?
-                        baskets.map((data) => (
+                    {baskets != "" && baskets?.basketItems.length > 0 ?
+                        baskets.basketItems.map((data) => (
                             <Card
                                 variant="plain"
                                 orientation="horizontal"
-                                key={data.productsId}
+                                key={data.basketItemId}
                                 sx={{
                                     width: 320,
                                     mb: 0.5,
@@ -47,14 +53,14 @@ const BasketDropdown = () => {
                                 <AspectRatio ratio="1" sx={{ width: 90 }}>
                                     <img
                                         src={data.imageUrl}
-                                        srcSet={data.imageUrl != null ? data.imageUrl : "https://images.deliveryhero.io/image/fd-tr/LH/h6km-listing.jpg?width=400&height=292&quot;"}
+                                        srcSet={data.product.imageUrl != null ? data.product.imageUrl : "https://images.deliveryhero.io/image/fd-tr/LH/h6km-listing.jpg?width=400&height=292&quot;"}
                                         loading="lazy"
                                         alt=""
                                     />
                                 </AspectRatio>
                                 <CardContent>
                                     <Typography level="title-lg" id="card-description">
-                                        {data.productName}
+                                        {data.product.productName}
                                     </Typography>
                                     <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                                         <Chip
@@ -63,7 +69,7 @@ const BasketDropdown = () => {
                                             size="sm"
                                             sx={{ pointerEvents: 'none' }}
                                         >
-                                            {data.price * data.unit}₺
+                                            {data.product.price * data.unit}₺
                                         </Chip>
                                         <IconButton
                                             aria-label="Sepete Ekle"
@@ -75,23 +81,25 @@ const BasketDropdown = () => {
                                                 "&:hover":
                                                     { color: "#0B6BCB" }
                                             }}
-                                            onClick={() => dispatch(removeBasket(data))}
+                                            onClick={() => dispatch(removeBasketItem(data.product)).then(() => dispatch(getBasket()))}
                                         >
-                                            {data.unit > 1 ? <Remove /> : <Delete />}
+                                            {status == STATUS.LOADING ? <CircularProgress /> : (data.unit > 1 ? <Remove /> : <Delete />)}
                                         </IconButton>
                                         <Typography>{data.unit}</Typography>
                                         <IconButton
                                             aria-label="Sepete Ekle"
                                             component="button"
+                                            loading="true"
+                                            disabled={status == STATUS.LOADING}
                                             sx={{
                                                 borderRadius: 20,
                                                 color: "#4393E4",
                                                 "&:hover":
                                                     { color: "#0B6BCB" }
                                             }}
-                                            onClick={() => dispatch(addBasket(data))}
+                                            onClick={() => dispatch(addBasketItem(data.product)).then(() => dispatch(getBasket()))}
                                         >
-                                            <Add />
+                                            {status == STATUS.LOADING ? <CircularProgress /> : <Add />}
                                         </IconButton>
                                     </Box>
                                 </CardContent>
@@ -99,9 +107,9 @@ const BasketDropdown = () => {
                         )) : <Typography sx={{ padding: 1, px: 4 }}>Sepetin boş</Typography>}
                 </div>
                 <Divider />
-                <Stack direction="row" spacing={2} sx={{ m: "auto", my: 1 }}>
+                <Stack direction="row" spacing={2} sx={{ m: "auto", my: 1, mx: 1 }}>
                     <Button sx={{ width: 145 }} variant='outlined' onClick={() => { navigate('/sepet'); setOpen(false) }}>Sepete Git</Button>
-                    <Button sx={{ width: 145 }} onClick={() => {navigate('/odeme'); setOpen(false)}}>Siparişi Tamamla</Button>
+                    <Button sx={{ width: 145 }} onClick={() => { navigate('/odeme'); setOpen(false) }}>Siparişi Tamamla</Button>
                 </Stack>
             </Menu>
         </Dropdown>

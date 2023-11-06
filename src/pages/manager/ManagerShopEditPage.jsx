@@ -7,6 +7,8 @@ import { Snackbar } from '@mui/material';
 import React from 'react';
 import { Add, Delete, DeleteForever, Edit, WarningRounded } from '@mui/icons-material';
 import styled from '@emotion/styled';
+import { useDispatch, useSelector } from 'react-redux';
+import { setSnackbar } from '../../redux/snackbarSlice';
 
 const ManagerShopEditPage = () => {
     const columns = [
@@ -59,23 +61,24 @@ const ManagerShopEditPage = () => {
                 <GridToolbarFilterButton />
                 <GridToolbarDensitySelector />
                 <GridToolbarExport />
-                <GridToolbarQuickFilter sx={{ml: 'auto', mr : 2}}/>
+                <GridToolbarQuickFilter sx={{ ml: 'auto', mr: 2 }} />
             </GridToolbarContainer>
         );
     }
 
     const [shop, setShop] = React.useState([]);
     const [status, setStatus] = React.useState('');
-    const [snackbar, setSnackbar] = React.useState(null);
+    //const [snackbar, setSnackbar] = React.useState(null);
     const [open, setOpen] = React.useState(false);
     const [openAddModal, setOpenAddModal] = React.useState(false);
     const [lastSelect, setLastSelect] = React.useState(null);
 
+    const { token } = useSelector((state) => state.user);
+    const dispatch = useDispatch();
+
     const inputRef = React.useRef(null);
 
     const { id } = useParams();
-
-    const handleCloseSnackbar = () => setSnackbar(null);
 
     const getShopsById = async (shopId) => {
         setStatus('pending');
@@ -96,12 +99,12 @@ const ManagerShopEditPage = () => {
     const handleModalDelete = async () => {
         setOpen(false);
         setStatus('pending');
-        await axios.post(`/manager/products/deleteProduct?productId=${lastSelect}`, {}, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }).then((res) => {
+        await axios.post(`/manager/products/deleteProduct?productId=${lastSelect}`, {}, { headers: { Authorization: `Bearer ${token}` } }).then((res) => {
             getShopsById(id);
-            setSnackbar({ children: res.data, color: 'success' });
+            dispatch(setSnackbar({ children: res.data, color: 'success' }));
             setStatus('success');
         }).catch((error) => {
-            setSnackbar({ children: error.message, color: 'danger' });
+            dispatch(setSnackbar({ children: error.message, color: 'danger' }));
             setStatus('error');
             //console.log(error);
         });
@@ -118,12 +121,12 @@ const ManagerShopEditPage = () => {
             imageUrl: data.get('imageUrl'),
             price: data.get('price'),
             stock: 9999
-        }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }).then((res) => {
+        }, { headers: { Authorization: `Bearer ${token}` } }).then((res) => {
             getShopsById(id);
-            setSnackbar({ children: res.data, color: 'success' });
+            dispatch(setSnackbar({ children: res.data, color: 'success' }));
             setStatus('success');
         }).catch((error) => {
-            setSnackbar({ children: error.message, color: 'danger' });
+            dispatch(setSnackbar({ children: error.message, color: 'danger' }));
             setStatus('error');
         });
     }
@@ -132,13 +135,14 @@ const ManagerShopEditPage = () => {
     const processRowUpdate = async (newRow, oldRow) => {
         if (JSON.stringify(newRow) != JSON.stringify(oldRow)) {
             setStatus('pending');
-            await axios.post("/manager/products/updateProduct", newRow, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }).then((res) => {
+            await axios.post("/manager/products/updateProduct", newRow, { headers: { Authorization: `Bearer ${token}` } }).then((res) => {
                 getShopsById(id);
                 setStatus('success')
-                setSnackbar({ children: res.data, color: 'success' });
+                console.log(res.data);
+                dispatch(setSnackbar({ children: res.data, color: 'success' }));
             }).catch((error) => {
                 console.log(error);
-                setSnackbar({ children: error.message, color: 'danger' });
+                dispatch(setSnackbar({ children: error.message, color: 'danger' }));
                 setStatus('error');
             });
         }
@@ -147,7 +151,7 @@ const ManagerShopEditPage = () => {
 
 
     const handleProcessRowUpdateError = React.useCallback((error) => {
-        setSnackbar({ children: error.message, color: 'danger' });
+        dispatch(setSnackbar({ children: error.message, color: 'danger' }));
         console.log(error);
     }, []);
 
@@ -158,19 +162,18 @@ const ManagerShopEditPage = () => {
 
     return (
         <div className='w-10/12 m-auto mt-5'>
-            <Box sx={{ height: 400, width: '100%' }}>
+            <Box sx={{ height: 'auto', width: '100%' }}>
                 {shop != "" ?
                     <DataGrid
                         rows={shop.products}
                         columns={columns}
                         initialState={{
-                            pagination: {
-                                paginationModel: {
-                                    pageSize: 5,
-                                },
-                            },
+                            pagination: { paginationModel: { pageSize: 5 } },
                         }}
-                        pageSizeOptions={[5]}
+                        pageSize={5}
+                        pageSizeOptions={[5, 10, 25]}
+                        rowsPerPageOptions={[5]}
+
                         //checkboxSelection
                         disableRowSelectionOnClick
                         getRowId={(row) => (row.productsId)}
@@ -181,7 +184,8 @@ const ManagerShopEditPage = () => {
                             toolbar: {
                                 showQuickFilter: true,
                                 csvOptions: { delimiter: ';', utf8WithBom: true, },
-                                printOptions: { hideToolbar: true, hideFooter: true }
+                                printOptions: { hideToolbar: true, hideFooter: true },
+
                             },
                         }}
                         loading={status == "pending"}
@@ -205,16 +209,6 @@ const ManagerShopEditPage = () => {
                         }}
                     />
                 }
-                {!!snackbar && (
-                    <Snackbar
-                        open
-                        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-                        onClose={handleCloseSnackbar}
-                        autoHideDuration={4000}
-                    >
-                        <Alert {...snackbar} onClose={handleCloseSnackbar} />
-                    </Snackbar>
-                )}
             </Box>
             <Modal open={open} onClose={() => setOpen(false)}>
                 <ModalDialog variant="outlined" role="alertdialog">

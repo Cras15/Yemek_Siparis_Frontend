@@ -2,20 +2,19 @@ import * as React from 'react';
 import Button from '@mui/joy/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import Checkbox from '@mui/joy/Checkbox';
-import Link from '@mui/material/Link';
 import Box from '@mui/joy/Box';
-import Typography from '@mui/joy/Typography';
 import Container from '@mui/material/Container';
 import Copyright from '../components/Copyright';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { getUserProfile, userLogin, userRegister } from '../redux/userSlice';
-import { Divider, FormControl, FormLabel, GlobalStyles, Input, Stack } from '@mui/joy';
+import { userRegister } from '../redux/userSlice';
+import { Divider, FormControl, FormLabel, Input, Stack } from '@mui/joy';
 import GoogleIcon from '../assets/GoogleIcon'
 import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
-import { EmailRounded, Key, Mail } from '@mui/icons-material';
+import { Key, Mail } from '@mui/icons-material';
 import { STATUS } from '../components/Status';
+import { setSnackbar } from '../redux/snackbarSlice';
 
 const SignInPage = () => {
   const [googleMail, setGoogleMail] = React.useState('');
@@ -32,9 +31,7 @@ const SignInPage = () => {
     if (data.get('firstname') && data.get('lastname') && data.get('email') != "" && data.get('password') != "") {
       dispatch(userRegister({ firstname: data.get('firstname'), lastname: data.get('lastname'), email: data.get('email'), password: data.get('password') })).then((res => {
         console.log(res);
-        //setAlertText(res.payload.data != "undefined" ? res.payload.data : "Kayıt olurken bir hata oluştu!");
-        //setSevenery(res.payload.status == 200 ? "success" : "error");
-        //setOpen(true);
+        dispatch(setSnackbar({ children: res.payload.data, color: res.payload.status == 200 ? 'success' : 'danger' }));
         if (res.payload.status == 200) navigate('/giris');
       }));
     }
@@ -142,7 +139,7 @@ const SignInPage = () => {
                       >
                         <Checkbox size="sm" label="Kullanıcı Sözleşmesi" name="persistent" />
                       </Box>
-                      <Button type="submit" fullWidth loading={status== STATUS.LOADING}>
+                      <Button type="submit" fullWidth loading={status == STATUS.LOADING}>
                         Kayıt Ol
                       </Button>
                     </Stack>

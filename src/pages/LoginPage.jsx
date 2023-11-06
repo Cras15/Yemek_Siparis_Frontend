@@ -15,6 +15,7 @@ import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
 import { Key, Mail } from '@mui/icons-material';
 import { STATUS } from '../components/Status';
+import { setSnackbar } from '../redux/snackbarSlice';
 
 const LoginPage = () => {
   const [googleMail, setGoogleMail] = React.useState('');
@@ -27,6 +28,7 @@ const LoginPage = () => {
     const data = new FormData(event.currentTarget);
     if (data.get('email') != "" && data.get('password') != "") {
       dispatch(userLogin({ username: data.get('email'), password: data.get('password') })).then((res) => {
+        dispatch(setSnackbar({ children: "Giriş başarılı", color: 'success' }));
         dispatch(getUserProfile());
       });
     }

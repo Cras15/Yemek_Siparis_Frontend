@@ -14,8 +14,18 @@ import ManagerShopPage from "./pages/manager/ManagerShopPage"
 import ErrorPage404 from "./pages/ErrorPage404"
 import ManagerIndexPage from "./pages/manager/ManagerIndexPage"
 import ManagerShopEditPage from "./pages/manager/ManagerShopEditPage"
+import ManagerOrdersPage from "./pages/manager/ManagerOrdersPage"
+import { useDispatch, useSelector } from "react-redux"
+import { userLogout } from "./redux/userSlice"
 
 function App() {
+  const { expireDate, user, token } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+
+  React.useEffect(() => {
+    if ((user != "" || token != "") && new Date().getTime() > expireDate)
+      dispatch(userLogout());
+  }, []);
 
   return (
     <div>
@@ -32,6 +42,7 @@ function App() {
           <Route path='/manager' element={<Outlet />}>
             <Route path='magazalarim' element={<ManagerShopPage />} />
             <Route path='magaza/:id' element={<ManagerShopEditPage />} />
+            <Route path="siparisler" element={<ManagerOrdersPage />} />
           </Route>
         </Route>
         <Route path='*' element={<ErrorPage404 />} />

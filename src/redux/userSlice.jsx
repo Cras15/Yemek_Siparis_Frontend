@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { STATUS } from "../components/Status";
+import { useSelector } from "react-redux";
 
 export const userLogin = createAsyncThunk("auth/login", async (data) => {
     console.log(data);
@@ -8,7 +9,6 @@ export const userLogin = createAsyncThunk("auth/login", async (data) => {
         username: data.username,
         password: data.password
     }).then(function (response) {
-        localStorage.setItem('token', response.data);
         return response;
     })
     return res;
@@ -16,23 +16,23 @@ export const userLogin = createAsyncThunk("auth/login", async (data) => {
 
 export const userRegister = createAsyncThunk("auth/register", async (data) => {
     const res = await axios.post("/auth/register", data).then(function (response) {
-        console.log(response)
         return response;
     })
     return res;
 });
 
-export const getUserProfile = createAsyncThunk("auth/user/profile", async (data) => {
+export const getUserProfile = createAsyncThunk("auth/user/profile", async (data, thunkAPI) => {
+    const token = thunkAPI.getState().user.token;
     const res = await axios.get("/auth/user/profile", {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
+            Authorization: `Bearer ${token}`
         }
     }).then(function (response) {
-        console.log(response)
         return response;
     })
     return res;
 });
+
 
 const userSlice = createSlice({
     name: "user",
@@ -42,12 +42,16 @@ const userSlice = createSlice({
         statusCode: null,
         errorMessage: "",
         user: [],
+        token: '',
+        expireDate: '',
     },
     reducers: {
         userLogout(state, action) {
             state.user = [];
-            localStorage.removeItem('token');
-        }
+            state.token = '';
+            state.expireDate = '';
+        },
+
     },
     extraReducers: (builder) => {
         builder
@@ -56,7 +60,11 @@ const userSlice = createSlice({
             })
             .addCase(userLogin.fulfilled, (state, action) => {
                 state.status = STATUS.COMPLETED;
-                console.log(action)
+                state.token = action.payload.data;
+                state.expireDate = new Date().getTime() + 1000 * 60 * 60 * 24;
+                console.log("act", action.payload)
+                console.log("token", state.token)
+                console.log("expireDate", state.expireDate)
             })
             .addCase(userLogin.rejected, (state, action) => {
                 state.status = STATUS.ERROR;
@@ -89,6 +97,8 @@ const userSlice = createSlice({
             });
     },
 });
+
+export const selectUserToken = (state) => state.user.token;
 
 export const { userLogout } = userSlice.actions
 export default userSlice.reducer;

@@ -8,7 +8,7 @@ const ManagerShopPage = () => {
     const [shops, setShops] = React.useState([]);
 
     const navigate = useNavigate();
-    const { user } = useSelector((state) => state.user);
+    const { user, token } = useSelector((state) => state.user);
 
     React.useEffect(() => {
         if (user.role == "USER")
@@ -17,7 +17,7 @@ const ManagerShopPage = () => {
         const fetchData = async () => {
             await axios.get("/manager/shop/getMyShop", {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                    Authorization: `Bearer ${token}`
                 }
             }).then(function (response) {
                 console.log(response)

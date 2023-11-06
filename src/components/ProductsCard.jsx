@@ -2,7 +2,7 @@ import { Add } from '@mui/icons-material'
 import { AspectRatio, Box, Card, CardContent, Chip, IconButton, Typography } from '@mui/joy'
 import React from 'react'
 import { useDispatch } from 'react-redux'
-import { addBasket } from '../redux/basketSlice'
+import { addBasket, addBasketItem } from '../redux/basketSlice'
 import { etcString } from './Utils'
 
 const ProductsCard = ({ data }) => {
@@ -51,7 +51,7 @@ const ProductsCard = ({ data }) => {
               "&:hover":
                 { color: "#0B6BCB" }
             }}
-            onClick={() => dispatch(addBasket(data))}>
+            onClick={() => dispatch(addBasketItem(data))}>
             <Add />
           </IconButton>
         </Box>

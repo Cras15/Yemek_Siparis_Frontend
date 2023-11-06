@@ -1,25 +1,20 @@
 import { Add, Check, Delete, KeyboardArrowRight, Remove } from '@mui/icons-material';
-import { AspectRatio, ButtonGroup, Button, Card, CardContent, Chip, IconButton, List, ListDivider, ListItem, ListItemDecorator, Table, Typography, ListSubheader, Divider, CardActions } from '@mui/joy'
+import { AspectRatio, ButtonGroup, Button, Card, CardContent, Chip, IconButton, List, ListDivider, ListItem, ListItemDecorator, Table, Typography, ListSubheader, Divider, CardActions, Skeleton } from '@mui/joy'
 import { useDispatch, useSelector } from 'react-redux';
-import { addBasket, removeBasket } from '../redux/basketSlice';
+import { addBasket, addBasketItem, getBasket, removeBasket, removeBasketItem } from '../redux/basketSlice';
 import { etcString } from '../components/Utils';
 import { Box } from '@mui/material';
 import BasketPaymentItem from '../components/BasketPaymentItem';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { STATUS } from '../components/Status';
 
 const BasketPage = () => {
   const [discount, setDiscount] = useState(0);
-  const [total, setTotal] = useState(0);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { baskets } = useSelector((state) => state.basket);
-
-  useEffect(() => {
-    setTotal(baskets.reduce((a, v) => a = a + (v.unit * v.price), 0));
-  }, [baskets]);
-
+  const { baskets, status } = useSelector((state) => state.basket);
 
   return (
     <div className='m-auto mt-5 w-11/12 sm:w-10/12 rounded-lg grid gap-9 md:grid-flow-col grid-flow-row'>
@@ -32,52 +27,89 @@ const BasketPage = () => {
           }}>
           <ListSubheader color="primary" sx={{ fontWeight: 800 }}>Sepetim</ListSubheader>
           <ListDivider />
-          {baskets.map((data, i) => (
-            <div key={data.productsId}>
-              <ListItem>
-                <ListItemDecorator>
-                  <AspectRatio ratio="1" sx={{ width: 90 }}>
+          {status != STATUS.LOADING ? (
+            baskets != "" && baskets?.basketItems.length != 0 ?
+              baskets.basketItems.map((data, i) => (
+                <div key={data.basketItemId}>
+                  <ListItem>
+                    <ListItemDecorator>
+                      <AspectRatio ratio="1" sx={{ width: 90 }}>
+                        <img
+                          src={data.imageUrl}
+                          srcSet={data.product.imageUrl != null ? data.product.imageUrl : "https://images.deliveryhero.io/image/fd-tr/LH/h6km-listing.jpg?width=400&height=292&quot;"}
+                          loading="lazy"
+                          alt=""
+                        />
+                      </AspectRatio>
+                    </ListItemDecorator>
+                    <CardContent sx={{ ml: 3 }}>
+                      <Typography level="title-lg" id="card-description">
+                        {etcString(data.product.productName, 15)}
+                      </Typography>
+                      <Typography level="body-sm" aria-describedby="card-description" mb={1} sx={{ color: 'text.tertiary' }}>
+                        {etcString("Patates", 50)}
+                      </Typography>
+                      <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                        <Chip
+                          variant="outlined"
+                          color="primary"
+                          size="sm"
+                          sx={{ pointerEvents: 'none' }}
+                        >
+                          {data.product.price * data.unit}₺
+                        </Chip>
+                        <ButtonGroup aria-label="outlined primary button group" sx={{ ml: 'auto', mb: 'auto' }}>
+                          <IconButton onClick={() => dispatch(removeBasketItem(data.product)).then(() => dispatch(getBasket()))}>
+                            {data.unit > 1 ? <Remove color='primary' /> : <Delete color='primary' />}
+                          </IconButton>
+                          <Button disabled>{data.unit}</Button>
+                          <IconButton onClick={() => dispatch(addBasketItem(data.product)).then(()=>dispatch(getBasket()))}>
+                            <Add color='primary' />
+                          </IconButton>
+                        </ButtonGroup>
+                      </Box>
+                    </CardContent>
+                  </ListItem>
+                  {i != baskets.basketItems.length - 1 &&
+                    <ListDivider inset="gutter" />
+                  }
+                </div>
+              )) : <Typography level="title-lg" sx={{ textAlign: 'center' }}>Sepetinizde ürün bulunmamaktadır.</Typography>)
+            : <ListItem>
+              <ListItemDecorator>
+                <AspectRatio ratio="1" sx={{ width: 90 }}>
+                  <Skeleton>
                     <img
-                      src={data.imageUrl}
-                      srcSet={data.imageUrl != null ? data.imageUrl : "https://images.deliveryhero.io/image/fd-tr/LH/h6km-listing.jpg?width=400&height=292&quot;"}
-                      loading="lazy"
+                      src={null}
+                      srcSet={null}
                       alt=""
                     />
-                  </AspectRatio>
-                </ListItemDecorator>
-                <CardContent sx={{ ml: 3 }}>
-                  <Typography level="title-lg" id="card-description">
-                    {etcString(data.productName, 15)}
-                  </Typography>
-                  <Typography level="body-sm" aria-describedby="card-description" mb={1} sx={{ color: 'text.tertiary' }}>
-                    {etcString("İskender, Ayran, Patates Kızartması, lahana, turşu, domates, karnabahar", 50)}
-                  </Typography>
-                  <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                    <Chip
-                      variant="outlined"
-                      color="primary"
-                      size="sm"
-                      sx={{ pointerEvents: 'none' }}
-                    >
-                      {data.price * data.unit}₺
-                    </Chip>
-                    <ButtonGroup aria-label="outlined primary button group" sx={{ ml: 'auto', mb: 'auto' }}>
-                      <IconButton onClick={() => dispatch(removeBasket(data))}>
-                        {data.unit > 1 ? <Remove color='primary' /> : <Delete color='primary' />}
-                      </IconButton>
-                      <Button disabled>{data.unit}</Button>
-                      <IconButton onClick={() => dispatch(addBasket(data))}>
-                        <Add color='primary' />
-                      </IconButton>
-                    </ButtonGroup>
-                  </Box>
-                </CardContent>
-              </ListItem>
-              {i != baskets.length - 1 &&
-                <ListDivider inset="gutter" />
-              }
-            </div>
-          ))}
+                  </Skeleton>
+                </AspectRatio>
+              </ListItemDecorator>
+              <CardContent sx={{ ml: 3 }}>
+                <Typography level="title-lg" id="card-description">
+                  <Skeleton>aaaaaaaaaaaaaaaaaaaaaaaaa</Skeleton>
+                </Typography>
+                <Typography level="body-sm" aria-describedby="card-description" mb={1} sx={{ color: 'text.tertiary' }}>
+                  <Skeleton>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</Skeleton>
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                  <Typography><Skeleton>111111₺</Skeleton></Typography>
+                  <ButtonGroup aria-label="outlined primary button group" sx={{ ml: 'auto', mb: 'auto' }}>
+                    <IconButton>
+                      <Skeleton><Remove color='primary' /></Skeleton>
+                    </IconButton>
+                    <Button><Skeleton>55</Skeleton></Button>
+                    <IconButton>
+                      <Skeleton><Add color='primary' /></Skeleton>
+                    </IconButton>
+                  </ButtonGroup>
+                </Box>
+              </CardContent>
+            </ListItem>
+
+          }
         </List>
       </div>
       <div>
@@ -85,9 +117,9 @@ const BasketPage = () => {
           <Typography level="h3">Sipariş Özeti</Typography>
           <Divider inset="none" />
           <List size="sm" sx={{ mx: 'calc(-1 * var(--ListItem-paddingX))' }}>
-            <BasketPaymentItem title="Ara Toplam" price={`${total}₺`} />
+            <BasketPaymentItem title="Ara Toplam" price={`${baskets.totalPrice}₺`} />
             <BasketPaymentItem title="Gönderim Tutarı" price="Ücretsiz" />
-            <BasketPaymentItem title="KDV(%20)" price={(total * 0.20).toFixed(1)+ '₺'} />
+            <BasketPaymentItem title="KDV(%20)" price={(baskets.totalPrice * 0.20).toFixed(1) + '₺'} />
             <BasketPaymentItem title="İndirim" price={`${discount}₺`} />
           </List>
           <Divider inset="none" />
@@ -99,10 +131,10 @@ const BasketPage = () => {
               </Typography>
             </Typography>
             <Typography>
-              {(total - discount + total * 0.18)}₺
+              {(baskets.totalPrice - discount + baskets.totalPrice * 0.18).toFixed(2)}₺
             </Typography>
           </CardActions>
-          <Button color='primary' endDecorator={<KeyboardArrowRight />} onClick={()=>navigate('/odeme')}>Sepeti Onayla</Button>
+          <Button color='primary' endDecorator={<KeyboardArrowRight />} onClick={() => navigate('/odeme')} disabled={baskets.basketItems?.length == 0}>Sepeti Onayla</Button>
         </Card>
 
       </div>
