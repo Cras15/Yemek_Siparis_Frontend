@@ -133,7 +133,8 @@ const Navbar = () => {
               </div>
               : <>
                 <Stack spacing={2} direction="row">
-                  <BasketDropdown />
+                  {user != "" &&
+                    <BasketDropdown />}
                   <Button sx={{
                     color: 'rgb(209,213,  219)',
                     "&:hover": {
