@@ -5,7 +5,7 @@ import axios from "axios";
 
 export const addBasketItem = createAsyncThunk("basket/add", async (data, { getState }) => {
     const token = selectUserToken(getState());
-    const res = await axios.post(`/basket/add/${data.productId}`, {}, {
+    const res = await axios.post(`/basket/add/${data.productsId}`, {}, {
         headers: {
             Authorization: `Bearer ${token}`
         }
