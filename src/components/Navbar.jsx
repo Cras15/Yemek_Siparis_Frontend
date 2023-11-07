@@ -169,7 +169,7 @@ const Navbar = () => {
           onClose={() => dispatch(setSnackbar(null))}
           autoHideDuration={4000}
         >
-          <Alert {...snackbar} onClose={() => dispatch(setSnackbar(null))} />
+          <Alert {...snackbar} onClose={() => dispatch(setSnackbar(null))}  />
         </Snackbar>
       )}
       <Outlet />

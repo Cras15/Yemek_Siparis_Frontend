@@ -5,9 +5,10 @@ import { FormControl, FormLabel, Input, Stack, Box, Link, Button, Checkbox, Card
 import { CreditCard, InfoOutlined, PersonOutline } from '@mui/icons-material';
 import { IMaskInput } from 'react-imask';
 import { useDispatch, useSelector } from 'react-redux';
-import { removeAllBasket } from '../redux/basketSlice';
+import { getBasket, removeAllBasket } from '../redux/basketSlice';
 import axios from 'axios';
 import { setSnackbar } from '../redux/snackbarSlice';
+import { useNavigate } from 'react-router-dom';
 
 const TextMaskAdapter = React.forwardRef(function TextMaskAdapter(props, ref) {
     const { onChange, mask, blocks, ...other } = props;
@@ -33,10 +34,13 @@ TextMaskAdapter.propTypes = {
 const PaymentPage = () => {
     const { token } = useSelector((state) => state.user);
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const handlePurchase = () => {
         axios.post("/orders/purchase", {}, { headers: { Authorization: `Bearer ${token}` } }).then((res) => {
             dispatch(setSnackbar({ children: res.data, color: 'success' }));
+            dispatch(getBasket());
+            navigate("/");
         }).catch((error) => {
             console.log(error);
         });
