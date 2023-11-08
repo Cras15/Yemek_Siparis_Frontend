@@ -17,7 +17,6 @@ const BasketDropdown = () => {
         setOpen(isOpen);
     }, []);
 
-    é
 
     return (
         <Dropdown open={open} onOpenChange={handleOpenChange}>
