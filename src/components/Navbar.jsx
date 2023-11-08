@@ -5,7 +5,7 @@ import { Outlet, useNavigate } from 'react-router-dom'
 import PersonIcon from '@mui/icons-material/Person';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import { Avatar, Typography, Dropdown, IconButton, ListDivider, ListItemDecorator, Menu, MenuButton, MenuItem, Divider, Alert } from '@mui/joy';
-import { Home, LogoutOutlined, PersonOutline, SettingsOutlined, SupervisorAccountOutlined } from '@mui/icons-material';
+import { Home, LogoutOutlined, PersonOutline, SettingsOutlined, ShoppingBasketOutlined, SupervisorAccountOutlined } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { userLogout } from '../redux/userSlice';
 import BasketDropdown from './BasketDropdown';
@@ -111,6 +111,11 @@ const Navbar = () => {
                           <Divider />
                         </>
                       }
+                      <MenuItem onClick={()=>navigate("/siparislerim")}>
+                        <ListItemDecorator sx={{ mr: 1 }}>
+                          <ShoppingBasketOutlined />
+                        </ListItemDecorator>{' '}Siparişlerim
+                      </MenuItem>
                       <MenuItem>
                         <ListItemDecorator sx={{ mr: 1 }}>
                           <PersonOutline />
@@ -169,7 +174,7 @@ const Navbar = () => {
           onClose={() => dispatch(setSnackbar(null))}
           autoHideDuration={4000}
         >
-          <Alert {...snackbar} onClose={() => dispatch(setSnackbar(null))}  />
+          <Alert {...snackbar} onClose={() => dispatch(setSnackbar(null))} />
         </Snackbar>
       )}
       <Outlet />

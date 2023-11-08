@@ -17,6 +17,8 @@ import ManagerShopEditPage from "./pages/manager/ManagerShopEditPage"
 import ManagerOrdersPage from "./pages/manager/ManagerOrdersPage"
 import { useDispatch, useSelector } from "react-redux"
 import { userLogout } from "./redux/userSlice"
+import Footer2 from "./components/Footer2"
+import OrdersPage from "./pages/OrdersPage"
 
 function App() {
   const { expireDate, user, token } = useSelector((state) => state.user);
@@ -38,6 +40,7 @@ function App() {
           <Route path="/shop/:id" element={<ShopsPage />} />
           <Route path="/sepet" element={<BasketPage />} />
           <Route path="/odeme" element={<PaymentPage />} />
+          <Route path="/siparislerim" element={<OrdersPage />} />
           <Route path="/manager" element={<ManagerIndexPage />} />
           <Route path='/manager' element={<Outlet />}>
             <Route path='magazalarim' element={<ManagerShopPage />} />
@@ -47,7 +50,7 @@ function App() {
         </Route>
         <Route path='*' element={<ErrorPage404 />} />
       </Routes>
-      <Footer />
+      <Footer2 />
     </div>
   )
 }

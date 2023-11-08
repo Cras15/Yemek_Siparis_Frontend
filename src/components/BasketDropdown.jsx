@@ -17,9 +17,7 @@ const BasketDropdown = () => {
         setOpen(isOpen);
     }, []);
 
-    React.useEffect(() => {
-        dispatch(getBasket());
-    }, []);
+    é
 
     return (
         <Dropdown open={open} onOpenChange={handleOpenChange}>
