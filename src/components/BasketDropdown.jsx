@@ -17,20 +17,19 @@ const BasketDropdown = () => {
         setOpen(isOpen);
     }, []);
 
+    React.useEffect(() => {
+        if (baskets == "")
+            dispatch(getBasket());
+    }, []);
+
 
     return (
         <Dropdown open={open} onOpenChange={handleOpenChange}>
             <MenuButton
-                color="neutral"
-                sx={{
-                    mr: 1, color: 'rgb(209,213,  219)',
-                    "&:hover": {
-                        bgcolor: "rgb(55,65,81)",
-                        color: "white"
-                    }
-                }} slots={{ root: IconButton }} >
+                color='primary'
+                slots={{ root: IconButton }} >
                 <Badge badgeContent={baskets.basketItems?.length} showZero={false} color="primary" size='sm' variant="solid">
-                    <ShoppingBasket sx={{ color: "rgb(156 163 175)" }} />
+                    <ShoppingBasket color='primary'/>
                 </Badge>
             </MenuButton>
             <Menu>

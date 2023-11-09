@@ -1,10 +1,9 @@
-import { Button, Snackbar, Stack } from '@mui/material'
-import { deepPurple } from '@mui/material/colors';
+import { Button, Snackbar, Stack, capitalize } from '@mui/material'
 import React from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import PersonIcon from '@mui/icons-material/Person';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import { Avatar, Typography, Dropdown, IconButton, ListDivider, ListItemDecorator, Menu, MenuButton, MenuItem, Divider, Alert } from '@mui/joy';
+import { Typography, Dropdown, IconButton, ListDivider, ListItemDecorator, Menu, MenuButton, MenuItem, Divider, Alert } from '@mui/joy';
 import { Home, LogoutOutlined, PersonOutline, SettingsOutlined, ShoppingBasketOutlined, SupervisorAccountOutlined } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { userLogout } from '../redux/userSlice';
@@ -14,7 +13,7 @@ import { setSnackbar } from '../redux/snackbarSlice';
 const Navbar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { status, user } = useSelector((state) => state.user);
+  const { user } = useSelector((state) => state.user);
   const { snackbar } = useSelector((state) => state.snackbar);
 
   const logout = () => {
@@ -23,17 +22,11 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="bg-gray-800 shadow-lg">
+      <nav className="bg-gray-50 shadow-lg">
         <div className="mx-auto px-2 sm:px-6 lg:px-8 mr-10">
           <div className="relative flex h-16 items-center justify-between">
             <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
-              <IconButton onClick={() => navigate('/')} size='sm' sx={{
-                color: 'rgb(209,213,  219)',
-                "&:hover": {
-                  bgcolor: "rgb(55,65,81)",
-                  color: "white"
-                }
-              }}>
+              <IconButton onClick={() => navigate('/')} size='sm' color='primary'>
                 <Home />
               </IconButton>
               {/*<button onClick={() => setActive(!active)} type="button" className="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
@@ -56,22 +49,15 @@ const Navbar = () => {
                 noWrap
                 component="a"
                 href="/"
+                color='primary'
                 sx={{
                   mr: 2,
                   ml: 6,
                   display: { xs: 'none', md: 'flex' },
                   fontFamily: 'monospace',
                   fontWeight: 700,
-                  textDecoration: 'none',
-                  borderRadius: 2,
-                  pl: 1,
-                  pr: 1,
-                  color: 'rgb(209,213,  219)',
-                  "&:hover": {
-                    bgcolor: "rgb(55,65,81)",
-                    color: "white"
-                  }
-
+                  borderRadius: 5,
+                  p: 1,
                 }}
               >
                 Ayağımagelsin
@@ -81,60 +67,57 @@ const Navbar = () => {
 
             {user != "" ?
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                <BasketDropdown />
-                <button type="button" className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-                  <span className="absolute -inset-1.5"></span>
-                  <span className="sr-only">View notifications</span>
-                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
-                  </svg>
-                </button>
-
-                <div className="relative ml-3">
+                <div className="relative mr-3">
                   <Dropdown>
                     <MenuButton
                       slots={{ root: IconButton }}
-                      sx={{
-                        "&:hover": {
-                          background: "transparent"
-                        }
-                      }}
+                      color='primary'
                     >
-                      <Avatar sx={{ bgcolor: deepPurple[500], cursor: "pointer", color: "white" }}>{user.firstname.toUpperCase().charAt(0)}{user.lastname.toUpperCase().charAt(0)}</Avatar>
+                      <PersonOutline color='primary' />
+                      <Typography color='primary'>{capitalize(user.firstname) + " " + capitalize(user.lastname)}</Typography>
+
                     </MenuButton>
-                    <Menu sx={{ minWidth: 160, '--ListItemDecorator-size': '24px' }} placement="bottom-end">
+                    <Menu sx={{
+                      mx: 44,
+                      "--List-radius": "20px",
+                      "--ListItem-minHeight": "44px",
+                      "--List-padding": "8px",
+                      "--List-gap": "1px",
+                      "--List-nestedInsetStart": "var(--ListItemDecorator-size)"
+                    }} placement="bottom-end">
                       {user.role == "MANAGER" &&
                         <>
-                          <MenuItem onClick={() => navigate('/manager')}>
-                            <ListItemDecorator sx={{ mr: 1 }}><SupervisorAccountOutlined /></ListItemDecorator> Yetkili Paneli
+                          <MenuItem onClick={() => navigate('/manager')} color='primary'>
+                            <ListItemDecorator><SupervisorAccountOutlined /></ListItemDecorator> Yetkili Paneli
                           </MenuItem>
-                          <Divider />
+                          <Divider sx={{ my: 1 }} />
                         </>
                       }
-                      <MenuItem onClick={()=>navigate("/siparislerim")}>
-                        <ListItemDecorator sx={{ mr: 1 }}>
+                      <MenuItem onClick={() => navigate("/siparislerim")} color='primary'>
+                        <ListItemDecorator>
                           <ShoppingBasketOutlined />
-                        </ListItemDecorator>{' '}Siparişlerim
+                        </ListItemDecorator>Siparişlerim&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                       </MenuItem>
-                      <MenuItem>
-                        <ListItemDecorator sx={{ mr: 1 }}>
+                      <MenuItem onClick={() => navigate("/profil")} color='primary'>
+                        <ListItemDecorator >
                           <PersonOutline />
-                        </ListItemDecorator>{' '}Profil
+                        </ListItemDecorator>Profil
                       </MenuItem>
-                      <MenuItem>
-                        <ListItemDecorator sx={{ mr: 1 }}>
+                      <MenuItem color='primary'>
+                        <ListItemDecorator >
                           <SettingsOutlined />
-                        </ListItemDecorator>{' '}Ayarlar
+                        </ListItemDecorator>Ayarlar
                       </MenuItem>
                       <ListDivider />
-                      <MenuItem onClick={() => logout()}>
-                        <ListItemDecorator sx={{ mr: 1 }}>
+                      <MenuItem onClick={() => logout()} color='primary'>
+                        <ListItemDecorator >
                           <LogoutOutlined />
-                        </ListItemDecorator>{' '}Çıkış Yap
+                        </ListItemDecorator>Çıkış Yap
                       </MenuItem>
                     </Menu>
                   </Dropdown>
                 </div>
+                <BasketDropdown />
               </div>
               : <>
                 <Stack spacing={2} direction="row">

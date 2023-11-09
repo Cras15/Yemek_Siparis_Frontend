@@ -31,8 +31,8 @@ const SignInPage = () => {
     if (data.get('firstname') && data.get('lastname') && data.get('email') != "" && data.get('password') != "") {
       dispatch(userRegister({ firstname: data.get('firstname'), lastname: data.get('lastname'), email: data.get('email'), password: data.get('password') })).then((res => {
         console.log(res);
-        dispatch(setSnackbar({ children: res.payload.data, color: res.payload.status == 200 ? 'success' : 'danger' }));
-        if (res.payload.status == 200) navigate('/giris');
+        dispatch(setSnackbar({ children: res.payload != undefined? res.payload.data : "Hata oluştu", color: res.payload?.status == 200 ? 'success' : 'danger' }));
+        if (res.payload?.status == 200) navigate('/giris');
       }));
     }
   };

@@ -1,11 +1,13 @@
 import { Add } from '@mui/icons-material'
-import { AspectRatio, Box, Card, CardContent, Chip, IconButton, Typography } from '@mui/joy'
+import { AspectRatio, Box, Card, CardContent, Chip, CircularProgress, IconButton, Typography } from '@mui/joy'
 import React from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { addBasket, addBasketItem, getBasket } from '../redux/basketSlice'
 import { etcString } from './Utils'
+import { STATUS } from './Status'
 
 const ProductsCard = ({ data }) => {
+  const status = useSelector((state) => state.basket.status);
   const dispatch = useDispatch();
 
   return (
@@ -44,6 +46,7 @@ const ProductsCard = ({ data }) => {
           <IconButton
             aria-label="Sepete Ekle"
             component="button"
+            disabled={status == STATUS.LOADING}
             sx={{
               ml: 'auto',
               borderRadius: 20,
@@ -52,7 +55,7 @@ const ProductsCard = ({ data }) => {
                 { color: "#0B6BCB" }
             }}
             onClick={() => dispatch(addBasketItem(data)).then(() => dispatch(getBasket()))}>
-            <Add />
+            {status == STATUS.LOADING ? <CircularProgress /> : <Add />}
           </IconButton>
         </Box>
       </CardContent>

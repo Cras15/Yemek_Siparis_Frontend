@@ -3,6 +3,7 @@ import { Accordion, AccordionDetails, AccordionGroup, AccordionSummary, AspectRa
 import { format, parseISO } from 'date-fns'
 import tr from 'date-fns/locale/tr'
 import { OrderStatus, OrderStatusColor } from './Utils'
+import { ArrowDownward, LocationOnOutlined } from '@mui/icons-material'
 
 const OrderCard = ({ data }) => {
     const convertDate = (date) => {
@@ -14,9 +15,11 @@ const OrderCard = ({ data }) => {
         <Card
             variant="outlined"
             orientation="vertical"
-            key={data.orderId}
+            key={data.orderId * 10}
             sx={{
-                width: 600,
+                minWidth: 220,
+                width: 'auto',
+                maxWidth: 600,
                 m: 'auto',
                 '&:hover': { boxShadow: 'md', borderColor: 'neutral.outlinedHoverBorder' },
             }}
@@ -31,14 +34,14 @@ const OrderCard = ({ data }) => {
                     />
                 </AspectRatio>
                 <CardContent>
-                    <Stack direction="row">
+                    <div className='grid grid-flow-col-dense '>
                         <Typography level="h3" id="card-description">
                             {data.shopName}
                         </Typography>
                         <Typography level="title-lg" aria-describedby="card-description" mb={1} ml="auto" mr={2} sx={{ fontWeight: 'bold' }}>
                             {(data.finalPrice - data.discount).toFixed(2)} TL
                         </Typography>
-                    </Stack>
+                    </div>
                     <Stack direction="row">
                         <Typography level="body-sm" aria-describedby="card-description" mb={1}>
                             {convertDate(data.orderDate)} tarihinde sipariş edildi.
@@ -53,7 +56,7 @@ const OrderCard = ({ data }) => {
                     </Stack>
                     {data.orderItems.map((item, i) => (
                         i < 3 &&
-                        <Typography level="body-md" aria-describedby="card-description" key={i}>
+                        <Typography level="body-md" aria-describedby="card-description" key={i * item.unit}>
                             {item.unit} x {item.orderName} {(i == 2 && data.orderItems.length != i + 1) && "..."}
                         </Typography>
                     ))}
@@ -65,12 +68,28 @@ const OrderCard = ({ data }) => {
                 <Accordion >
                     <AccordionSummary>Ayrıntıları Gör</AccordionSummary>
                     <AccordionDetails>
+                        <Stack direction="row" spacing={1}>
+                            <div className='grid grid-flow-row gap-0'>
+
+                                <LocationOnOutlined color='primary' />
+                                <Divider orientation="vertical" sx={{ mx: 'auto', height: 'auto', bgcolor: 'var(--variant-plainColor, rgba(var(--joy-palette-primary-mainChannel, 11 107 203) / 1))' }} />
+                                <LocationOnOutlined color='primary' sx={{ mt: 'auto' }} />
+                            </div>
+                            <div>
+                                <Typography level="body-xs" aria-describedby="card-description" sx={{ fontWeight: 'bold' }}>Siparişin Verildiği Yer:</Typography>
+                                <Typography level="body-md" aria-describedby="card-description">{data.shopName}</Typography>
+                                <ArrowDownward sx={{ mt: 1, ml: 'auto', width: 100 }} color='primary' />
+                                <Typography level="body-xs" aria-describedby="card-description" sx={{ fontWeight: 'bold', mt: 2 }}>Teslim edildiği yer:</Typography>
+                                <Typography level="body-md" aria-describedby="card-description">{data.address}</Typography>
+                            </div>
+                        </Stack>
+                        <Divider sx={{ my: 1 }} />
                         {data.orderItems.map((item, i) => (
-                            <div className='grid grid-flow-col'>
-                                <Typography level="body-sm" aria-describedby="card-description" key={i}>
+                            <div className='grid grid-flow-col' key={i * 13}>
+                                <Typography level="body-sm" aria-describedby="card-description">
                                     {item.unit} x {item.orderName}
                                 </Typography>
-                                <Typography level="body-sm" aria-describedby="card-description" key={i} sx={{ ml: 'auto' }}> {(item.price * item.unit).toFixed(2)} TL</Typography>
+                                <Typography level="body-sm" aria-describedby="card-description" sx={{ ml: 'auto' }}> {(item.price * item.unit).toFixed(2)} TL</Typography>
                             </div>
                         ))}
                         <Divider sx={{ my: 1 }} />
@@ -98,7 +117,7 @@ const OrderCard = ({ data }) => {
                                 {(data.finalPrice - data.discount).toFixed(2)} TL
                             </Typography>
                         </div>
-                        
+
                     </AccordionDetails>
                 </Accordion>
             </AccordionGroup>

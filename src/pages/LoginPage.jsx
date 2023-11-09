@@ -28,7 +28,8 @@ const LoginPage = () => {
     const data = new FormData(event.currentTarget);
     if (data.get('email') != "" && data.get('password') != "") {
       dispatch(userLogin({ username: data.get('email'), password: data.get('password') })).then((res) => {
-        dispatch(setSnackbar({ children: "Giriş başarılı", color: 'success' }));
+        console.log(res)
+        dispatch(setSnackbar({ children: res?.payload == undefined ? "Girilen bilgiler hatalı" :"Giriş başarılı", color: res.payload.status == 200 ? 'success' : 'danger' }));
         dispatch(getUserProfile());
       });
     }
@@ -122,11 +123,11 @@ const LoginPage = () => {
                         }}
                       >
                         <Checkbox size="sm" label="Beni hatırla" name="persistent" />
-                        <Link level="title-sm" href="#">
+                        <Link level="title-sm" href="/sifremi-unuttum">
                           Şifreni mi unuttun?
                         </Link>
                       </Box>
-                      <Button type="submit" fullWidth loading={status== STATUS.LOADING}>
+                      <Button type="submit" fullWidth loading={status == STATUS.LOADING}>
                         Giriş Yap
                       </Button>
                     </Stack>

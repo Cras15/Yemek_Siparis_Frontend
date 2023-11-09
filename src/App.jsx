@@ -19,6 +19,8 @@ import { useDispatch, useSelector } from "react-redux"
 import { userLogout } from "./redux/userSlice"
 import Footer2 from "./components/Footer2"
 import OrdersPage from "./pages/OrdersPage"
+import ForgotPassword from "./pages/ForgotPassword"
+import ResetPassword from "./pages/ResetPassword"
 
 function App() {
   const { expireDate, user, token } = useSelector((state) => state.user);
@@ -37,6 +39,8 @@ function App() {
           <Route index element={<HomePage />} />
           <Route path="/kayit" element={<SignInPage />} />
           <Route path="/giris" element={<LoginPage />} />
+          <Route path="/sifremi-unuttum" element={<ForgotPassword />} />
+          <Route path="/sifre-sifirla/:token" element={<ResetPassword />} />
           <Route path="/shop/:id" element={<ShopsPage />} />
           <Route path="/sepet" element={<BasketPage />} />
           <Route path="/odeme" element={<PaymentPage />} />
