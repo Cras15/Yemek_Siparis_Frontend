@@ -2,23 +2,18 @@ import { CheckCircleOutlined, InfoOutlined, Mail } from '@mui/icons-material'
 import { Button, Card, CardContent, FormControl, FormHelperText, FormLabel, Input, Link, Typography } from '@mui/joy'
 import axios from 'axios'
 import React from 'react'
-import { useDispatch } from 'react-redux'
-import { setSnackbar } from '../redux/snackbarSlice'
 
 const ForgotPassword = () => {
     const [status, setStatus] = React.useState("");
-    const dispatch = useDispatch();
 
     const sendMail = async (email) => {
         setStatus("loading");
         await axios.post(`/auth/forgotPassword?email=${email}`).then((res) => {
             console.log(res);
             setStatus("success");
-            dispatch(setSnackbar({ children: res.data, color: 'success' }));
         }).catch((error) => {
             console.log(error);
             setStatus("error");
-            dispatch(setSnackbar({ children: error.response.data, color: 'danger' }));
         });
     }
 
@@ -46,7 +41,7 @@ const ForgotPassword = () => {
                             }
                             {status == "error" && <FormHelperText about=''>
                                 <InfoOutlined />
-                                Mail gönderirken bir hata oluştu!
+                                Sistemde kayıtlı böyle bir mail adresi yok ya da sistemsel bir hata oluştu lütfen daha sonra tekrar deneyin.
                             </FormHelperText>}
                         </FormControl>
                         <Button size='lg' sx={{ mt: 2, mb: 4, width: '100%' }} type='submit' loading={status == "loading"}>Şifreyi Sıfırla</Button>
