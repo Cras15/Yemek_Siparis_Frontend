@@ -1,5 +1,5 @@
-import { CheckCircleOutlined, Mail } from '@mui/icons-material'
-import { Button, Card, CardContent, FormControl, FormLabel, Input, Link, Typography } from '@mui/joy'
+import { CheckCircleOutlined, InfoOutlined, Mail } from '@mui/icons-material'
+import { Button, Card, CardContent, FormControl, FormHelperText, FormLabel, Input, Link, Typography } from '@mui/joy'
 import axios from 'axios'
 import React from 'react'
 import { useDispatch } from 'react-redux'
@@ -35,9 +35,19 @@ const ForgotPassword = () => {
                     <Typography level="h3" >Şifrenizi mi unuttunuz?</Typography>
                     <Typography>E-posta adresinizi girin. E-posta adresinize şifrenizi sıfırlamanız için bir bağlantı göndereceğiz.</Typography>
                     <form onSubmit={(event) => { handleSubmit(event) }}>
-                        <FormControl required sx={{ mt: 3 }}>
+                        <FormControl required sx={{ mt: 3 }} error={status == "error"} >
                             <FormLabel>Email</FormLabel>
-                            <Input startDecorator={<Mail />} size='lg' placeholder='E-Mail' type="email" name="email" />
+                            <Input color={(status == "success" && "success" || status == "error"&& "danger") || "neutral"} startDecorator={<Mail color={(status == "error" && 'error' || status == "success" && 'success') || "neutral"} />} size='lg' placeholder='E-Mail' type="email" name="email" />
+                            {status == "success" &&
+                                <FormHelperText about=''>
+                                    <CheckCircleOutlined color='success'/>
+                                    <Typography color='success'>Mail gönderildi!</Typography>
+                                </FormHelperText>
+                            }
+                            {status == "error" && <FormHelperText about=''>
+                                <InfoOutlined />
+                                Mail gönderirken bir hata oluştu!
+                            </FormHelperText>}
                         </FormControl>
                         <Button size='lg' sx={{ mt: 2, mb: 4, width: '100%' }} type='submit' loading={status == "loading"}>Şifreyi Sıfırla</Button>
                     </form>
