@@ -1,14 +1,21 @@
-import { Add } from '@mui/icons-material'
+import { Add, ErrorOutline } from '@mui/icons-material'
 import { AspectRatio, Box, Card, CardContent, Chip, CircularProgress, IconButton, Typography } from '@mui/joy'
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { addBasket, addBasketItem, getBasket } from '../redux/basketSlice'
 import { etcString } from './Utils'
 import { STATUS } from './Status'
+import { setSnackbar } from '../redux/snackbarSlice'
 
 const ProductsCard = ({ data }) => {
   const status = useSelector((state) => state.basket.status);
+  const token = useSelector((state) => state.user.token);
   const dispatch = useDispatch();
+
+  const addBasket = async () => {
+    if (token == "") dispatch(setSnackbar({children: "Sepete ürün eklemek için giriş yapmalısınız.", color: "danger" , startDecorator: <ErrorOutline />}));
+    else await dispatch(addBasketItem(data)).then(() => dispatch(getBasket()))
+  }
 
   return (
     <Card
@@ -54,7 +61,7 @@ const ProductsCard = ({ data }) => {
               "&:hover":
                 { color: "#0B6BCB" }
             }}
-            onClick={() => dispatch(addBasketItem(data)).then(() => dispatch(getBasket()))}>
+            onClick={addBasket}>
             {status == STATUS.LOADING ? <CircularProgress /> : <Add />}
           </IconButton>
         </Box>

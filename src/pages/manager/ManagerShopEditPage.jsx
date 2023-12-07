@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom';
 import { GRID_EDITED_LOCALE_TEXT } from '../../components/GridLocaleText';
 import { Snackbar } from '@mui/material';
 import React from 'react';
-import { Add, Delete, DeleteForever, Edit, WarningRounded } from '@mui/icons-material';
+import { Add, Delete, DeleteForever, Edit, InfoOutlined, PlaylistAddCheckCircleOutlined, WarningRounded } from '@mui/icons-material';
 import styled from '@emotion/styled';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSnackbar } from '../../redux/snackbarSlice';
@@ -101,10 +101,10 @@ const ManagerShopEditPage = () => {
         setStatus('pending');
         await axios.post(`/manager/products/deleteProduct?productId=${lastSelect}`, {}, { headers: { Authorization: `Bearer ${token}` } }).then((res) => {
             getShopsById(id);
-            dispatch(setSnackbar({ children: res.data, color: 'success' }));
+            dispatch(setSnackbar({ children: res.data, color: 'success', startDecorator: <PlaylistAddCheckCircleOutlined /> }));
             setStatus('success');
         }).catch((error) => {
-            dispatch(setSnackbar({ children: error.message, color: 'danger' }));
+            dispatch(setSnackbar({ children: error.message, color: 'danger', startDecorator: <InfoOutlined /> }));
             setStatus('error');
             //console.log(error);
         });
@@ -123,10 +123,10 @@ const ManagerShopEditPage = () => {
             stock: 9999
         }, { headers: { Authorization: `Bearer ${token}` } }).then((res) => {
             getShopsById(id);
-            dispatch(setSnackbar({ children: res.data, color: 'success' }));
+            dispatch(setSnackbar({ children: res.data, color: 'success', startDecorator: <PlaylistAddCheckCircleOutlined /> }));
             setStatus('success');
         }).catch((error) => {
-            dispatch(setSnackbar({ children: error.message, color: 'danger' }));
+            dispatch(setSnackbar({ children: error.message, color: 'danger', startDecorator: <InfoOutlined /> }));
             setStatus('error');
         });
     }
@@ -139,10 +139,10 @@ const ManagerShopEditPage = () => {
                 getShopsById(id);
                 setStatus('success')
                 console.log(res.data);
-                dispatch(setSnackbar({ children: res.data, color: 'success' }));
+                dispatch(setSnackbar({ children: res.data, color: 'success', startDecorator: <PlaylistAddCheckCircleOutlined /> }));
             }).catch((error) => {
                 console.log(error);
-                dispatch(setSnackbar({ children: error.message, color: 'danger' }));
+                dispatch(setSnackbar({ children: error.message, color: 'danger', startDecorator: <InfoOutlined /> }));
                 setStatus('error');
             });
         }

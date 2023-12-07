@@ -1,14 +1,36 @@
-import { Button, Snackbar, Stack, capitalize } from '@mui/material'
+import { Stack, capitalize, keyframes } from '@mui/material'
 import React from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import PersonIcon from '@mui/icons-material/Person';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import { Typography, Dropdown, IconButton, ListDivider, ListItemDecorator, Menu, MenuButton, MenuItem, Divider, Alert } from '@mui/joy';
-import { Home, LogoutOutlined, PersonOutline, SettingsOutlined, ShoppingBasketOutlined, SupervisorAccountOutlined } from '@mui/icons-material';
+import { Typography, Dropdown, Button, Snackbar, IconButton, ListDivider, ListItemDecorator, Menu, MenuButton, MenuItem, Divider } from '@mui/joy';
+import { Check, Home, LogoutOutlined, PersonOutline, SettingsOutlined, ShoppingBasketOutlined, SupervisorAccountOutlined } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { userLogout } from '../redux/userSlice';
 import BasketDropdown from './BasketDropdown';
-import { setSnackbar } from '../redux/snackbarSlice';
+import { closeSnackbar, setSnackbar } from '../redux/snackbarSlice';
+
+const inAnimation = keyframes`
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+`;
+
+const outAnimation = keyframes`
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0);
+    opacity: 0;
+  }
+`;
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -18,6 +40,9 @@ const Navbar = () => {
 
   const logout = () => {
     dispatch(userLogout());
+    dispatch(setSnackbar({ children: "Başarıyla çıkış yapıldı.", color: "success" }));
+    navigate('/');
+
   }
 
   return (
@@ -93,10 +118,10 @@ const Navbar = () => {
                           <Divider sx={{ my: 1 }} />
                         </>
                       }
-                      <MenuItem onClick={() => navigate("/siparislerim")} color='primary'>
+                      <MenuItem onClick={() => navigate("/siparislerim")} color='primary' sx={{ pr: 8 }}>
                         <ListItemDecorator>
                           <ShoppingBasketOutlined />
-                        </ListItemDecorator>Siparişlerim&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </ListItemDecorator>Siparişlerim
                       </MenuItem>
                       <MenuItem onClick={() => navigate("/profil")} color='primary'>
                         <ListItemDecorator >
@@ -123,20 +148,18 @@ const Navbar = () => {
                 <Stack spacing={2} direction="row">
                   {user != "" &&
                     <BasketDropdown />}
-                  <Button sx={{
-                    color: 'rgb(209,213,  219)',
-                    "&:hover": {
-                      bgcolor: "rgb(55,65,81)",
-                      color: "white"
-                    }
-                  }} startIcon={<PersonIcon />} href='/giris'>Giriş Yap</Button>
-                  <Button sx={{
-                    color: 'rgb(209,213,  219)',
-                    "&:hover": {
-                      bgcolor: "rgb(55,65,81)",
-                      color: "white"
-                    }
-                  }} startIcon={<PersonAddIcon />} href='/kayit'>Kayıt Ol</Button>
+                  <Button
+                    color="primary"
+                    component="a"
+                    startDecorator={<PersonIcon />} href='/giris'>
+                    Giriş Yap
+                  </Button>
+                  <Button
+                    color="primary"
+                    component="a"
+                    startDecorator={<PersonAddIcon />} href='/kayit'>
+                    Kayıt Ol
+                  </Button>
                 </Stack>
               </>}
           </div>
@@ -150,7 +173,35 @@ const Navbar = () => {
                 </Collapse>*/}
         </div >
       </nav >
-      {!!snackbar && (
+      <Snackbar
+        variant="solid"
+        //color="success"
+        open={!!snackbar}
+        onClose={() => dispatch(closeSnackbar())}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        startDecorator={<Check />}
+        autoHideDuration={3000}
+        {...snackbar}
+        endDecorator={
+          <Button
+            onClick={() => dispatch(closeSnackbar())}
+            size="sm"
+            variant="solid"
+            color={snackbar?.color}
+          >
+            OK
+          </Button>
+        }
+        //sx={{ ml: 1 }}
+        animationDuration={600}
+        sx={{
+          ml: 1,
+          animation: snackbar?.open
+            ? `${inAnimation} ${600}ms forwards`
+            : `${outAnimation} ${600}ms forwards`,
+        }}
+      />
+      {/*!!snackbar && (
         <Snackbar
           open
           anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
@@ -159,7 +210,8 @@ const Navbar = () => {
         >
           <Alert {...snackbar} onClose={() => dispatch(setSnackbar(null))} />
         </Snackbar>
-      )}
+         )*/
+      }
       <Outlet />
     </>
   )

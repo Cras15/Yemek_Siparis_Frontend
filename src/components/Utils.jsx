@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export const etcString = (str, maxChar) => {
     return (str.length <= maxChar ? str : (str.substr(0, maxChar) + "..."))
 }
@@ -22,3 +24,76 @@ export const OrderStatusColor = {
     DELIVERED: "success",
     CANCELED: "danger"
 };
+
+export async function getCoordinates(address) {
+    const apiKey = 'AIzaSyAn7jrZBPBwXrELrF6vu2d0UaFYikEdZVg';
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
+    try {
+        const response = await axios.get(url);
+        const data = response.data;
+        console.log(data);
+        if (data.results.length > 0) {
+            const coordinates = data.results[0].geometry.location;
+            console.log(coordinates);
+            return coordinates;
+        } else {
+            return null;
+        }
+    } catch (error) {
+        console.error("Error getting coordinates: ", error);
+        return null;
+    }
+}
+
+export async function calculateDistance(address1, address2) {
+    const coords1 = await getCoordinates(address1);
+    const coords2 = await getCoordinates(address2);
+
+    if (coords1 && coords2) {
+        const distanceMatrixUrl = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${coords1.lat},${coords1.lng}&destinations=${coords2.lat},${coords2.lng}&key=AIzaSyAn7jrZBPBwXrELrF6vu2d0UaFYikEdZVg`;
+
+        try {
+            const response = await axios.get(distanceMatrixUrl);
+            const data = response.data;
+            if (data.rows.length > 0) {
+                const distance = data.rows[0].elements[0].distance.text;
+                console.log(distance);
+                return distance;
+            } else {
+                return null;
+            }
+        } catch (error) {
+            console.error("Error calculating distance: ", error);
+            return null;
+        }
+    } else {
+        return null;
+    }
+}
+
+export function openSidebar() {
+    if (typeof document !== 'undefined') {
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.setProperty('--SideNavigation-slideIn', '1');
+    }
+  }
+  
+  export function closeSidebar() {
+    if (typeof document !== 'undefined') {
+      document.documentElement.style.removeProperty('--SideNavigation-slideIn');
+      document.body.style.removeProperty('overflow');
+    }
+  }
+  
+  export function toggleSidebar() {
+    if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+      const slideIn = window
+        .getComputedStyle(document.documentElement)
+        .getPropertyValue('--SideNavigation-slideIn');
+      if (slideIn) {
+        closeSidebar();
+      } else {
+        openSidebar();
+      }
+    }
+  }

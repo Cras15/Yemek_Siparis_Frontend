@@ -161,8 +161,6 @@ const SignInPage = () => {
           </Box>
         </Box>
       }
-      <Copyright />
-
     </Container>
   )
 }

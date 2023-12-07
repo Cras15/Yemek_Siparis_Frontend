@@ -115,12 +115,12 @@ export default function Footer2() {
                         orientation="horizontal"
                         wrap
                         sx={{ flexGrow: 0, '--ListItem-radius': '8px', '--ListItem-gap': '0px', }}>
-                        <div className='cursor-pointer  hidden lg:block mr-32'>
+                        <div className='hidden lg:block mr-32'>
                             <Typography level='h4' color='primary' mb={2}>Uygulamayı İndirin</Typography>
-                            <Stack spacing={0.5}>
-                                <AppStoreIcon />
-                                <GooglePlayIcon />
-                                <HuaweiStoreIcon />
+                            <Stack spacing={0.5} sx={{ cursor: 'pointer' }}>
+                                <div onClick={() => window.open("https://www.apple.com/tr/app-store/", "_blank")}><AppStoreIcon /></div>
+                                <div onClick={() => window.open("https://play.google.com/", "_blank")}><GooglePlayIcon /></div>
+                                <div onClick={() => window.open("https://consumer.huawei.com/tr/mobileservices/appgallery/", "_blank")}><HuaweiStoreIcon /></div>
                             </Stack>
                         </div>
                         <FooterLinks2 title="Keşfet" data={kesfet} md={180} />
@@ -129,7 +129,7 @@ export default function Footer2() {
                     </List>
                 </div>
 
-            </Box><Divider sx={{ mb: 3 }} />
+            </Box><Divider sx={{ mb: 3, mt: 2 }} />
             <Copyright />
         </Sheet>
     );

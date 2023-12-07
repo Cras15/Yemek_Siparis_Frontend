@@ -1,4 +1,4 @@
-import { Route, Routes, Outlet } from "react-router-dom"
+import { Route, Routes, Outlet, useLocation } from "react-router-dom"
 import HomePage from "./pages/HomePage"
 import Navbar from "./components/Navbar"
 import SignInPage from "./pages/SignInPage"
@@ -21,21 +21,27 @@ import Footer2 from "./components/Footer2"
 import OrdersPage from "./pages/OrdersPage"
 import ForgotPassword from "./pages/ForgotPassword"
 import ResetPassword from "./pages/ResetPassword"
+import ManagerIndexPage2 from "./pages/manager/ManagerIndexPage2"
+import ManagerSidebar from "./pages/manager/ManagerSidebar"
+import ManagerLayout from "./components/ManagerLayout"
 
 function App() {
   const { expireDate, user, token } = useSelector((state) => state.user);
   const dispatch = useDispatch();
+  const location = useLocation();
 
   React.useEffect(() => {
+    console.log(location.pathname);
     if ((user != "" || token != "") && new Date().getTime() > expireDate)
       dispatch(userLogout());
   }, []);
 
   return (
-    <div>
+    <>
       <CssBaseline />
+      {/* {location.pathname.startsWith("/manager") && <ManagerSidebar />} */}
       <Routes>
-        <Route path='/' element={<Navbar />}>
+        <Route path='/' element={!location.pathname.startsWith('/manager') && <Navbar />}>
           <Route index element={<HomePage />} />
           <Route path="/kayit" element={<SignInPage />} />
           <Route path="/giris" element={<LoginPage />} />
@@ -45,8 +51,8 @@ function App() {
           <Route path="/sepet" element={<BasketPage />} />
           <Route path="/odeme" element={<PaymentPage />} />
           <Route path="/siparislerim" element={<OrdersPage />} />
-          <Route path="/manager" element={<ManagerIndexPage />} />
-          <Route path='/manager' element={<Outlet />}>
+          <Route path="/manager" element={<ManagerLayout />} >
+            <Route index element={<ManagerIndexPage2 />} />
             <Route path='magazalarim' element={<ManagerShopPage />} />
             <Route path='magaza/:id' element={<ManagerShopEditPage />} />
             <Route path="siparisler" element={<ManagerOrdersPage />} />
@@ -54,8 +60,11 @@ function App() {
         </Route>
         <Route path='*' element={<ErrorPage404 />} />
       </Routes>
-      <Footer2 />
-    </div>
+      {//if url inside manager
+        !location.pathname.startsWith("/manager") &&
+        <Footer2 />
+      }
+    </>
   )
 }
 

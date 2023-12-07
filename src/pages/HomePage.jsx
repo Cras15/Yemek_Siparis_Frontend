@@ -10,7 +10,7 @@ const HomePage = () => {
   const [status, setStatus] = React.useState('');
 
   const getShops = async () => {
-    await setStatus('pending');
+    setStatus('pending');
     await axios.get("/shop/getAll").then((res) => {
       console.log(res);
       setShops(res.data);
