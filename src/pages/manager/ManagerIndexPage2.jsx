@@ -1,27 +1,55 @@
 import React from 'react'
-import ManagerSidebar from './ManagerSidebar'
 import DashboardItems from '../../components/DashboardItems'
-import { ProfitIcon } from '../../assets/ProfitIcon'
-import { Avatar, Box, Divider, Drawer, IconButton, List, ListItem, ListItemButton, ListItemContent, ListItemDecorator, Stack, Typography } from '@mui/joy'
-import { ArrowForward, ChevronRight } from '@mui/icons-material'
+import { Box, Button, DialogContent, DialogTitle, Divider, Drawer, IconButton, List, ModalClose, Stack, Table, Typography, Chip, Grid, Card, CardContent, CircularProgress, CardActions, ToggleButtonGroup } from '@mui/joy'
+import { ArrowForward } from '@mui/icons-material'
 import DOrdersListItems from '../../components/DOrdersListItems'
-import DOrdersInfoTab from '../../components/DOrdersInfoTab'
-import { ListItemIcon, ListItemText } from '@mui/material'
+import ShopIcon from '../../assets/ShopIcon'
+import ProductsIcon from '../../assets/ProductsIcon'
+import OrderIcon from '../../assets/OrderIcon'
+import { useSelector } from 'react-redux'
+import axios from 'axios'
+import { OrderStatus, OrderStatusColor, timeAgo } from '../../components/Utils'
+import { format, parseISO } from 'date-fns'
 
+const tableItems = (title, text, text2) => (
+    <tr>
+        <td><Typography level={text2 ? 'body-md' : 'title-sm'} sx={!text2 && { fontWeight: 600 }}>{title}</Typography></td>
+        <td style={{ width: '60%' }}><Typography level={text2 ? "body-md" : 'body-sm'}>{text}</Typography></td>
+        {text2 && <td><Typography level="body-md">{text2.toFixed(2)}TL</Typography></td>}
+    </tr >
+)
 
 
 const ManagerIndexPage2 = () => {
+    const [shopStats, setShopStats] = React.useState([]);
+    const [clickedOrder, setClickedOrder] = React.useState(null);
+    const [earningValue, setEarningValue] = React.useState('daily');
+    const { token } = useSelector((state) => state.user);
+
+    const getShopStats = async () => {
+        await axios.get("/manager/shop/getStats", { headers: { Authorization: `Bearer ${token}` } }).then((res) => {
+            console.log(res);
+            setShopStats(res.data);
+        }
+        ).catch((error) => {
+            console.log(error);
+        })
+    }
+
+    React.useEffect(() => {
+        getShopStats();
+    }, []);
+
     return (
         <div>
             <div className='grid gap-10 grid-flow-row-dense xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2 grid-cols-1'>
-                <DashboardItems title="Marketlerim" icon={<ProfitIcon />} child={`1 Tane`} />
-                <DashboardItems title="Ürünlerim" icon={<ProfitIcon />} child="
-                10 Tane"/>
-                <DashboardItems title="Siparişler" icon={<ProfitIcon />} child="500 Adet" />
+                <DashboardItems title="Marketlerim" value={90} icon={<ShopIcon />} child={`${shopStats.shopCount} Tane`} color="success" />
+                <DashboardItems title="Ürünlerim" value={60} icon={<ProductsIcon />} child={`${shopStats.totalProductCount} Tane`} color="primary" />
+                <DashboardItems title="Siparişler" value={35} icon={<OrderIcon />} child={`${shopStats.totalOrderCount} Tane`} color="warning" />
             </div>
             <div className='grid gap-10 grid-flow-row-dense xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2 grid-cols-1 mt-10'>
                 <div className='col-span-2'>
-                    <Box sx={{ boxShadow: 'xl', borderRadius: 'xl', p: 3 }}>
+                    <Box sx={{ boxShadow: 'xl', borderRadius: 'xl', p: 3/*, height: 455*/ }}>
                         <Typography
                             id="ellipsis-list-demo"
                             level="body-xs"
@@ -34,9 +62,9 @@ const ManagerIndexPage2 = () => {
                             aria-labelledby="ellipsis-list-demo"
                             sx={{ '--ListItemDecorator-size': '56px' }}
                         >
-                            <DOrdersListItems title="Lahmacun Menü" child="Anabağlar mah. prof. dr. necmettin erbakan caddesi no:23" time={5} />
-                            <DOrdersListItems title="Döner, Ayran..." child="Anabağlar mah. prof. dr. necmettin erbakan caddesi no:23" time={10} />
-                            <DOrdersListItems title="Hamburger, Patates, Ayran..." child="Anabağlar mah. prof. dr. necmettin erbakan caddesi no:23" time={43} />
+                            {shopStats.lastFiveOrders?.map((data, i) => (
+                                <DOrdersListItems key={i} title={data.orderItems?.map((oitems, j) => (oitems.orderName + (j != data.orderItems?.length - 1 ? ', ' : '')))} child={data.address} time={timeAgo(data.orderDate)} onClick={() => setClickedOrder(data)} />
+                            ))}
                             <Divider sx={{ my: 2 }} />
                             <IconButton
                                 variant="plain"
@@ -47,8 +75,84 @@ const ManagerIndexPage2 = () => {
                         </List>
                     </Box>
                 </div>
+                <div>
+                    {/* Earnings area for daily, weekly and all */}
+                    <Card variant="soft" color='' invertedColors sx={{ maxWidth: 750, boxShadow: 'lg', borderRadius: 'xl' }}>
+                        <ToggleButtonGroup
+                            value={earningValue}
+                            variant='soft'
+                            sx={{ m: 'auto', mb: 1 }}
+                            onChange={(event, newValue) => {
+                                setEarningValue(newValue);
+                            }}
+                        >
+                            <Button value="daily">
+                                Günlük
+                            </Button>
+                            <Button value="weekly">
+                                Haftalık
+                            </Button>
+                            <Button value="monthly">
+                                Aylık
+                            </Button>
+                            <Button value="all">
+                                Tümü
+                            </Button>
+                        </ToggleButtonGroup>
+                        <CardContent orientation="horizontal" sx={{ alignItems: 'center', py: 2 }}>
+                            <CircularProgress size="lg" determinate value={90} color='success' thickness={4}>
+                                <ShopIcon />
+                            </CircularProgress>
+                            <CardContent>
+                                <Typography level="body-md">Kazanç</Typography>
+                                <Typography level="h3">{shopStats[earningValue + 'Earnings']?.toFixed(2)}TL</Typography>
+                            </CardContent>
+                        </CardContent>
+                    </Card>
+                </div>
+                <div></div>
             </div>
-        </div>
+            <Drawer open={clickedOrder} onClose={() => setClickedOrder(null)} anchor='right' hideBackdrop>
+                <ModalClose sx={{ borderRadius: 'lg' }} />
+                <DialogTitle>Lahmacun Menü</DialogTitle>
+                <DialogContent>
+                    <Typography level='title-lg' sx={{ ml: 2, mt: 3, mb: 2 }}>Detaylar</Typography>
+                    <Table sx={{ textAlign: 'left', px: 2, }} size='md'>
+                        <tbody>
+                            {tableItems("ID", "1234567890")}
+                            {tableItems("Ad Soyad", "Mert Yener")}
+                            {tableItems("Telefon", "0532 123 45 67")}
+                            {tableItems("Adres", clickedOrder?.address/*"Anabağlar mah. prof. dr. necmettin erbakan caddesi no:23/4 Seydişehir/Konya"*/)}
+                            {clickedOrder && tableItems("Sipariş Tarihi", format(parseISO(clickedOrder?.orderDate), "dd/MM/yyyy HH:mm"))}
+                            {tableItems("Ödeme Tipi", "Kart")}
+                            {tableItems("Ürün Fiyatı", `${clickedOrder?.finalPrice.toFixed(2)}TL`)}
+                            {tableItems("Sipariş Durumu", <Chip color={OrderStatusColor[clickedOrder?.status]}>{OrderStatus[clickedOrder?.status]}</Chip>)}
+                            {tableItems()}
+                        </tbody>
+                    </Table>
+                    <Stack direction="row" sx={{ mt: -1, mb: 1 }}>
+                        <Button sx={{ ml: 'auto', borderRadius: 'lg' }} color='success' variant='soft'>Onayla</Button>
+                        <Button sx={{ mx: 2, borderRadius: 'lg' }} color='danger' variant='soft'>İptal Et</Button>
+                    </Stack>
+                    <Typography level='title-lg' sx={{ ml: 2, mt: 3, mb: 2 }}>Ürün Detayları</Typography>
+                    <Table sx={{ textAlign: 'left', px: 2, '& thead th:nth-of-type(1)': { width: '40%' }, '& thead th:nth-of-type(2)': { width: '20%' } }} size='md'>
+                        <thead>
+                            <tr>
+                                <th>Ürün</th>
+                                <th>Adet</th>
+                                <th>Fiyat</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {clickedOrder?.orderItems?.map((oitems, i) => (
+                                tableItems(oitems.orderName, oitems.unit, (oitems.price * oitems.unit))
+                            ))}
+                            {tableItems()}
+                        </tbody>
+                    </Table>
+                </DialogContent>
+            </Drawer>
+        </div >
     )
 }
 

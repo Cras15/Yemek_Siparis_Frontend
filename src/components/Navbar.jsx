@@ -42,7 +42,6 @@ const Navbar = () => {
     dispatch(userLogout());
     dispatch(setSnackbar({ children: "Başarıyla çıkış yapıldı.", color: "success" }));
     navigate('/');
-
   }
 
   return (
@@ -150,14 +149,12 @@ const Navbar = () => {
                     <BasketDropdown />}
                   <Button
                     color="primary"
-                    component="a"
-                    startDecorator={<PersonIcon />} href='/giris'>
+                    startDecorator={<PersonIcon />} onClick={() => navigate("/giris")}>
                     Giriş Yap
                   </Button>
                   <Button
                     color="primary"
-                    component="a"
-                    startDecorator={<PersonAddIcon />} href='/kayit'>
+                    startDecorator={<PersonAddIcon />} onClick={() => navigate("/giris")}>
                     Kayıt Ol
                   </Button>
                 </Stack>
@@ -201,17 +198,6 @@ const Navbar = () => {
             : `${outAnimation} ${600}ms forwards`,
         }}
       />
-      {/*!!snackbar && (
-        <Snackbar
-          open
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-          onClose={() => dispatch(setSnackbar(null))}
-          autoHideDuration={4000}
-        >
-          <Alert {...snackbar} onClose={() => dispatch(setSnackbar(null))} />
-        </Snackbar>
-         )*/
-      }
       <Outlet />
     </>
   )

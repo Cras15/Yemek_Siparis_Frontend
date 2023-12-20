@@ -4,10 +4,22 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addBasket, addBasketItem, getBasket, removeBasket, removeBasketItem } from '../redux/basketSlice';
 import { etcString } from '../components/Utils';
 import { Box } from '@mui/material';
-import BasketPaymentItem from '../components/BasketPaymentItem';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { STATUS } from '../components/Status';
+
+
+const BasketPaymentItem = ({ title, price }) => {
+  return (
+    <ListItem>
+      <ListItemDecorator>
+        <Check />
+      </ListItemDecorator>
+      <Typography sx={{ mr: 'auto' }}> {title}</Typography>
+      <Typography>{price}</Typography>
+    </ListItem>
+  )
+}
 
 const BasketPage = () => {
   const [discount, setDiscount] = useState(0);
@@ -43,7 +55,7 @@ const BasketPage = () => {
                       </AspectRatio>
                     </ListItemDecorator>
                     <CardContent sx={{ ml: 3 }}>
-                      <Typography level="title-lg" id="card-description">
+                      <Typography level="title-md" fontWeight="lg" id="card-description">
                         {etcString(data.product.productName, 15)}
                       </Typography>
                       <Typography level="body-sm" aria-describedby="card-description" mb={1} sx={{ color: 'text.tertiary' }}>
@@ -63,7 +75,7 @@ const BasketPage = () => {
                             {data.unit > 1 ? <Remove color='primary' /> : <Delete color='primary' />}
                           </IconButton>
                           <Button disabled>{data.unit}</Button>
-                          <IconButton onClick={() => dispatch(addBasketItem(data.product)).then(()=>dispatch(getBasket()))}>
+                          <IconButton onClick={() => dispatch(addBasketItem(data.product)).then(() => dispatch(getBasket()))}>
                             <Add color='primary' />
                           </IconButton>
                         </ButtonGroup>
@@ -114,7 +126,7 @@ const BasketPage = () => {
       </div>
       <div>
         <Card size="lg" variant="outlined">
-          <Typography level="h3">Sipariş Özeti</Typography>
+          <Typography level="h4">Sipariş Özeti</Typography>
           <Divider inset="none" />
           <List size="sm" sx={{ mx: 'calc(-1 * var(--ListItem-paddingX))' }}>
             <BasketPaymentItem title="Ara Toplam" price={`${baskets.totalPrice}₺`} />
@@ -124,9 +136,9 @@ const BasketPage = () => {
           </List>
           <Divider inset="none" />
           <CardActions>
-            <Typography level="title-lg" sx={{ mr: 'auto' }}>
+            <Typography level="title-md" fontWeight="lg" sx={{ mr: 'auto' }}>
               Toplam {' '}
-              <Typography fontSize="xs" textColor="text.tertiary">
+              <Typography fontSize="xs"  textColor="text.tertiary">
                 (KDV Dahil)
               </Typography>
             </Typography>

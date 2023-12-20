@@ -55,7 +55,7 @@ const BasketDropdown = () => {
                                     />
                                 </AspectRatio>
                                 <CardContent>
-                                    <Typography level="title-lg" id="card-description">
+                                    <Typography level="title-md" id="card-description">
                                         {data.product.productName}
                                     </Typography>
                                     <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>

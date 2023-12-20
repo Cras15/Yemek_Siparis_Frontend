@@ -9,7 +9,7 @@ import BasketPage from "./pages/BasketPage"
 import Footer from "./components/Footer"
 import PaymentPage from "./pages/PaymentPage"
 import LoginPage from "./pages/LoginPage"
-import { CssBaseline } from "@mui/joy"
+import { CssBaseline, ThemeProvider } from "@mui/joy"
 import ManagerShopPage from "./pages/manager/ManagerShopPage"
 import ErrorPage404 from "./pages/ErrorPage404"
 import ManagerIndexPage from "./pages/manager/ManagerIndexPage"
@@ -24,6 +24,10 @@ import ResetPassword from "./pages/ResetPassword"
 import ManagerIndexPage2 from "./pages/manager/ManagerIndexPage2"
 import ManagerSidebar from "./pages/manager/ManagerSidebar"
 import ManagerLayout from "./components/ManagerLayout"
+import { createTheme } from "@mui/material"
+
+
+
 
 function App() {
   const { expireDate, user, token } = useSelector((state) => state.user);
@@ -35,7 +39,6 @@ function App() {
     if ((user != "" || token != "") && new Date().getTime() > expireDate)
       dispatch(userLogout());
   }, []);
-
   return (
     <>
       <CssBaseline />

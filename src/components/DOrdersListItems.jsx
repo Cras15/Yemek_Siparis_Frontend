@@ -1,12 +1,12 @@
 import { Avatar, ListItem, ListItemButton, ListItemContent, ListItemDecorator, Typography } from '@mui/joy'
 import React from 'react'
 
-const DOrdersListItems = ({ title, child, time }) => {
+const DOrdersListItems = ({ title, child, time, onClick }) => {
     return (
         <ListItem>
-            <ListItemButton sx={{ borderRadius: 'xl', py: 1.3 }}>
+            <ListItemButton sx={{ borderRadius: 'xl', py: 1.3 }} onClick={onClick}>
                 <ListItemDecorator>
-                    <Avatar  />
+                    <Avatar />
                 </ListItemDecorator>
 
                 <ListItemContent>
@@ -15,7 +15,7 @@ const DOrdersListItems = ({ title, child, time }) => {
                         {child}
                     </Typography>
                 </ListItemContent>
-                <Typography level="body-xs" sx={{ color: 'text.tertiary' }}>{time} dk önce</Typography>
+                <Typography level="body-xs" sx={{ color: 'text.tertiary' }}>{time} önce</Typography>
             </ListItemButton>
         </ListItem>
     )

@@ -20,8 +20,6 @@ import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
 import ShoppingCartRoundedIcon from '@mui/icons-material/ShoppingCartRounded';
-import AssignmentRoundedIcon from '@mui/icons-material/AssignmentRounded';
-import QuestionAnswerRoundedIcon from '@mui/icons-material/QuestionAnswerRounded';
 import GroupRoundedIcon from '@mui/icons-material/GroupRounded';
 import SupportRoundedIcon from '@mui/icons-material/SupportRounded';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
@@ -30,10 +28,14 @@ import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import BrightnessAutoRoundedIcon from '@mui/icons-material/BrightnessAutoRounded';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { closeSidebar } from '../../components/Utils';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { capitalize } from '@mui/material';
 import MSidebarItems from '../../components/MSidebarItems';
 import axios from 'axios';
+import { setSnackbar } from '../../redux/snackbarSlice';
+import { useNavigate } from 'react-router';
+import { userLogout } from '../../redux/userSlice';
+import { PeopleRounded } from '@mui/icons-material';
 
 function Toggler({ defaultExpanded = false, renderToggle, children }) {
     const [open, setOpen] = React.useState(defaultExpanded)
@@ -60,9 +62,18 @@ function Toggler({ defaultExpanded = false, renderToggle, children }) {
 
 
 const ManagerSidebar = () => {
+    const [shops, setShops] = React.useState([]);
+
     const { user, token } = useSelector((state) => state.user);
 
-    const [shops, setShops] = React.useState([]);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const logout = () => {
+        dispatch(userLogout());
+        dispatch(setSnackbar({ children: "Başarıyla çıkış yapıldı.", color: "success" }));
+        navigate('/');
+    }
 
     React.useEffect(() => {
         const fetchData = async () => {
@@ -157,9 +168,8 @@ const ManagerSidebar = () => {
                         '--ListItem-radius': (theme) => theme.vars.radius.sm,
                     }}
                 >
-                    <MSidebarItems title="Anasayfa" link="/manager" icon={<HomeRoundedIcon />} />
-                    <MSidebarItems title="Dashboard" icon={<DashboardRoundedIcon />} badge={4} />
-                    <MSidebarItems selected={true} title="Orders" icon={<ShoppingCartRoundedIcon />} />
+                    <MSidebarItems selected={true} title="Anasayfa" link="/manager" icon={<HomeRoundedIcon />} />
+                    {/* <MSidebarItems title="Dashboard" icon={<DashboardRoundedIcon />} badge={4} /> */}
 
                     <ListItem nested>
                         <Toggler
@@ -187,7 +197,7 @@ const ManagerSidebar = () => {
                         </Toggler>
                     </ListItem>
 
-                    <ListItem nested>
+                    {/* <ListItem nested>
                         <Toggler
                             renderToggle={({ open, setOpen }) => (
                                 <ListItemButton onClick={() => setOpen(!open)}>
@@ -219,7 +229,7 @@ const ManagerSidebar = () => {
                                 </ListItem>
                             </List>
                         </Toggler>
-                    </ListItem>
+                    </ListItem> */}
                 </List>
 
                 <List
@@ -229,13 +239,14 @@ const ManagerSidebar = () => {
                         flexGrow: 0,
                         '--ListItem-radius': (theme) => theme.vars.radius.sm,
                         '--List-gap': '8px',
-                        mb: 2,
+                        // mb: 2,
                     }}
                 >
-                    <MSidebarItems title="Support" icon={<SupportRoundedIcon />} />
-                    <MSidebarItems title="Settings" icon={<SettingsRoundedIcon />} />
+                    <MSidebarItems title="Destek" icon={<SupportRoundedIcon />} />
+                    <MSidebarItems title="Ayarlar" icon={<SettingsRoundedIcon />} />
+                    <MSidebarItems title="Ana Sayfaya Dön" icon={<PeopleRounded />} link="/" />
                 </List>
-                <Card
+                {/* <Card
                     invertedColors
                     variant="soft"
                     color="warning"
@@ -255,20 +266,19 @@ const ManagerSidebar = () => {
                     <Button size="sm" variant="solid">
                         Upgrade plan
                     </Button>
-                </Card>
+                </Card> */}
             </Box>
             <Divider />
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                 <Avatar
                     variant="outlined"
                     size="sm"
-                    src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=286"
-                />
+                >{user.firstname.charAt(0).toUpperCase() + user.lastname.charAt(0).toUpperCase()}</Avatar>
                 <Box sx={{ minWidth: 0, flex: 1 }}>
                     <Typography level="title-sm">{`${capitalize(user.firstname)} ${user.lastname.charAt(0).toUpperCase()}.`}</Typography>
                     <Typography level="body-xs">{user.email}</Typography>
                 </Box>
-                <IconButton size="sm" variant="plain" color="neutral">
+                <IconButton size="sm" variant="plain" color="neutral" onClick={() => logout()}>
                     <LogoutRoundedIcon />
                 </IconButton>
             </Box>

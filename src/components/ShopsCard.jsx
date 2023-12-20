@@ -25,21 +25,26 @@ const ShopsCard = ({ data }) => {
         p: 0,
         mt: 4,
         cursor: 'pointer',
+        borderRadius: 'xl',
+        transition: 'transform 0.3s, border 0.3s',
+        '&:hover': {
+          transform: 'translateY(-3px)',
+        },
       }}
     >
       <div onClick={() => { navigate(`/shop/${data.shopId}`) }}>
         <Box sx={{ position: 'relative', width: "100%", mb: 1 }}>
-          <AspectRatio ratio="4/3" sx={{ borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }}>
+          <AspectRatio ratio="16/9" sx={{ borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }}>
             <figure>
               <img
-                src="https://images.deliveryhero.io/image/fd-tr/LH/h6km-listing.jpg?width=400&height=292&quot;"
+                src="https://images.deliveryhero.io/image/fd-tr/LH/ppdu-listing.jpg?width=400&height=225"
                 srcSet="https://images.deliveryhero.io/image/fd-tr/LH/h6km-listing.jpg?width=400&height=292&quot; 2x"
                 loading="lazy"
                 alt="Yosemite by Casey Horner"
               />
             </figure>
           </AspectRatio>
-          <CardCover
+          {/* <CardCover
             className="gradient-cover"
             sx={{
               '&:hover, &:focus-within': {
@@ -53,7 +58,6 @@ const ShopsCard = ({ data }) => {
                 'linear-gradient(180deg, transparent 62%, rgba(0,0,0,0.00345888) 63.94%, rgba(0,0,0,0.014204) 65.89%, rgba(0,0,0,0.0326639) 67.83%, rgba(0,0,0,0.0589645) 69.78%, rgba(0,0,0,0.0927099) 71.72%, rgba(0,0,0,0.132754) 73.67%, rgba(0,0,0,0.177076) 75.61%, rgba(0,0,0,0.222924) 77.56%, rgba(0,0,0,0.267246) 79.5%, rgba(0,0,0,0.30729) 81.44%, rgba(0,0,0,0.341035) 83.39%, rgba(0,0,0,0.367336) 85.33%, rgba(0,0,0,0.385796) 87.28%, rgba(0,0,0,0.396541) 89.22%, rgba(0,0,0,0.4) 91.17%)',
             }}
           >
-            {/* The first box acts as a container that inherits style from the CardCover */}
             <div>
               <Box
                 sx={{
@@ -65,7 +69,7 @@ const ShopsCard = ({ data }) => {
                   alignSelf: 'flex-end',
                 }}
               >
-                <Typography level="h2" noWrap sx={{ fontSize: 'lg', color: "#fff" }}>
+                <Typography level="title-lg" noWrap sx={{ fontSize: 'lg', color: "#fff" }}>
                   <Link
                     href={`/shop/${data.shopId}`}
                     overlay
@@ -93,11 +97,10 @@ const ShopsCard = ({ data }) => {
                 </IconButton>
               </Box>
             </div>
-          </CardCover>
+          </CardCover> */}
         </Box>
-
-        <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, alignItems: 'center', boxShadow: 3, px: 1, pt: 0.5, pb:1.5 }} >
-          <Typography sx={{ fontWeight: 'bold', ml: 1 }} level='title-lg' color='primary'>
+        <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, alignItems: 'center', boxShadow: 3, px: 1, pt: 0.5, pb: 1.5 }} >
+          <Typography sx={{ ml: 1 }} fontWeight="lg" level='title-md' color='primary'>
             {capitalizeFirstLetter(data.shopName)}
           </Typography>
           <StarRounded sx={{ ml: 'auto', mr: -0.8 }} color='primary' />

@@ -35,7 +35,7 @@ const OrderCard = ({ data }) => {
                 </AspectRatio>
                 <CardContent>
                     <div className='grid grid-flow-col-dense '>
-                        <Typography level="h3" id="card-description">
+                        <Typography level="title-lg" id="card-description">
                             {data.shopName}
                         </Typography>
                         <Typography level="title-lg" aria-describedby="card-description" mb={1} ml="auto" mr={2} sx={{ fontWeight: 'bold' }}>
