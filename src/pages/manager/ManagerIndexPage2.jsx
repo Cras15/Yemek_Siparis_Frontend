@@ -1,7 +1,7 @@
 import React from 'react'
 import DashboardItems from '../../components/DashboardItems'
-import { Box, Button, DialogContent, DialogTitle, Divider, Drawer, IconButton, List, ModalClose, Stack, Table, Typography, Chip, Grid, Card, CardContent, CircularProgress, CardActions, ToggleButtonGroup } from '@mui/joy'
-import { ArrowForward } from '@mui/icons-material'
+import { Box, Button, DialogContent, DialogTitle, Divider, Drawer, IconButton, List, ModalClose, Stack, Table, Typography, Chip, Grid, Card, CardContent, CircularProgress, CardActions, ToggleButtonGroup, Modal, ModalDialog, DialogActions } from '@mui/joy'
+import { ArrowForward, WarningRounded } from '@mui/icons-material'
 import DOrdersListItems from '../../components/DOrdersListItems'
 import ShopIcon from '../../assets/ShopIcon'
 import ProductsIcon from '../../assets/ProductsIcon'
@@ -11,11 +11,10 @@ import axios from 'axios'
 import { OrderStatus, OrderStatusColor, timeAgo } from '../../components/Utils'
 import { format, parseISO } from 'date-fns'
 
-const tableItems = (title, text, text2) => (
-    <tr>
-        <td><Typography level={text2 ? 'body-md' : 'title-sm'} sx={!text2 && { fontWeight: 600 }}>{title}</Typography></td>
-        <td style={{ width: '60%' }}><Typography level={text2 ? "body-md" : 'body-sm'}>{text}</Typography></td>
-        {text2 && <td><Typography level="body-md">{text2.toFixed(2)}TL</Typography></td>}
+const tableItems = (title, text) => (
+    <tr key={title}>
+        <td><Typography level='title-sm' sx={{ fontWeight: 600 }}>{title}</Typography></td>
+        <td style={{ width: '60%' }}><Typography level='body-sm'>{text}</Typography></td>
     </tr >
 )
 
@@ -24,6 +23,7 @@ const ManagerIndexPage2 = () => {
     const [shopStats, setShopStats] = React.useState([]);
     const [clickedOrder, setClickedOrder] = React.useState(null);
     const [earningValue, setEarningValue] = React.useState('daily');
+    const [cancelModal, setCancelModal] = React.useState(false);
     const { token } = useSelector((state) => state.user);
 
     const getShopStats = async () => {
@@ -112,7 +112,7 @@ const ManagerIndexPage2 = () => {
                 </div>
                 <div></div>
             </div>
-            <Drawer open={clickedOrder} onClose={() => setClickedOrder(null)} anchor='right' hideBackdrop>
+            <Drawer open={clickedOrder != null} onClose={() => setClickedOrder(null)} anchor='right' hideBackdrop>
                 <ModalClose sx={{ borderRadius: 'lg' }} />
                 <DialogTitle>Lahmacun Menü</DialogTitle>
                 <DialogContent>
@@ -131,8 +131,8 @@ const ManagerIndexPage2 = () => {
                         </tbody>
                     </Table>
                     <Stack direction="row" sx={{ mt: -1, mb: 1 }}>
-                        <Button sx={{ ml: 'auto', borderRadius: 'lg' }} color='success' variant='soft'>Onayla</Button>
-                        <Button sx={{ mx: 2, borderRadius: 'lg' }} color='danger' variant='soft'>İptal Et</Button>
+                        <Button sx={{ ml: 'auto', borderRadius: 'lg' }} color='success' variant='soft' disabled={clickedOrder?.status != 'RECEIVED'}>Onayla</Button>
+                        <Button sx={{ mx: 2, borderRadius: 'lg' }} color='danger' variant='soft' disabled={clickedOrder?.status != 'RECEIVED' && clickedOrder?.status != 'GETTING_READY'} onClick={() => setCancelModal(true)}>İptal Et</Button>
                     </Stack>
                     <Typography level='title-lg' sx={{ ml: 2, mt: 3, mb: 2 }}>Ürün Detayları</Typography>
                     <Table sx={{ textAlign: 'left', px: 2, '& thead th:nth-of-type(1)': { width: '40%' }, '& thead th:nth-of-type(2)': { width: '20%' } }} size='md'>
@@ -145,13 +145,37 @@ const ManagerIndexPage2 = () => {
                         </thead>
                         <tbody>
                             {clickedOrder?.orderItems?.map((oitems, i) => (
-                                tableItems(oitems.orderName, oitems.unit, (oitems.price * oitems.unit))
+                                <tr key={i} >
+                                    <td><Typography level='body-md'>{oitems.orderName}</Typography></td>
+                                    <td style={{ width: '60%' }}><Typography level="body-md">{oitems.unit}</Typography></td>
+                                    <td><Typography level="body-md">{(oitems.price * oitems.unit).toFixed(2)}TL</Typography></td>
+                                </tr >
                             ))}
                             {tableItems()}
                         </tbody>
                     </Table>
                 </DialogContent>
             </Drawer>
+            <Modal open={cancelModal} onClose={() => setCancelModal(false)}>
+                <ModalDialog variant="outlined" role="alertdialog">
+                    <DialogTitle>
+                        <WarningRounded />
+                        Sipariş İptali
+                    </DialogTitle>
+                    <Divider />
+                    <DialogContent>
+                        Siparişi İptal etmek istediğine emin misin?
+                    </DialogContent>
+                    <DialogActions>
+                        <Button variant="solid" color="danger" onClick={() => setCancelModal(false)}>
+                            İptal et
+                        </Button>
+                        <Button variant="plain" color="neutral" onClick={() => setCancelModal(false)}>
+                            Vazgeçtim
+                        </Button>
+                    </DialogActions>
+                </ModalDialog>
+            </Modal>
         </div >
     )
 }

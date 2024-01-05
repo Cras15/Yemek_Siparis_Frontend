@@ -1,4 +1,4 @@
-import { AspectRatio, Card, CardContent, CircularProgress, Divider, Link, Stack, Typography } from '@mui/joy'
+import { AspectRatio, Card, CardContent, CircularProgress, Divider, Link, Modal, ModalClose, Sheet, Stack, Typography } from '@mui/joy'
 import React from 'react'
 import OrderCard from '../components/OrderCard';
 import axios from 'axios';
@@ -26,7 +26,7 @@ const OrdersPage = () => {
     }, []);
     return (
         <div className='mt-16 '>
-            <Stack spacing={2} direction="column" sx={{ width: 600, m: 'auto' }}>
+            <Stack spacing={2} direction="column" sx={{ width: { md: 650, xs: '90%' }, m: 'auto' }}>
                 <Typography level="h4" >Siparişlerim</Typography>
                 <Divider />
                 {loading ? <CircularProgress /> :

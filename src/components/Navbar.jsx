@@ -154,7 +154,7 @@ const Navbar = () => {
                   </Button>
                   <Button
                     color="primary"
-                    startDecorator={<PersonAddIcon />} onClick={() => navigate("/giris")}>
+                    startDecorator={<PersonAddIcon />} onClick={() => navigate("/kayit")}>
                     Kayıt Ol
                   </Button>
                 </Stack>
