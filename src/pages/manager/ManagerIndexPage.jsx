@@ -1,16 +1,8 @@
 import { Box, Card, CardContent, CardCover, Typography } from '@mui/joy'
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom'
 
 const ManagerIndexPage = () => {
-    const navigate = useNavigate();
-    const { user } = useSelector((state) => state.user);
-
-    React.useEffect(() => {
-        if (user.role == "USER")
-            navigate("/");
-    });
+    
     return (
         <div className='w-9/12 m-auto mt-20'>
             <Box

@@ -14,7 +14,7 @@ import { format, parseISO } from 'date-fns'
 const tableItems = (title, text) => (
     <tr key={title}>
         <td><Typography level='title-sm' sx={{ fontWeight: 600 }}>{title}</Typography></td>
-        <td style={{ width: '60%' }}><Typography level='body-sm'>{text}</Typography></td>
+        <td style={{ width: '60%' }}><Typography component="div" level='body-sm'>{text}</Typography></td>
     </tr >
 )
 
@@ -79,6 +79,7 @@ const ManagerIndexPage2 = () => {
                     {/* Earnings area for daily, weekly and all */}
                     <Card variant="soft" color='' invertedColors sx={{ maxWidth: 750, boxShadow: 'lg', borderRadius: 'xl' }}>
                         <ToggleButtonGroup
+                        required
                             value={earningValue}
                             variant='soft'
                             sx={{ m: 'auto', mb: 1 }}

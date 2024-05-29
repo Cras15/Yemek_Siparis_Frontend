@@ -35,7 +35,9 @@ import axios from 'axios';
 import { setSnackbar } from '../../redux/snackbarSlice';
 import { useNavigate } from 'react-router';
 import { userLogout } from '../../redux/userSlice';
-import { PeopleRounded } from '@mui/icons-material';
+import { PeopleRounded, RestaurantRounded } from '@mui/icons-material';
+import { Autocomplete, AutocompleteOption, CircularProgress, ListItemDecorator } from '@mui/joy';
+import { set } from 'date-fns';
 
 function Toggler({ defaultExpanded = false, renderToggle, children }) {
     const [open, setOpen] = React.useState(defaultExpanded)
@@ -63,6 +65,8 @@ function Toggler({ defaultExpanded = false, renderToggle, children }) {
 
 const ManagerSidebar = () => {
     const [shops, setShops] = React.useState([]);
+    const [selectedShop, setSelectedShop] = React.useState(null);
+    const [shopStatus, setShopStatus] = React.useState('idle');
 
     const { user, token } = useSelector((state) => state.user);
 
@@ -76,6 +80,7 @@ const ManagerSidebar = () => {
     }
 
     React.useEffect(() => {
+        setShopStatus('pending');
         const fetchData = async () => {
             await axios.get("/manager/shop/getMyShop", {
                 headers: {
@@ -84,7 +89,12 @@ const ManagerSidebar = () => {
             }).then(function (response) {
                 console.log(response)
                 setShops(response.data);
-            });
+                setSelectedShop(response.data[0]);
+                setShopStatus('success');
+            }).catch(function (error) {
+                console.log(error);
+                setShopStatus('error');
+            })
         }
         fetchData();
     }, []);
@@ -98,7 +108,7 @@ const ManagerSidebar = () => {
                     md: 'none',
                 },
                 transition: 'transform 0.4s, width 0.4s',
-                zIndex: 10000,
+                zIndex: 1000,
                 height: '100dvh',
                 width: 'var(--Sidebar-width)',
                 top: 0,
@@ -147,7 +157,51 @@ const ManagerSidebar = () => {
                 <Typography level="title-lg">Ayağıma Gelsin</Typography>
                 {/* <ColorSchemeToggle sx={{ ml: 'auto' }} /> */}
             </Box>
-            <Input size="sm" startDecorator={<SearchRoundedIcon />} placeholder="Search" />
+            <Autocomplete
+                id="country-select-demo"
+                placeholder="Restorant Seç"
+                slotProps={{
+                    input: {
+                        autoComplete: 'new-password', // disable autocomplete and autofill
+                    },
+                }}
+                sx={{ zIndex: 10001 }}
+                options={shops}
+                value={selectedShop}
+                onChange={(_, newValue) => {
+                    setSelectedShop(newValue)
+                  }}
+                autoHighlight
+                disableClearable
+                getOptionLabel={(option) => option.shopName}
+                loading={shopStatus == 'pending'}
+                endDecorator={
+                    shopStatus == 'pending' ? (
+                        <CircularProgress size="sm" sx={{ bgcolor: 'background.surface' }} />
+                    ) : null
+                }
+                renderOption={(props, option) => (
+                    <AutocompleteOption {...props}>
+                        <ListItemDecorator>
+                            <img
+                                loading="lazy"
+                                width="30"
+                                style={{ borderRadius: 5 }}
+                                srcSet={`${option.imageUrl} 2x`}
+                                src={`${option.imageUrl}`}
+                                alt=""
+                            />
+                        </ListItemDecorator>
+                        <ListItemContent sx={{ fontSize: 'sm' }}>
+                            {option.shopName}
+                            <Typography level="body-xs">
+                                {option.shopDesc}
+                            </Typography>
+                        </ListItemContent>
+                    </AutocompleteOption>
+                )}
+            />
+            {/* <Input size="sm" startDecorator={<SearchRoundedIcon />} placeholder="Search" /> */}
             <Box
                 sx={{
                     minHeight: 0,
@@ -171,7 +225,7 @@ const ManagerSidebar = () => {
                     <MSidebarItems selected={true} title="Anasayfa" link="/manager" icon={<HomeRoundedIcon />} />
                     {/* <MSidebarItems title="Dashboard" icon={<DashboardRoundedIcon />} badge={4} /> */}
 
-                    <ListItem nested>
+                    {/* <ListItem nested>
                         <Toggler
                             renderToggle={({ open, setOpen }) => (
                                 <ListItemButton onClick={() => setOpen(!open)}>
@@ -195,7 +249,9 @@ const ManagerSidebar = () => {
 
                             </List>
                         </Toggler>
-                    </ListItem>
+                    </ListItem> */}
+                    <MSidebarItems title="Siparişler" link="/manager" badge={4} icon={<ShoppingCartRoundedIcon />} />
+                    <MSidebarItems title="Ürünler" link="/manager/urunler" icon={<RestaurantRounded />} />
 
                     {/* <ListItem nested>
                         <Toggler

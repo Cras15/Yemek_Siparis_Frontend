@@ -6,13 +6,11 @@ import React from "react"
 import '@fontsource/inter';
 import ShopsPage from "./pages/ShopsPage"
 import BasketPage from "./pages/BasketPage"
-import Footer from "./components/Footer"
 import PaymentPage from "./pages/PaymentPage"
 import LoginPage from "./pages/LoginPage"
 import { CssBaseline, ThemeProvider } from "@mui/joy"
 import ManagerShopPage from "./pages/manager/ManagerShopPage"
 import ErrorPage404 from "./pages/ErrorPage404"
-import ManagerIndexPage from "./pages/manager/ManagerIndexPage"
 import ManagerShopEditPage from "./pages/manager/ManagerShopEditPage"
 import ManagerOrdersPage from "./pages/manager/ManagerOrdersPage"
 import { useDispatch, useSelector } from "react-redux"
@@ -22,11 +20,9 @@ import OrdersPage from "./pages/OrdersPage"
 import ForgotPassword from "./pages/ForgotPassword"
 import ResetPassword from "./pages/ResetPassword"
 import ManagerIndexPage2 from "./pages/manager/ManagerIndexPage2"
-import ManagerSidebar from "./pages/manager/ManagerSidebar"
 import ManagerLayout from "./components/ManagerLayout"
-import { createTheme } from "@mui/material"
-
-
+import ManagerProductsPage from "./pages/manager/products/ManagerProductsPage"
+import ManagerProductViewPage from "./pages/manager/products/ManagerProductViewPage"
 
 
 function App() {
@@ -35,7 +31,6 @@ function App() {
   const location = useLocation();
 
   React.useEffect(() => {
-    console.log(location.pathname);
     if ((user != "" || token != "") && new Date().getTime() > expireDate)
       dispatch(userLogout());
   }, []);
@@ -59,6 +54,8 @@ function App() {
             <Route path='magazalarim' element={<ManagerShopPage />} />
             <Route path='magaza/:id' element={<ManagerShopEditPage />} />
             <Route path="siparisler" element={<ManagerOrdersPage />} />
+            <Route path="urunler" element={<ManagerProductsPage />} />
+            <Route path="urunler/:id" element={<ManagerProductViewPage />} />
           </Route>
         </Route>
         <Route path='*' element={<ErrorPage404 />} />

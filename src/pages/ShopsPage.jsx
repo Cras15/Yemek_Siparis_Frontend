@@ -1,8 +1,8 @@
 import React from 'react'
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { AspectRatio, Box, Button, Card, CardContent, CardOverflow, Chip, IconButton, Link, Sheet, Skeleton, Stack, Typography } from '@mui/joy';
-import { FavoriteRounded, FmdGoodRounded, InfoOutlined, KingBedRounded, Star, WifiRounded, WorkspacePremiumRounded } from '@mui/icons-material';
+import { AspectRatio, Box, Button, Card, CardContent, CardOverflow, Chip, Divider, IconButton, Link, Sheet, Skeleton, Stack, Typography } from '@mui/joy';
+import { FavoriteRounded, FmdGoodRounded, InfoOutlined, KingBedRounded, MopedOutlined, ShoppingCartOutlined, Star, StarRounded, WifiRounded, WorkspacePremiumRounded } from '@mui/icons-material';
 import ProductsCard from '../components/ProductsCard';
 
 const ShopsPage = () => {
@@ -28,7 +28,7 @@ const ShopsPage = () => {
   return (
     <>
       <Card
-        variant="soft"
+        variant="plain"
         orientation="horizontal"
         sx={{
           display: 'flex',
@@ -101,7 +101,7 @@ const ShopsPage = () => {
             <div>
               <Typography level="title-md">{shop.shopName}</Typography>
               <Typography level="body-sm">
-                  {shop.shopDesc}
+                {shop.shopDesc}
               </Typography>
             </div>
             <IconButton
@@ -124,38 +124,23 @@ const ShopsPage = () => {
             flexWrap="wrap"
             sx={{ my: 0.25 }}
           >
-            <Typography level="body-xs" startDecorator={<FmdGoodRounded />}>
-              Collingwood VIC
+            <Chip color='danger' variant='soft'>%40 İndirim</Chip>
+            <Typography level="body-xs" startDecorator={<MopedOutlined />}>
+              Ücretsiz Teslimat
             </Typography>
-            <Typography level="body-xs" startDecorator={<KingBedRounded />}>
-              1 bed
-            </Typography>
-            <Typography level="body-xs" startDecorator={<WifiRounded />}>
-              Wi-Fi
+            <Typography level="body-xs" startDecorator={<ShoppingCartOutlined />}>
+              Minimum Sepet Tutarı 50₺
             </Typography>
           </Stack>
-          <Stack direction="row" sx={{ mt: 'auto' }}>
-            <Typography
-              level="title-sm"
-              startDecorator={
-                <React.Fragment>
-                  <Star sx={{ color: 'warning.400' }} />
-                  <Star sx={{ color: 'warning.400' }} />
-                  <Star sx={{ color: 'warning.400' }} />
-                  <Star sx={{ color: 'warning.400' }} />
-                  <Star sx={{ color: 'warning.200' }} />
-                </React.Fragment>
-              }
-              sx={{ display: 'flex', gap: 1 }}
-            >
-              4.0
-            </Typography>
-            <Typography level="title-lg" sx={{ flexGrow: 1, textAlign: 'right' }}>
-              <strong>$540</strong> <Typography level="body-md">total</Typography>
-            </Typography>
-          </Stack>
+          <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, alignItems: 'center' }} >
+            <StarRounded sx={{ mr: -0.5 }} color='primary' />
+            <Typography sx={{ mr: -0.5 }}>{shop.shopRating?.toFixed(1)}</Typography>
+            <Typography level='body-xs'>(100+)</Typography>
+            <Link fontSize={13} underline='none' variant='plain' p={1} borderRadius={10}>Yorumları Gör</Link>
+          </Box>
         </CardContent>
       </Card>
+      <Divider sx={{mt:2}} />
       <div className='mx-8 mt-4 md:m-16 bg-white'>
         {status !== "pending" ?
           <Stack spacing={5} direction="row" flexWrap="wrap" useFlexGap>

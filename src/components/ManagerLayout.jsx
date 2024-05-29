@@ -1,13 +1,21 @@
 import React from 'react'
 import ManagerSidebar from '../pages/manager/ManagerSidebar'
-import { Outlet, useLocation } from 'react-router-dom'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import ManagerHeader from '../pages/manager/ManagerHeader'
-import { Box, Breadcrumbs, Button, CssVarsProvider, Link, Typography } from '@mui/joy'
+import { Box, Breadcrumbs,  CssVarsProvider, Link, Typography } from '@mui/joy'
 import { CssBaseline, capitalize } from '@mui/material'
-import { ChevronRightRounded, DownloadRounded, HomeRounded } from '@mui/icons-material'
+import { ChevronRightRounded,  HomeRounded } from '@mui/icons-material'
+import { useSelector } from 'react-redux'
 
 const ManagerLayout = () => {
     const location = useLocation();
+    const navigate = useNavigate();
+    const { user } = useSelector((state) => state.user);
+
+    React.useEffect(() => {
+        if (user.role == "USER")
+            navigate("/");
+    });
     return (
         <CssVarsProvider disableTransitionOnChange>
             <CssBaseline />
@@ -90,4 +98,4 @@ const ManagerLayout = () => {
     )
 }
 
-export default ManagerLayout
+export default ManagerLayout;
