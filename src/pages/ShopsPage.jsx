@@ -1,7 +1,7 @@
 import React from 'react'
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { AspectRatio, Box, Button, Card, CardContent, CardOverflow, Chip, Divider, IconButton, Link, Sheet, Skeleton, Stack, Typography } from '@mui/joy';
+import { AspectRatio, Box, Button, Card, CardContent, CardOverflow, Chip, Divider, Grid, IconButton, Link, Sheet, Skeleton, Stack, Typography } from '@mui/joy';
 import { FavoriteRounded, FmdGoodRounded, InfoOutlined, KingBedRounded, MopedOutlined, ShoppingCartOutlined, Star, StarRounded, WifiRounded, WorkspacePremiumRounded } from '@mui/icons-material';
 import ProductsCard from '../components/ProductsCard';
 
@@ -28,13 +28,14 @@ const ShopsPage = () => {
   return (
     <>
       <Card
-        variant="plain"
+        variant="outlined"
         orientation="horizontal"
         sx={{
           display: 'flex',
           width: '90%',
           m: 'auto',
           mt: 4,
+          background: 'transparent',
           flexDirection: { xs: 'column', sm: 'row' },
           // '&:hover': {
           //   boxShadow: 'lg',
@@ -129,7 +130,7 @@ const ShopsPage = () => {
               Ücretsiz Teslimat
             </Typography>
             <Typography level="body-xs" startDecorator={<ShoppingCartOutlined />}>
-              Minimum Sepet Tutarı 50₺
+              Minimum Sepet Tutarı {shop.minOrderPrice}₺
             </Typography>
           </Stack>
           <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, alignItems: 'center' }} >
@@ -140,16 +141,30 @@ const ShopsPage = () => {
           </Box>
         </CardContent>
       </Card>
-      <Divider sx={{mt:2}} />
+      <Divider sx={{ mt: 2 }} />
       <div className='mx-8 mt-4 md:m-16 bg-white'>
         {status !== "pending" ?
-          <Stack spacing={5} direction="row" flexWrap="wrap" useFlexGap>
-            {shop != "" && shop.products.length > 0 ?
+          <Grid container spacing={5}>
+            {shop != "" && shop.products.length > 0 ? (
               shop.products.map((res) => (
-                <ProductsCard data={res} key={res.productsId} />
-              )) :
-              <Typography startDecorator={<InfoOutlined />} justifyContent="center" textAlign="center" level="h3">Bu işletme henüz birşey eklememiş</Typography>}
-          </Stack>
+                <Grid xs={12} md={6} lg={4} key={res.productsId}>
+                  <ProductsCard data={res} />
+                </Grid>
+              ))
+            ) : (
+              <Grid xs={12}>
+                <Typography
+                  startDecorator={<InfoOutlined />}
+                  justifyContent="center"
+                  textAlign="center"
+                  level="h3"
+                >
+                  Bu işletme henüz bir şey eklememiş
+                </Typography>
+              </Grid>
+            )}
+          </Grid>
+
           :
           <Card
             variant="outlined"

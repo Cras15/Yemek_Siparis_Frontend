@@ -37,7 +37,7 @@ const ShopsCard = ({ data }) => {
           <AspectRatio ratio="16/9" sx={{ borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }}>
             <figure>
               <img
-                src="https://images.deliveryhero.io/image/fd-tr/LH/ppdu-listing.jpg?width=400&height=225"
+                src={data.imageUrl}
                 srcSet="https://images.deliveryhero.io/image/fd-tr/LH/h6km-listing.jpg?width=400&height=292&quot; 2x"
                 loading="lazy"
                 alt="Yosemite by Casey Horner"
@@ -108,7 +108,7 @@ const ShopsCard = ({ data }) => {
           <Typography level='body-xs'>(+10)</Typography>
         </Box>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.4, alignItems: 'start', boxShadow: 3, px: 2, mt: -1, mb: 1 }}>
-          <Typography level='body-sm'><CurrencyLira fontSize='small' />50TL minimum • Pide & Lahmacun</Typography>
+          <Typography level='body-sm'><CurrencyLira fontSize='small' />{data.minOrderPrice}TL minimum • Pide & Lahmacun</Typography>
           <Typography level='body-sm'><QueryBuilder fontSize='small' /> 30dk &nbsp;•&nbsp; 0.3km &nbsp;•&nbsp; <MopedOutlined color='primary' /><Typography color='primary'>Ücretsiz</Typography></Typography>
         </Box>
       </div>

@@ -29,7 +29,6 @@ import BrightnessAutoRoundedIcon from '@mui/icons-material/BrightnessAutoRounded
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { closeSidebar } from '../../components/Utils';
 import { useDispatch, useSelector } from 'react-redux';
-import { capitalize } from '@mui/material';
 import MSidebarItems from '../../components/MSidebarItems';
 import axios from 'axios';
 import { setSnackbar } from '../../redux/snackbarSlice';
@@ -38,6 +37,7 @@ import { userLogout } from '../../redux/userSlice';
 import { PeopleRounded, RestaurantRounded } from '@mui/icons-material';
 import { Autocomplete, AutocompleteOption, CircularProgress, ListItemDecorator } from '@mui/joy';
 import { set } from 'date-fns';
+import { capitalize } from '@mui/material';
 
 function Toggler({ defaultExpanded = false, renderToggle, children }) {
     const [open, setOpen] = React.useState(defaultExpanded)
@@ -82,22 +82,23 @@ const ManagerSidebar = () => {
     React.useEffect(() => {
         setShopStatus('pending');
         const fetchData = async () => {
-            await axios.get("/manager/shop/getMyShop", {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            }).then(function (response) {
-                console.log(response)
-                setShops(response.data);
-                setSelectedShop(response.data[0]);
-                setShopStatus('success');
-            }).catch(function (error) {
-                console.log(error);
-                setShopStatus('error');
-            })
-        }
+          try {
+            const response = await axios.get("/manager/shop/getMyShop", {
+              headers: {
+                Authorization: `Bearer ${token}`
+              }
+            });
+            setShops(response.data);
+            setSelectedShop(response.data[0]);
+            setShopStatus('success');
+          } catch (error) {
+            console.log(error);
+            setShopStatus('error');
+          }
+        };
         fetchData();
-    }, []);
+      }, []);
+      
     return (
         <Sheet
             className="Sidebar"
@@ -187,7 +188,7 @@ const ManagerSidebar = () => {
                                 loading="lazy"
                                 width="30"
                                 style={{ borderRadius: 5 }}
-                                srcSet={`${option.imageUrl} 2x`}
+                                //srcSet={`${option.imageUrl} 2x`}
                                 src={`${option.imageUrl}`}
                                 alt=""
                             />

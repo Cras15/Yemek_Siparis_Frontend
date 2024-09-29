@@ -1,189 +1,97 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-import * as React from "react"
-
-import IconButton, { iconButtonClasses } from "@mui/joy/IconButton"
-
-import FilterAltIcon from "@mui/icons-material/FilterAlt"
-import SearchIcon from "@mui/icons-material/Search"
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown"
-import PropTypes from 'prop-types';
-import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight"
-import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft"
-import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded"
+import React, { useEffect, useState } from "react";
 import {
-    Avatar, Box, Button, Chip, Divider, FormControl, FormLabel, Link, Input, Modal, ModalDialog, ModalClose,
-    Select, Option, Table, Sheet, Checkbox, Typography, Menu, MenuButton, MenuItem, Dropdown, Stack
-} from "@mui/joy"
-import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material"
-import FloatingLabelInput from "./FloatingLabelInput"
+    IconButton, Box, Button, Chip, Divider, FormControl, FormLabel, Link, Input, Modal, ModalDialog, ModalClose, Select,
+    Option, Table, Sheet, Typography, Menu, MenuButton, MenuItem, Dropdown, Stack,
+    Grid,
+    Textarea,
+} from "@mui/joy";
+import {
+    KeyboardArrowDown,
+    KeyboardArrowUp,
+    FilterAlt as FilterAltIcon,
+    Search as SearchIcon,
+    ArrowDropDown as ArrowDropDownIcon,
+    KeyboardArrowRight as KeyboardArrowRightIcon,
+    KeyboardArrowLeft as KeyboardArrowLeftIcon,
+    MoreHorizRounded as MoreHorizRoundedIcon,
+    PlaylistAddCheckCircleOutlined,
+    InfoOutlined,
+    DoneOutline,
+} from "@mui/icons-material";
+import { iconButtonClasses } from "@mui/joy/IconButton";
+import PropTypes from "prop-types";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { setSnackbar } from "../redux/snackbarSlice";
+import YesNoModal from "./YesNoModal";
 
 function descendingComparator(a, b, orderBy) {
-    if (typeof a[orderBy] === 'number' && typeof b[orderBy] === 'number') {
-        // Sayısal değerler için karşılaştırma
-        return a[orderBy] - b[orderBy];
-    } else if (typeof a[orderBy] === 'string' && typeof b[orderBy] === 'string') {
-        // String değerler için karşılaştırma
-        return a[orderBy].localeCompare(b[orderBy]);
+    const valA = a[orderBy];
+    const valB = b[orderBy];
+    if (typeof valA === "number" && typeof valB === "number") {
+        return valA - valB;
     } else {
-        // Diğer durumlar için varsayılan bir değer döndür
-        return 0;
+        return valA.toString().localeCompare(valB.toString());
     }
 }
 
 function getComparator(order, orderBy) {
     return order === "desc"
-        ? (a, b) => descendingComparator(b, a, orderBy) // Tersten sıralama için b ve a'nın yerini değiştiriyoruz.
+        ? (a, b) => descendingComparator(b, a, orderBy)
         : (a, b) => descendingComparator(a, b, orderBy);
 }
 
-function stableSort(array, comparator) {
-    const stabilizedThis = array.map((el, index) => [el, index]);
-    stabilizedThis.sort((a, b) => {
-        const order = comparator(a[0], b[0]);
-        if (order !== 0) {
-            return order;
-        }
-        return a[1] - b[1];
-    });
-    return stabilizedThis.map(el => el[0]);
-}
+function ManagerProductTable({ products, getProducts }) {
+    const [order, setOrder] = useState("asc");
+    const [orderBy, setOrderBy] = useState("productName");
+    const [open, setOpen] = useState(false);
+    const [openRowId, setOpenRowId] = useState(null);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
+    const [category, setCategory] = useState(null);
+    const rowsPerPage = 5;
 
-function SortableTableHeader({ title, orderByValue, currentOrder, currentOrderBy, setOrder, setOrderBy }) {
-    const handleSort = () => {
-        const isAsc = orderByValue === currentOrderBy && currentOrder === "asc";
-        setOrder(isAsc ? "desc" : "asc");
-        setOrderBy(orderByValue);
-    };
-
-    const isActive = orderByValue === currentOrderBy;
-
-    return (
-        <Link
-            underline="none"
-            color={isActive ? "primary" : "inherit"}
-            component="button"
-            onClick={handleSort}
-            fontWeight="lg"
-            sx={{
-                '&:hover': {
-                    color: 'primary.500',
-                },
-                display: 'flex',
-                alignItems: 'center',
-                cursor: 'pointer',
-            }}
-            endDecorator={isActive && <ArrowDropDownIcon
-                sx={{
-                    transform: currentOrder === "desc" ? "rotate(180deg)" : "none",
-                    transition: "transform 0.2s"
-                }}
-            />}
-        >
-            {title}
-        </Link>
+    const filteredProducts = products.filter(
+        (product) =>
+            product.productName.toLowerCase().includes(searchTerm) ||
+            product.productDesc.toLowerCase().includes(searchTerm) ||
+            product.price.toString().includes(searchTerm)
     );
-}
 
-function RowMenu() {
-    return (
-        <Dropdown>
-            <MenuButton
-                slots={{ root: IconButton }}
-                slotProps={{ root: { variant: "plain", color: "neutral", size: "sm" } }}
-            >
-                <MoreHorizRoundedIcon />
-            </MenuButton>
-            <Menu size="sm" sx={{ minWidth: 140 }}>
-                <MenuItem sx={{ borderRadius: 'sm', mx: 1 }}>Görüntüle</MenuItem>
-                <MenuItem sx={{ borderRadius: 'sm', mx: 1, mb: 0.5 }}>Düzenle</MenuItem>
-                <Divider />
-                <MenuItem sx={{ borderRadius: 'sm', mx: 1, mt: 0.5 }} color="danger">Sil</MenuItem>
-            </Menu>
-        </Dropdown>
-    )
-}
-
-export default function ManagerProductTable({ products }) {
-    const [order, setOrder] = React.useState("asc")
-    const [orderBy, setOrderBy] = React.useState("productName");
-    const [open, setOpen] = React.useState(false)
-    const [openRowId, setOpenRowId] = React.useState(null);
-    const [searchTerm, setSearchTerm] = React.useState("");
-    const [currentPage, setCurrentPage] = React.useState(1);
-    const rowsPerPage = 5; // Varsayılan olarak sayfa başına 10 satır
-
-    const filteredProducts = products.filter(product =>
-        product.productName.toLowerCase().includes(searchTerm) ||
-        product.productDesc.toLowerCase().includes(searchTerm) ||
-        // product.category.toLowerCase().includes(searchTerm) ||
-        product.price.toString().includes(searchTerm)
-    );
     const pageCount = Math.ceil(filteredProducts.length / rowsPerPage);
-
-    const currentProducts = stableSort(filteredProducts, getComparator(order, orderBy))
+    const currentProducts = filteredProducts
+        .sort(getComparator(order, orderBy))
         .slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
-    const pageNumbers = [];
-    for (let i = 1; i <= pageCount; i++) {
-        pageNumbers.push(i);
-    }
-    const handleChangePage = (newPage) => {
-        setCurrentPage(newPage);
-    };
 
-    const handleSearch = (event) => {
-        setSearchTerm(event.target.value.toLowerCase());
+    const handleChangePage = (newPage) => setCurrentPage(newPage);
+    const handleSearch = (e) => {
+        setSearchTerm(e.target.value.toLowerCase());
         setCurrentPage(1);
     };
-    const handleRowClick = rowId => {
+    const handleRowClick = (rowId) =>
         setOpenRowId(openRowId === rowId ? null : rowId);
-    };
 
-    const renderFilters = () => (
-        <React.Fragment>
-            <FormControl size="sm">
-                <FormLabel>Kategori</FormLabel>
-                <Select
-                    size="sm"
-                    placeholder="Kategori Seç"
-                    slotProps={{ button: { sx: { whiteSpace: "nowrap" } } }}
-                >
-                    <Option value="paid">Döner</Option>
-                    <Option value="pending">Pending</Option>
-                    <Option value="refunded">Refunded</Option>
-                    <Option value="cancelled">Cancelled</Option>
-                </Select>
-            </FormControl>
-            {/* <FormControl size="sm">
-                <FormLabel>Category</FormLabel>
-                <Select size="sm" placeholder="All">
-                    <Option value="all">All</Option>
-                    <Option value="refund">Refund</Option>
-                    <Option value="purchase">Purchase</Option>
-                    <Option value="debit">Debit</Option>
-                </Select>
-            </FormControl>
-            <FormControl size="sm">
-                <FormLabel>Customer</FormLabel>
-                <Select size="sm" placeholder="All">
-                    <Option value="all">All</Option>
-                    <Option value="olivia">Olivia Rhye</Option>
-                    <Option value="steve">Steve Hampton</Option>
-                    <Option value="ciaran">Ciaran Murray</Option>
-                    <Option value="marina">Marina Macdonald</Option>
-                    <Option value="charles">Charles Fulton</Option>
-                    <Option value="jay">Jay Hoper</Option>
-                </Select>
-            </FormControl> */}
-        </React.Fragment>
-    )
+    const getCategories = async () => {
+        await axios.get("/category").then((res) => {
+            setCategory(res.data);
+            console.log(res.data);
+        }).catch((error) => {
+            dispatch(setSnackbar({ children: error.message, color: 'danger', startDecorator: <InfoOutlined /> }));
+            setStatus('error');
+        });
+    }
+
+    useEffect(() => {
+        getCategories();
+    }
+        , []);
     return (
-        <React.Fragment>
+        <>
             <Sheet
-                className="SearchAndFilters-mobile"
                 sx={{
                     display: { xs: "flex", sm: "none" },
                     my: 1,
-                    gap: 1
+                    gap: 1,
                 }}
             >
                 <Input
@@ -204,20 +112,29 @@ export default function ManagerProductTable({ products }) {
                     <ModalDialog aria-labelledby="filter-modal" layout="fullscreen">
                         <ModalClose />
                         <Typography id="filter-modal" level="h2">
-                            Filters
+                            Filtreler
                         </Typography>
                         <Divider sx={{ my: 2 }} />
                         <Sheet sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                            {renderFilters()}
+                            <FormControl size="sm">
+                                <FormLabel>Kategori</FormLabel>
+                                <Select size="sm" placeholder="Kategori Seç">
+                                <Option value="all">Tümü</Option>
+                                    {category?.map((option) => (
+                                        <Option key={option.categoryId} value={option.categoryId}>
+                                            {option.categoryName}
+                                        </Option>
+                                    ))}
+                                </Select>
+                            </FormControl>
                             <Button color="primary" onClick={() => setOpen(false)}>
-                                Submit
+                                Uygula
                             </Button>
                         </Sheet>
                     </ModalDialog>
                 </Modal>
             </Sheet>
             <Box
-                className="SearchAndFilters-tabletUp"
                 sx={{
                     borderRadius: "sm",
                     py: 2,
@@ -225,8 +142,8 @@ export default function ManagerProductTable({ products }) {
                     flexWrap: "wrap",
                     gap: 1.5,
                     "& > *": {
-                        minWidth: { xs: "120px", md: "160px" }
-                    }
+                        minWidth: { xs: "120px", md: "160px" },
+                    },
                 }}
             >
                 <FormControl sx={{ flex: 1 }} size="sm">
@@ -239,91 +156,79 @@ export default function ManagerProductTable({ products }) {
                         onChange={handleSearch}
                     />
                 </FormControl>
-                {renderFilters()}
+                <FormControl size="sm">
+                    <FormLabel>Kategori</FormLabel>
+                    <Select size="sm" placeholder="Kategori Seç" defaultValue="all">
+                    <Option value="all">Tümü</Option>
+                        {category?.map((option) => (
+                            <Option key={option.categoryId} value={option.categoryId}>
+                                {option.categoryName}
+                            </Option>
+                        ))}
+                    </Select>
+                </FormControl>
             </Box>
             <Sheet
-                className="OrderTableContainer"
                 variant="outlined"
                 sx={{
                     display: { xs: "none", sm: "initial" },
                     width: "100%",
                     borderRadius: "md",
-                    maxHeight: '55vh',
-                    flexShrink: 1,
+                    maxHeight: "55vh",
                     overflow: "auto",
-                    minHeight: 0
                 }}
             >
                 <Table
-                    aria-labelledby="tableTitle"
                     stickyHeader
                     hoverRow
                     sx={{
-                        "--TableCell-headBackground":
-                            "var(--joy-palette-background-level1)",
+                        "--TableCell-headBackground": "var(--joy-palette-background-level1)",
                         "--Table-headerUnderlineThickness": "1px",
-                        "--TableRow-hoverBackground":
-                            "var(--joy-palette-background-level1)",
+                        "--TableRow-hoverBackground": "var(--joy-palette-background-level1)",
                         "--TableCell-paddingY": "4px",
-                        "--TableCell-paddingX": "8px"
+                        "--TableCell-paddingX": "8px",
                     }}
                 >
                     <thead>
                         <tr>
-                            <th
-                                style={{ width: 48, textAlign: "center", padding: "12px 6px" }} />
-                            <th style={{ width: 140, padding: "12px 6px" }}>
-                                <SortableTableHeader
-                                    title="Ürün Adı"
-                                    orderByValue="productName"
-                                    currentOrder={order}
-                                    currentOrderBy={orderBy}
-                                    setOrder={setOrder}
-                                    setOrderBy={setOrderBy}
-                                />
-                            </th>
-                            <th style={{ width: 140, padding: "12px 6px" }}>
-                                <SortableTableHeader
-                                    title="Açıklama"
-                                    orderByValue="productDesc"
-                                    currentOrder={order}
-                                    currentOrderBy={orderBy}
-                                    setOrder={setOrder}
-                                    setOrderBy={setOrderBy}
-                                />
-                            </th>
-                            <th style={{ width: 140, padding: "12px 6px" }}>Kategoriler</th>
-                            <th style={{ width: 140, padding: "12px 6px" }}>
-                                <SortableTableHeader
-                                    title="Fiyat"
-                                    orderByValue="price"
-                                    currentOrder={order}
-                                    currentOrderBy={orderBy}
-                                    setOrder={setOrder}
-                                    setOrderBy={setOrderBy}
-                                />
-                            </th>
-                            <th style={{ width: 140, padding: "12px 6px" }}> </th>
+                            <th style={{ width: 48, textAlign: "center" }} />
+                            {["Ürün Adı", "Açıklama", "Kategoriler", "Fiyat"].map((title, idx) => (
+                                <th key={idx} style={{ width: 140 }}>
+                                    <SortableTableHeader
+                                        title={title}
+                                        orderByValue={
+                                            ["productName", "productDesc", "", "price"][idx]
+                                        }
+                                        currentOrder={order}
+                                        currentOrderBy={orderBy}
+                                        setOrder={setOrder}
+                                        setOrderBy={setOrderBy}
+                                    />
+                                </th>
+                            ))}
+                            <th style={{ width: 140 }} />
                         </tr>
                     </thead>
                     <tbody>
-                        {currentProducts.map((row, index) => (
-                            <Row key={row.productsId} row={row} isOpen={row.productsId === openRowId}
-                                onRowClick={() => handleRowClick(row.productsId)} />
+                        {currentProducts.map((row) => (
+                            <Row
+                                key={row.productsId}
+                                row={row}
+                                category={category}
+                                getProducts={getProducts}
+                                isOpen={row.productsId === openRowId}
+                                onRowClick={() => handleRowClick(row.productsId)}
+                            />
                         ))}
                     </tbody>
                 </Table>
             </Sheet>
             <Box
-                className="Pagination-laptopUp"
                 sx={{
                     pt: 2,
                     gap: 1,
                     [`& .${iconButtonClasses.root}`]: { borderRadius: "50%" },
-                    display: {
-                        xs: "none",
-                        md: "flex"
-                    }
+                    display: { xs: "none", md: "flex" },
                 }}
             >
                 <Button
@@ -336,21 +241,19 @@ export default function ManagerProductTable({ products }) {
                 >
                     Önceki Sayfa
                 </Button>
-
                 <Box sx={{ flex: 1 }} />
-                {pageNumbers.map(page => (
+                {[...Array(pageCount)].map((_, idx) => (
                     <IconButton
-                        key={page}
+                        key={idx + 1}
                         size="sm"
-                        variant={page === currentPage ? "solid" : "outlined"}
+                        variant={idx + 1 === currentPage ? "solid" : "outlined"}
                         color="neutral"
-                        onClick={() => handleChangePage(page)}
+                        onClick={() => handleChangePage(idx + 1)}
                     >
-                        {page}
+                        {idx + 1}
                     </IconButton>
                 ))}
                 <Box sx={{ flex: 1 }} />
-
                 <Button
                     size="sm"
                     variant="outlined"
@@ -362,16 +265,81 @@ export default function ManagerProductTable({ products }) {
                     Sonraki Sayfa
                 </Button>
             </Box>
-        </React.Fragment>
-    )
+        </>
+    );
 }
 
-function Row(props) {
-    const { row, isOpen, onRowClick } = props;
-
+function SortableTableHeader({
+    title,
+    orderByValue,
+    currentOrder,
+    currentOrderBy,
+    setOrder,
+    setOrderBy,
+}) {
+    const handleSort = () => {
+        const isAsc = orderByValue === currentOrderBy && currentOrder === "asc";
+        setOrder(isAsc ? "desc" : "asc");
+        setOrderBy(orderByValue);
+    };
+    const isActive = orderByValue === currentOrderBy;
     return (
-        <React.Fragment>
-            <tr key={row.productsId}>
+        <Link
+            underline="none"
+            color={isActive ? "primary" : "inherit"}
+            component="button"
+            onClick={handleSort}
+            fontWeight="lg"
+            sx={{
+                "&:hover": { color: "primary.500" },
+                display: "flex",
+                alignItems: "center",
+                cursor: "pointer",
+            }}
+            endDecorator={
+                isActive && (
+                    <ArrowDropDownIcon
+                        sx={{
+                            transform: currentOrder === "desc" ? "rotate(180deg)" : "none",
+                            transition: "transform 0.2s",
+                        }}
+                    />
+                )
+            }
+        >
+            {title}
+        </Link>
+    );
+}
+
+function Row({ row, isOpen, onRowClick, getProducts, category }) {
+    const { token } = useSelector((state) => state.user);
+    const dispatch = useDispatch();
+
+    const EditProduct = async (event) => {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        console.log(data.get('categories'));
+        await axios.post("/manager/products/updateProduct", {
+            productsId: row.productsId,
+            productName: data.get('productName'),
+            productDesc: data.get('productDesc'),
+            imageUrl: data.get('imageUrl'),
+            price: data.get('price'),
+            stock: data.get('stock'),
+            categoryIds: JSON.parse(data.getAll('categories'))
+        }, { headers: { Authorization: `Bearer ${token}` } }).then((res) => {
+            dispatch(setSnackbar({ children: res.data, color: 'success', startDecorator: <DoneOutline /> }));
+        }).catch((error) => {
+            dispatch(setSnackbar({ children: error.message, color: 'danger', startDecorator: <InfoOutlined /> }));
+            setStatus('error');
+        });
+        await getProducts();
+
+    }
+    return (
+        <>
+            <tr>
                 <td style={{ textAlign: "center", width: 120 }}>
                     <IconButton
                         aria-label="expand row"
@@ -390,47 +358,164 @@ function Row(props) {
                     <Typography level="body-xs">{row.productDesc}</Typography>
                 </td>
                 <td>
-                    <Typography level="body-xs"><Chip color="primary">{'Döner'}</Chip></Typography>
+                    <Typography level="body-xs">
+                        {row.categories.map((category) => (
+                            <Chip color={category.categoryColor}>{category.categoryName}</Chip>
+                        ))}
+                    </Typography>
                 </td>
                 <td>
-                    <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-                        <Typography level="body-sm" sx={{ fontWeight: 'bold' }}>₺{row.price.toFixed(2)}</Typography>
-                    </Box>
+                    <Typography level="body-sm" sx={{ fontWeight: "bold" }}>
+                        ₺{row.price.toFixed(2)}
+                    </Typography>
                 </td>
                 <td>
-                    <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-                        <RowMenu />
-                    </Box>
+                    <RowMenu getProducts={getProducts} productsId={row.productsId} />
                 </td>
             </tr>
-            <tr>
-                <td style={{ height: 0, padding: 0 }} colSpan={6}>
-                    {isOpen && (
-                        <Sheet
-                            variant=""
-                            sx={{ p: 1, pl: 2, pr: 2, pt: 2 }}
-                        >
-                            <Typography level="title-md" fontWeight='bold' component="div">
+            {isOpen && (
+                <tr>
+                    <td style={{ padding: 0 }} colSpan={6}>
+                        <Sheet sx={{ p: 2 }}>
+                            <Typography level="title-md" fontWeight="bold">
                                 Ürün Bilgileri
                             </Typography>
                             <Divider sx={{ my: 1 }} />
-                            <Stack direction='row' spacing={3}>
-                                <FloatingLabelInput placeholder='' label='Ürün Adı' width={150} defaultValue={row.productName} />
-                                <FloatingLabelInput placeholder='' label='Ürün Açıklaması' defaultValue={row.productDesc}/>
-                            </Stack>
+                            <form onSubmit={(e) => EditProduct(e)}>
+                                <Grid container spacing={2}>
+                                    <Grid xs={12} sm={6} md={4}>
+                                        <FormControl>
+                                            <FormLabel>Ürün Adı</FormLabel>
+                                            <Input placeholder="Ürün Adı" defaultValue={row.productName} name="productName" />
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid xs={12} sm={6} md={4}>
+                                        <FormControl>
+                                            <FormLabel>Fiyat</FormLabel>
+                                            <Input type="number" placeholder="Fiyat" defaultValue={row.price} name="price" />
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid xs={12} sm={6} md={4}>
+                                        <FormControl>
+                                            <FormLabel>Stok</FormLabel>
+                                            <Input type="number" placeholder="Stok" defaultValue={row.stock} name="stock" />
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid xs={12} sm={6} md={4}>
+                                        <FormControl>
+                                            <FormLabel>Resim URL</FormLabel>
+                                            <Input placeholder="URL" defaultValue={row.imageUrl} name="imageUrl" />
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid xs={12} sm={6} md={4}>
+                                        <FormControl>
+                                            <FormLabel>Kategoriler</FormLabel>
+                                            <Select
+                                                multiple
+                                                name="categories"
+                                                placeholder="Kategoriler"
+                                                defaultValue={row.categories.map((category) => category.categoryId)}
+                                                renderValue={(selected) => (
+                                                    <Box sx={{ display: 'flex', gap: '0.25rem' }}>
+                                                        {selected.map((selectedOption) => (
+                                                            <Chip variant="soft" color="primary">
+                                                                {selectedOption.label}
+                                                            </Chip>
+                                                        ))}
+                                                    </Box>
+                                                )}
+                                                sx={{ minWidth: '15rem' }}
+                                                slotProps={{
+                                                    listbox: {
+                                                        sx: {
+                                                            width: '100%',
+                                                        },
+                                                    },
+                                                }}
+                                            >
+                                                {category?.map((option) => (
+                                                    <Option key={option.categoryId} value={option.categoryId}>
+                                                        {option.categoryName}
+                                                    </Option>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid xs={12} sm={6} md={4}>
+                                        <FormControl>
+                                            <FormLabel>Ürün Açıklaması</FormLabel>
+                                            <Textarea minRows={2} variant="outlined" defaultValue={row.productDesc} name="productDesc" />
+                                        </FormControl>
+                                    </Grid>
+                                </Grid>
+                                <Divider sx={{ my: 1 }} />
+                                <Button color="primary" type="submit">Düzenle</Button>
+                            </form>
                         </Sheet>
-                    )}
-                </td>
-            </tr>
-        </React.Fragment>
+                    </td>
+                </tr>
+            )}
+        </>
     );
 }
 
-Row.propTypes = {
-    initialOpen: PropTypes.bool,
-    row: PropTypes.shape({
-        productName: PropTypes.string.isRequired,
-        productDesc: PropTypes.string.isRequired,
-        price: PropTypes.number.isRequired,
-    }).isRequired,
+function RowMenu({ getProducts, productsId }) {
+    const { token } = useSelector((state) => state.user);
+    const dispatch = useDispatch();
+    const [modalOpen, setModalOpen] = useState(false);
+
+    const DeleteProduct = async () => {
+        await axios.post(`/manager/products/deleteProduct?productId=${productsId}`, {}, { headers: { Authorization: `Bearer ${token}` } }).then((res) => {
+            dispatch(setSnackbar({ children: res.data, color: 'success', startDecorator: <DoneOutline /> }));
+        }).catch((error) => {
+            dispatch(setSnackbar({ children: error.message, color: 'danger', startDecorator: <InfoOutlined /> }));
+            setStatus('error');
+        });
+        await getProducts();
+
+    }
+    return (
+        <>
+            <Dropdown>
+                <MenuButton
+                    slots={{ root: IconButton }}
+                    slotProps={{
+                        root: { variant: "plain", color: "neutral", size: "sm" },
+                    }}
+                >
+                    <MoreHorizRoundedIcon />
+                </MenuButton>
+                <Menu size="sm" sx={{ minWidth: 140 }}>
+                    <MenuItem sx={{ borderRadius: "sm", mx: 1 }}>Görüntüle</MenuItem>
+                    <MenuItem sx={{ borderRadius: "sm", mx: 1, mb: 0.5 }}>
+                        Düzenle
+                    </MenuItem>
+                    <Divider />
+                    <MenuItem
+                        sx={{ borderRadius: "sm", mx: 1, mt: 0.5 }}
+                        color="danger"
+                        onClick={() => setModalOpen(true)}
+                    >
+                        Sil
+                    </MenuItem>
+                </Menu>
+            </Dropdown>
+            <YesNoModal
+                isOpen={modalOpen}
+                closeModal={() => setModalOpen(false)}
+                title="Emin misin?"
+                body="Ürünü silmek üzeresin."
+                yesButton="Sil"
+                noButton="Vazgeç"
+                onAccept={DeleteProduct}
+                onCancel={() => setModalOpen(false)}
+            />
+        </>
+    );
+}
+
+ManagerProductTable.propTypes = {
+    products: PropTypes.array.isRequired,
 };
+
+export default ManagerProductTable;

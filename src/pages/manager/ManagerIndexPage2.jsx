@@ -44,7 +44,7 @@ const ManagerIndexPage2 = () => {
         <div>
             <div className='grid gap-10 grid-flow-row-dense xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2 grid-cols-1'>
                 <DashboardItems title="Marketlerim" value={90} icon={<ShopIcon />} child={`${shopStats.shopCount} Tane`} color="success" />
-                <DashboardItems title="Ürünlerim" value={60} icon={<ProductsIcon />} child={`${shopStats.totalProductCount} Tane`} color="primary" />
+                <DashboardItems title="Ürünlerim" value={60} icon={<ProductsIcon />} child={`${shopStats.totalProductCount} Tane`} color="primary" link="/manager/urunler"/>
                 <DashboardItems title="Siparişler" value={35} icon={<OrderIcon />} child={`${shopStats.totalOrderCount} Tane`} color="warning" />
             </div>
             <div className='grid gap-10 grid-flow-row-dense xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2 grid-cols-1 mt-10'>

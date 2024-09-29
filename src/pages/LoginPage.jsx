@@ -108,7 +108,7 @@ const LoginPage = () => {
                     onSubmit={(event) => { handleSubmit(event) }}>
                     <FormControl required>
                       <FormLabel>Email</FormLabel>
-                      <Input startDecorator={<Mail />} placeholder='E-Mail' type="email" name="email" value={googleMail} onChange={(e) => setGoogleMail(e.target.value)} />
+                      <Input startDecorator={<Mail />} placeholder='E-Mail' type="email" name="email" value={googleMail} onChange={(e) => setGoogleMail(e.target.value)} autoComplete='email'/>
                     </FormControl>
                     <FormControl required>
                       <FormLabel>Şifre</FormLabel>

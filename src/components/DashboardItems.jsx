@@ -1,8 +1,10 @@
 import { ArrowForward } from '@mui/icons-material'
-import { AspectRatio, Button, Card, CardActions, CardContent, CircularProgress, Divider, IconButton, Stack, SvgIcon, Typography } from '@mui/joy'
+import { Card, CardActions, CardContent, CircularProgress, Divider, IconButton, Stack, SvgIcon, Typography } from '@mui/joy'
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 
-const DashboardItems = ({ icon, title, child, color, value }) => {
+const DashboardItems = ({ icon, title, child, color, value, link }) => {
+    const navigate = useNavigate();
     return (
         <Card variant="soft" color={''} invertedColors
             sx={{ maxWidth: 750, boxShadow: 'lg', borderRadius: 'xl' }}>
@@ -20,7 +22,8 @@ const DashboardItems = ({ icon, title, child, color, value }) => {
                 <IconButton
                     variant="plain"
                     size="md"
-                    sx={{ alignSelf: 'flex-start', borderRadius: 'xl', p: 1.3, mr: -1, my: -1 }}>
+                    sx={{ alignSelf: 'flex-start', borderRadius: 'xl', p: 1.3, mr: -1, my: -1 }}
+                    onClick={() => navigate(link)}>
                     Daha Fazla Ayrıntı &nbsp;<ArrowForward />
                 </IconButton>
             </CardActions>

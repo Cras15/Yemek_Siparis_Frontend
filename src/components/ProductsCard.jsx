@@ -13,7 +13,7 @@ const ProductsCard = ({ data }) => {
   const dispatch = useDispatch();
 
   const addBasket = async () => {
-    if (token == "") dispatch(setSnackbar({children: "Sepete ürün eklemek için giriş yapmalısınız.", color: "danger" , startDecorator: <ErrorOutline />}));
+    if (token == "") dispatch(setSnackbar({ children: "Sepete ürün eklemek için giriş yapmalısınız.", color: "danger", startDecorator: <ErrorOutline /> }));
     else await dispatch(addBasketItem(data)).then(() => dispatch(getBasket()))
   }
 
@@ -24,10 +24,11 @@ const ProductsCard = ({ data }) => {
       sx={{
         width: 'auto!important',
         minWidth: 320,
+        height: 165,
         '&:hover': { boxShadow: 'md', borderColor: 'neutral.outlinedHoverBorder', cursor: 'pointer' },
       }}
     >
-      <AspectRatio ratio="1" sx={{ width: 90 }}>
+      <AspectRatio ratio="1" sx={{ width: 130 }}>
         <img
           src={data.imageUrl != null ? data.imageUrl : "https://images.deliveryhero.io/image/fd-tr/LH/h6km-listing.jpg?width=400&height=292&quot;"}
           srcSet={data.imageUrl != null ? data.imageUrl : "https://images.deliveryhero.io/image/fd-tr/LH/h6km-listing.jpg?width=400&height=292&quot;"}
@@ -36,35 +37,57 @@ const ProductsCard = ({ data }) => {
         />
       </AspectRatio>
       <CardContent>
-        <Typography level="title-lg" id="card-description">
-          {etcString(data.productName, 14)}
+
+        <Typography
+          level="title-md"
+          fontWeight="bold"
+          id="card-description"
+          sx={{
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            display: 'block',
+            whiteSpace: 'nowrap',
+            width: '100%',
+          }}
+        >
+          {data.productName}
         </Typography>
-        <Typography level="body-sm" aria-describedby="card-description" mb={1} sx={{ color: 'text.tertiary' }}>
-          {etcString("İskender, Ayran, Patates Kızartması", 18)}
+        <Typography level='body-md'>{data.price}TL</Typography>
+        <Typography
+          level="body-sm"
+          aria-describedby="card-description"
+          mb={1}
+          sx={{
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            display: '-webkit-box',
+            WebkitBoxOrient: 'vertical',
+            WebkitLineClamp: 2,
+            wordBreak: 'break-word',
+            overflowWrap: 'break-word',
+            whiteSpace: 'normal',
+            color: 'text.tertiary',
+          }}
+        >
+          {data.productDesc}
         </Typography>
-        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-          <Chip
-            variant="outlined"
-            color="primary"
-            size="md"
-            sx={{ pointerEvents: 'none' }} >
-            {data.price}₺
-          </Chip>
-          <IconButton
-            aria-label="Sepete Ekle"
-            component="button"
-            disabled={status == STATUS.LOADING}
-            sx={{
-              ml: 'auto',
-              borderRadius: 20,
-              color: "#4393E4",
-              "&:hover":
-                { color: "#0B6BCB" }
-            }}
-            onClick={addBasket}>
-            {status == STATUS.LOADING ? <CircularProgress /> : <Add />}
-          </IconButton>
-        </Box>
+        <IconButton
+          aria-label="Sepete Ekle"
+          component="button"
+          disabled={status == STATUS.LOADING}
+          sx={{
+            position: 'absolute',
+            right: 12,
+            bottom: 12,
+            borderRadius: 20,
+            color: "#4393E4",
+            "&:hover":
+              { color: "#0B6BCB" }
+          }}
+          onClick={addBasket}>
+          {status == STATUS.LOADING ? <CircularProgress /> : <Add />}
+        </IconButton>
+
       </CardContent>
     </Card>
   )

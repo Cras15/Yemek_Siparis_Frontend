@@ -1,5 +1,5 @@
-import { Add, Check, Delete, KeyboardArrowRight, Remove } from '@mui/icons-material';
-import { AspectRatio, ButtonGroup, Button, Card, CardContent, Chip, IconButton, List, ListDivider, ListItem, ListItemDecorator, Table, Typography, ListSubheader, Divider, CardActions, Skeleton } from '@mui/joy'
+import { Add, Check, Delete, Info, KeyboardArrowRight, Remove } from '@mui/icons-material';
+import { AspectRatio, ButtonGroup, Button, Card, CardContent, Chip, IconButton, List, ListDivider, ListItem, ListItemDecorator, Table, Typography, ListSubheader, Divider, CardActions, Skeleton, Input, Grid } from '@mui/joy'
 import { useDispatch, useSelector } from 'react-redux';
 import { addBasket, addBasketItem, getBasket, removeBasket, removeBasketItem } from '../redux/basketSlice';
 import { etcString } from '../components/Utils';
@@ -7,6 +7,7 @@ import { Box } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { STATUS } from '../components/Status';
+import { setSnackbar } from '../redux/snackbarSlice';
 
 
 const BasketPaymentItem = ({ title, price }) => {
@@ -45,7 +46,7 @@ const BasketPage = () => {
                 <div key={data.basketItemId}>
                   <ListItem>
                     <ListItemDecorator>
-                      <AspectRatio ratio="1" sx={{ width: 90 }}>
+                      <AspectRatio ratio="1" sx={{ width: 130 }}>
                         <img
                           src={data.imageUrl}
                           srcSet={data.product.imageUrl != null ? data.product.imageUrl : "https://images.deliveryhero.io/image/fd-tr/LH/h6km-listing.jpg?width=400&height=292&quot;"}
@@ -55,17 +56,43 @@ const BasketPage = () => {
                       </AspectRatio>
                     </ListItemDecorator>
                     <CardContent sx={{ ml: 3 }}>
-                      <Typography level="title-md" fontWeight="lg" id="card-description">
-                        {etcString(data.product.productName, 15)}
+                      <Typography
+                        level="title-md"
+                        fontWeight="bold"
+                        id="card-description"
+                        sx={{
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          display: 'block',
+                          whiteSpace: 'nowrap',
+                          width: '100%',
+                        }}
+                      >
+                        {data.product.productName}
                       </Typography>
-                      <Typography level="body-sm" aria-describedby="card-description" mb={1} sx={{ color: 'text.tertiary' }}>
-                        {etcString("Patates", 50)}
+                      <Typography
+                        level="body-sm"
+                        aria-describedby="card-description"
+                        mb={1}
+                        sx={{
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          display: '-webkit-box',
+                          WebkitBoxOrient: 'vertical',
+                          WebkitLineClamp: 2,
+                          wordBreak: 'break-word',
+                          overflowWrap: 'break-word',
+                          whiteSpace: 'normal',
+                          color: 'text.tertiary',
+                        }}
+                      >
+                        {data.product.productDesc}
                       </Typography>
                       <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                         <Chip
                           variant="outlined"
                           color="primary"
-                          size="sm"
+                          size="md"
                           sx={{ pointerEvents: 'none' }}
                         >
                           {data.product.price * data.unit}₺
@@ -138,7 +165,7 @@ const BasketPage = () => {
           <CardActions>
             <Typography level="title-md" fontWeight="lg" sx={{ mr: 'auto' }}>
               Toplam {' '}
-              <Typography fontSize="xs"  textColor="text.tertiary">
+              <Typography fontSize="xs" textColor="text.tertiary">
                 (KDV Dahil)
               </Typography>
             </Typography>
@@ -146,6 +173,22 @@ const BasketPage = () => {
               {(baskets.totalPrice - discount + baskets.totalPrice * 0.18).toFixed(2)}₺
             </Typography>
           </CardActions>
+          <Input
+            sx={{ '--Input-decoratorChildHeight': '35px' }}
+            placeholder="İndirim Kodu"
+            endDecorator={
+              <Button
+                variant="solid"
+                color="primary"
+                type="submit"
+                onClick={() => dispatch(setSnackbar({ children: "İndirim kodu geçersiz", color: 'danger', startDecorator: <Info /> }))}
+                sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
+              >
+                Kod Kullan
+              </Button>
+            }
+          />
+
           <Button color='primary' endDecorator={<KeyboardArrowRight />} onClick={() => navigate('/odeme')} disabled={baskets.basketItems?.length == 0}>Sepeti Onayla</Button>
         </Card>
 

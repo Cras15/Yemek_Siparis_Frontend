@@ -8,7 +8,7 @@ import ShopsPage from "./pages/ShopsPage"
 import BasketPage from "./pages/BasketPage"
 import PaymentPage from "./pages/PaymentPage"
 import LoginPage from "./pages/LoginPage"
-import { CssBaseline, ThemeProvider } from "@mui/joy"
+import { Button, CssBaseline, Snackbar, ThemeProvider } from "@mui/joy"
 import ManagerShopPage from "./pages/manager/ManagerShopPage"
 import ErrorPage404 from "./pages/ErrorPage404"
 import ManagerShopEditPage from "./pages/manager/ManagerShopEditPage"
@@ -23,10 +23,35 @@ import ManagerIndexPage2 from "./pages/manager/ManagerIndexPage2"
 import ManagerLayout from "./components/ManagerLayout"
 import ManagerProductsPage from "./pages/manager/products/ManagerProductsPage"
 import ManagerProductViewPage from "./pages/manager/products/ManagerProductViewPage"
+import { closeSnackbar } from "./redux/snackbarSlice"
+import { Check } from "@mui/icons-material"
+import { keyframes } from "@emotion/react"
 
+const inAnimation = keyframes`
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+`;
+
+const outAnimation = keyframes`
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0);
+    opacity: 0;
+  }
+`;
 
 function App() {
   const { expireDate, user, token } = useSelector((state) => state.user);
+  const { snackbar } = useSelector((state) => state.snackbar);
   const dispatch = useDispatch();
   const location = useLocation();
 
@@ -64,6 +89,35 @@ function App() {
         !location.pathname.startsWith("/manager") &&
         <Footer2 />
       }
+
+      <Snackbar
+        variant="solid"
+        //color="success"
+        open={!!snackbar}
+        onClose={() => dispatch(closeSnackbar())}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        startDecorator={<Check />}
+        autoHideDuration={3000}
+        {...snackbar}
+        endDecorator={
+          <Button
+            onClick={() => dispatch(closeSnackbar())}
+            size="sm"
+            variant="solid"
+            color={snackbar?.color}
+          >
+            OK
+          </Button>
+        }
+        //sx={{ ml: 1 }}
+        animationDuration={600}
+        sx={{
+          ml: 1,
+          animation: snackbar?.open
+            ? `${inAnimation} ${600}ms forwards`
+            : `${outAnimation} ${600}ms forwards`,
+        }}
+      />
     </>
   )
 }

@@ -114,16 +114,16 @@ const SignInPage = () => {
                     <Stack direction="row" spacing={1}>
                       <FormControl required>
                         <FormLabel>Ad</FormLabel>
-                        <Input sx={{ maxWidth: 160 }} placeholder="Ad" type="text" name="firstname" value={firstName} onChange={(e) => setfirstName(e.target.value)} />
+                        <Input sx={{ maxWidth: 160 }} placeholder="Ad" type="text" name="firstname" value={firstName} onChange={(e) => setfirstName(e.target.value)} autoComplete='name'/>
                       </FormControl>
                       <FormControl required>
                         <FormLabel>Soyad</FormLabel>
-                        <Input sx={{ maxWidth: 160 }} placeholder="Soyad" type="text" name="lastname" value={lastName} onChange={(e) => setlastName(e.target.value)} />
+                        <Input sx={{ maxWidth: 160 }} placeholder="Soyad" type="text" name="lastname" value={lastName} onChange={(e) => setlastName(e.target.value)} autoComplete='family-name'/>
                       </FormControl>
                     </Stack>
                     <FormControl required>
                       <FormLabel>Email</FormLabel>
-                      <Input startDecorator={<Mail />} placeholder='E-Mail' type="email" name="email" value={googleMail} onChange={(e) => setGoogleMail(e.target.value)} />
+                      <Input startDecorator={<Mail />} placeholder='E-Mail' type="email" name="email" value={googleMail} onChange={(e) => setGoogleMail(e.target.value)} autoComplete='email'/>
                     </FormControl>
                     <FormControl required>
                       <FormLabel>Şifre</FormLabel>

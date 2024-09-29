@@ -30,7 +30,7 @@ const ManagerProductsPage = () => {
     <>
       {status === 'pending' && <div>Loading...</div>}
       {status === 'success' && <>
-        <ManagerProductTable products={products?.products} />
+        <ManagerProductTable products={products?.products} getProducts={getProducts} />
         <ManagerProductList listItems={products?.products} />
       </>
       }
