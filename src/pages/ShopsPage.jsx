@@ -142,29 +142,27 @@ const ShopsPage = () => {
         </CardContent>
       </Card>
       <Divider sx={{ mt: 2 }} />
-      <div className='mx-8 mt-4 md:m-16 bg-white'>
+      {/*<div className='mx-8 mt-4 md:m-16 bg-white'>*/}
+      <Grid container spacing={5} sx={{ width:'93%', m:'auto' }}>
         {status !== "pending" ?
-          <Grid container spacing={5}>
-            {shop != "" && shop.products.length > 0 ? (
-              shop.products.map((res) => (
-                <Grid xs={12} md={6} lg={4} key={res.productsId}>
-                  <ProductsCard data={res} />
-                </Grid>
-              ))
-            ) : (
-              <Grid xs={12}>
-                <Typography
-                  startDecorator={<InfoOutlined />}
-                  justifyContent="center"
-                  textAlign="center"
-                  level="h3"
-                >
-                  Bu işletme henüz bir şey eklememiş
-                </Typography>
+          shop != "" && shop.products.length > 0 ? (
+            shop.products.map((res) => (
+              <Grid xs={12} md={6} lg={4} key={res.productsId}>
+                <ProductsCard data={res} />
               </Grid>
-            )}
-          </Grid>
-
+            ))
+          ) : (
+            <Grid xs={12}>
+              <Typography
+                startDecorator={<InfoOutlined />}
+                justifyContent="center"
+                textAlign="center"
+                level="h3"
+              >
+                Bu işletme henüz bir şey eklememiş
+              </Typography>
+            </Grid>
+          )
           :
           <Card
             variant="outlined"
@@ -174,7 +172,6 @@ const ShopsPage = () => {
               <Skeleton variant="overlay">
                 <img
                   alt=""
-                  src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
                 />
               </Skeleton>
             </AspectRatio>
@@ -186,7 +183,8 @@ const ShopsPage = () => {
               <Typography><Skeleton>123.0₺</Skeleton></Typography>
             </CardContent>
           </Card>}
-      </div>
+      </Grid>
+      {/*</div>*/}
     </>
   )
 }

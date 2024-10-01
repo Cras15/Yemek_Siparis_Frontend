@@ -21,9 +21,8 @@ import {
 import { iconButtonClasses } from "@mui/joy/IconButton";
 import PropTypes from "prop-types";
 import axios from "axios";
-import { useDispatch, useSelector } from "react-redux";
-import { setSnackbar } from "../redux/snackbarSlice";
-import YesNoModal from "./YesNoModal";
+import { useSelector } from "react-redux";
+import { useUI } from "../utils/UIContext";
 
 function descendingComparator(a, b, orderBy) {
     const valA = a[orderBy];
@@ -42,6 +41,7 @@ function getComparator(order, orderBy) {
 }
 
 function ManagerProductTable({ products, getProducts }) {
+    const { showErrorSnackbar } = useUI();
     const [order, setOrder] = useState("asc");
     const [orderBy, setOrderBy] = useState("productName");
     const [open, setOpen] = useState(false);
@@ -76,7 +76,7 @@ function ManagerProductTable({ products, getProducts }) {
             setCategory(res.data);
             console.log(res.data);
         }).catch((error) => {
-            dispatch(setSnackbar({ children: error.message, color: 'danger', startDecorator: <InfoOutlined /> }));
+            showErrorSnackbar(error.message);
             setStatus('error');
         });
     }
@@ -119,7 +119,7 @@ function ManagerProductTable({ products, getProducts }) {
                             <FormControl size="sm">
                                 <FormLabel>Kategori</FormLabel>
                                 <Select size="sm" placeholder="Kategori Seç">
-                                <Option value="all">Tümü</Option>
+                                    <Option value="all">Tümü</Option>
                                     {category?.map((option) => (
                                         <Option key={option.categoryId} value={option.categoryId}>
                                             {option.categoryName}
@@ -159,7 +159,7 @@ function ManagerProductTable({ products, getProducts }) {
                 <FormControl size="sm">
                     <FormLabel>Kategori</FormLabel>
                     <Select size="sm" placeholder="Kategori Seç" defaultValue="all">
-                    <Option value="all">Tümü</Option>
+                        <Option value="all">Tümü</Option>
                         {category?.map((option) => (
                             <Option key={option.categoryId} value={option.categoryId}>
                                 {option.categoryName}
@@ -314,7 +314,7 @@ function SortableTableHeader({
 
 function Row({ row, isOpen, onRowClick, getProducts, category }) {
     const { token } = useSelector((state) => state.user);
-    const dispatch = useDispatch();
+    const { showDoneSnackbar, showErrorSnackbar } = useUI();
 
     const EditProduct = async (event) => {
         event.preventDefault();
@@ -329,9 +329,9 @@ function Row({ row, isOpen, onRowClick, getProducts, category }) {
             stock: data.get('stock'),
             categoryIds: JSON.parse(data.getAll('categories'))
         }, { headers: { Authorization: `Bearer ${token}` } }).then((res) => {
-            dispatch(setSnackbar({ children: res.data, color: 'success', startDecorator: <DoneOutline /> }));
+            showDoneSnackbar(res.data);
         }).catch((error) => {
-            dispatch(setSnackbar({ children: error.message, color: 'danger', startDecorator: <InfoOutlined /> }));
+            showErrorSnackbar(error.message);
             setStatus('error');
         });
         await getProducts();
@@ -360,7 +360,7 @@ function Row({ row, isOpen, onRowClick, getProducts, category }) {
                 <td>
                     <Typography level="body-xs">
                         {row.categories.map((category) => (
-                            <Chip color={category.categoryColor}>{category.categoryName}</Chip>
+                            <Chip key={category.categoryId} color={category.categoryColor}>{category.categoryName}</Chip>
                         ))}
                     </Typography>
                 </td>
@@ -417,8 +417,8 @@ function Row({ row, isOpen, onRowClick, getProducts, category }) {
                                                 defaultValue={row.categories.map((category) => category.categoryId)}
                                                 renderValue={(selected) => (
                                                     <Box sx={{ display: 'flex', gap: '0.25rem' }}>
-                                                        {selected.map((selectedOption) => (
-                                                            <Chip variant="soft" color="primary">
+                                                        {selected.map((selectedOption,i) => (
+                                                            <Chip key={i} variant="soft" color="primary">
                                                                 {selectedOption.label}
                                                             </Chip>
                                                         ))}
@@ -461,19 +461,28 @@ function Row({ row, isOpen, onRowClick, getProducts, category }) {
 
 function RowMenu({ getProducts, productsId }) {
     const { token } = useSelector((state) => state.user);
-    const dispatch = useDispatch();
-    const [modalOpen, setModalOpen] = useState(false);
+    const { openModal, showDoneSnackbar, showErrorSnackbar } = useUI();
 
     const DeleteProduct = async () => {
         await axios.post(`/manager/products/deleteProduct?productId=${productsId}`, {}, { headers: { Authorization: `Bearer ${token}` } }).then((res) => {
-            dispatch(setSnackbar({ children: res.data, color: 'success', startDecorator: <DoneOutline /> }));
+            showDoneSnackbar(res.data);
         }).catch((error) => {
-            dispatch(setSnackbar({ children: error.message, color: 'danger', startDecorator: <InfoOutlined /> }));
+            showErrorSnackbar(error.message);
             setStatus('error');
         });
         await getProducts();
-
     }
+
+    const handleDelete = (productsId) => {
+        openModal({
+            title: 'Silme Onayı',
+            body: 'Bunu silmek istediğine emin misin?',
+            yesButton: 'Sil',
+            noButton: 'Vazgeç',
+            onAccept: () => DeleteProduct(productsId),
+        });
+    }
+
     return (
         <>
             <Dropdown>
@@ -494,22 +503,12 @@ function RowMenu({ getProducts, productsId }) {
                     <MenuItem
                         sx={{ borderRadius: "sm", mx: 1, mt: 0.5 }}
                         color="danger"
-                        onClick={() => setModalOpen(true)}
+                        onClick={() => handleDelete(productsId)}
                     >
                         Sil
                     </MenuItem>
                 </Menu>
             </Dropdown>
-            <YesNoModal
-                isOpen={modalOpen}
-                closeModal={() => setModalOpen(false)}
-                title="Emin misin?"
-                body="Ürünü silmek üzeresin."
-                yesButton="Sil"
-                noButton="Vazgeç"
-                onAccept={DeleteProduct}
-                onCancel={() => setModalOpen(false)}
-            />
         </>
     );
 }

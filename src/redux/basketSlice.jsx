@@ -2,25 +2,28 @@ import { createAsyncThunk, createSlice, current } from "@reduxjs/toolkit";
 import { selectUserToken } from "./userSlice";
 import { STATUS } from "../components/Status";
 import axios from "axios";
-import { setSnackbar } from "./snackbarSlice";
-import { useDispatch } from "react-redux";
+import { useUI } from "../utils/UIContext";
 
 
 
 export const addBasketItem = createAsyncThunk("basket/add", async (data, { dispatch, getState }) => {
     const token = selectUserToken(getState());
+    const { showSnackbar } = useUI();
     const res = await axios.post(`/basket/add/${data.productsId}`, {}, {
         headers: {
             Authorization: `Bearer ${token}`
         }
     }).then(function (response) {
-        dispatch(setSnackbar({ children: response.data, color: response.status == 200 ? 'success' : 'danger' }))
+        showSnackbar({ children: response.data, color: response.status == 200 ? 'success' : 'danger' })
         return response;
-    })
+    }).catch(function (error) {
+        showSnackbar({ children: error.message, color: 'danger' })
+        return error.message;
+    });
     return res;
 });
 
-export const removeBasketItem = createAsyncThunk("basket/remove", async (data, { dispatch,getState }) => {
+export const removeBasketItem = createAsyncThunk("basket/remove", async (data, { dispatch, getState }) => {
     const token = selectUserToken(getState());
     const res = await axios.post(`/basket/remove/${data.productsId}`, {}, {
         headers: {

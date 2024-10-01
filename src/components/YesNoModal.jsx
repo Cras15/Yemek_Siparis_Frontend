@@ -1,8 +1,19 @@
-import { WarningRounded } from '@mui/icons-material'
-import { Button, DialogActions, DialogContent, DialogTitle, Divider, Modal, ModalDialog } from '@mui/joy'
-import React from 'react'
+// YesNoModal.js
+import { WarningRounded } from '@mui/icons-material';
+import { Button, DialogActions, DialogContent, DialogTitle, Divider, Modal, ModalDialog, } from '@mui/joy';
+import React from 'react';
 
-const YesNoModal = ({isOpen, closeModal, title, body, yesButton, noButton, onAccept, onCancel}) => {
+const YesNoModal = ({
+    isOpen,
+    closeModal,
+    title,
+    body,
+    yesButtonColor = "danger",
+    yesButton,
+    noButton,
+    onAccept,
+    onCancel,
+}) => {
     return (
         <Modal open={isOpen} onClose={closeModal}>
             <ModalDialog variant="outlined" role="alertdialog">
@@ -11,11 +22,9 @@ const YesNoModal = ({isOpen, closeModal, title, body, yesButton, noButton, onAcc
                     {title}
                 </DialogTitle>
                 <Divider />
-                <DialogContent>
-                    {body}
-                </DialogContent>
+                <DialogContent>{body}</DialogContent>
                 <DialogActions>
-                    <Button variant="solid" color="danger" onClick={onAccept}>
+                    <Button variant="solid" color={yesButtonColor} onClick={onAccept}>
                         {yesButton}
                     </Button>
                     <Button variant="plain" color="neutral" onClick={onCancel}>
@@ -24,7 +33,7 @@ const YesNoModal = ({isOpen, closeModal, title, body, yesButton, noButton, onAcc
                 </DialogActions>
             </ModalDialog>
         </Modal>
-    )
-}
+    );
+};
 
-export default YesNoModal
+export default YesNoModal;

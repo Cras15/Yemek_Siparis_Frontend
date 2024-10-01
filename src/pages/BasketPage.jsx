@@ -2,12 +2,11 @@ import { Add, Check, Delete, Info, KeyboardArrowRight, Remove } from '@mui/icons
 import { AspectRatio, ButtonGroup, Button, Card, CardContent, Chip, IconButton, List, ListDivider, ListItem, ListItemDecorator, Table, Typography, ListSubheader, Divider, CardActions, Skeleton, Input, Grid } from '@mui/joy'
 import { useDispatch, useSelector } from 'react-redux';
 import { addBasket, addBasketItem, getBasket, removeBasket, removeBasketItem } from '../redux/basketSlice';
-import { etcString } from '../components/Utils';
 import { Box } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { STATUS } from '../components/Status';
-import { setSnackbar } from '../redux/snackbarSlice';
+import { useUI } from '../utils/UIContext';
 
 
 const BasketPaymentItem = ({ title, price }) => {
@@ -28,6 +27,7 @@ const BasketPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { baskets, status } = useSelector((state) => state.basket);
+  const { showErrorSnackbar } = useUI();
 
   return (
     <div className='m-auto mt-5 w-11/12 sm:w-10/12 rounded-lg grid gap-9 md:grid-flow-col grid-flow-row'>
@@ -181,7 +181,7 @@ const BasketPage = () => {
                 variant="solid"
                 color="primary"
                 type="submit"
-                onClick={() => dispatch(setSnackbar({ children: "İndirim kodu geçersiz", color: 'danger', startDecorator: <Info /> }))}
+                onClick={() => showErrorSnackbar('Geçersiz İndirim Kodu')}
                 sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
               >
                 Kod Kullan

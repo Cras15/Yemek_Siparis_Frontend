@@ -14,7 +14,7 @@ import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
 import { Key, Mail } from '@mui/icons-material';
 import { STATUS } from '../components/Status';
-import { setSnackbar } from '../redux/snackbarSlice';
+import { useUI } from '../utils/UIContext';
 
 const SignInPage = () => {
   const [googleMail, setGoogleMail] = React.useState('');
@@ -24,14 +24,14 @@ const SignInPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { status, user } = useSelector((state) => state.user);
+  const { showSnackbar } = useUI();
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     if (data.get('firstname') && data.get('lastname') && data.get('email') != "" && data.get('password') != "") {
       dispatch(userRegister({ firstname: data.get('firstname'), lastname: data.get('lastname'), email: data.get('email'), password: data.get('password') })).then((res => {
-        console.log(res);
-        dispatch(setSnackbar({ children: res.payload != undefined? res.payload.data : "Hata oluştu", color: res.payload?.status == 200 ? 'success' : 'danger' }));
+        showSnackbar({ children: res.payload != undefined ? res.payload.data : "Hata oluştu", color: res.payload?.status == 200 ? 'success' : 'danger' });
         if (res.payload?.status == 200) navigate('/giris');
       }));
     }
@@ -114,16 +114,16 @@ const SignInPage = () => {
                     <Stack direction="row" spacing={1}>
                       <FormControl required>
                         <FormLabel>Ad</FormLabel>
-                        <Input sx={{ maxWidth: 160 }} placeholder="Ad" type="text" name="firstname" value={firstName} onChange={(e) => setfirstName(e.target.value)} autoComplete='name'/>
+                        <Input sx={{ maxWidth: 160 }} placeholder="Ad" type="text" name="firstname" value={firstName} onChange={(e) => setfirstName(e.target.value)} autoComplete='name' />
                       </FormControl>
                       <FormControl required>
                         <FormLabel>Soyad</FormLabel>
-                        <Input sx={{ maxWidth: 160 }} placeholder="Soyad" type="text" name="lastname" value={lastName} onChange={(e) => setlastName(e.target.value)} autoComplete='family-name'/>
+                        <Input sx={{ maxWidth: 160 }} placeholder="Soyad" type="text" name="lastname" value={lastName} onChange={(e) => setlastName(e.target.value)} autoComplete='family-name' />
                       </FormControl>
                     </Stack>
                     <FormControl required>
                       <FormLabel>Email</FormLabel>
-                      <Input startDecorator={<Mail />} placeholder='E-Mail' type="email" name="email" value={googleMail} onChange={(e) => setGoogleMail(e.target.value)} autoComplete='email'/>
+                      <Input startDecorator={<Mail />} placeholder='E-Mail' type="email" name="email" value={googleMail} onChange={(e) => setGoogleMail(e.target.value)} autoComplete='email' />
                     </FormControl>
                     <FormControl required>
                       <FormLabel>Şifre</FormLabel>

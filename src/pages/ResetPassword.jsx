@@ -5,11 +5,12 @@ import ErrorPage404 from './ErrorPage404';
 import { Button, Card, CardContent, CircularProgress, FormControl, FormLabel, Input, Typography } from '@mui/joy';
 import { Key, Mail, Password, PasswordOutlined } from '@mui/icons-material';
 import { useDispatch } from 'react-redux';
-import { setSnackbar } from '../redux/snackbarSlice';
+import { useUI } from '../utils/UIContext';
 
 const ResetPassword = () => {
     const [status, setStatus] = React.useState("loading");
     const [formStatus, setFormStatus] = React.useState("");
+    const { showDoneSnackbar, showErrorSnackbar } = useUI();
     const { token } = useParams();
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -29,11 +30,11 @@ const ResetPassword = () => {
             console.log(res);
             setFormStatus("success");
             navigate('/giris');
-            dispatch(setSnackbar({ children: "Şire sıfırlandı", color: 'success' }));
+            showDoneSnackbar("Şifreniz başarıyla sıfırlandı");
         }).catch((error) => {
             console.log(error);
             setFormStatus("error");
-            dispatch(setSnackbar({ children: "Bir hata oluştu tekrar deneyin", color: 'danger' }));
+            showErrorSnackbar("Şifre sıfırlanırken bir hata oluştu");
         })
     }
 

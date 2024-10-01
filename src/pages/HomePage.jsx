@@ -1,7 +1,7 @@
 import axios from 'axios'
 import React from 'react'
 import ShopsCard from '../components/ShopsCard'
-import { AspectRatio, Button, Card, CardActions, CardContent, Container, DialogContent, DialogTitle, Grid, Modal, ModalClose, ModalDialog, Skeleton, Stack, Typography } from '@mui/joy'
+import { AspectRatio, Button, Card, CardActions, CardContent, Grid, Skeleton,  Typography } from '@mui/joy'
 import { InfoOutlined, TuneRounded } from '@mui/icons-material'
 import HomePageFilterModal from '../components/HomePageFilterModal'
 import FilterChild from '../components/FilterChild'
@@ -25,6 +25,7 @@ const HomePage = () => {
   React.useEffect(() => {
     getShops();
   }, []);
+
   return (
     // <div className='lg:grid lg:grid-flow-row-dense xl:grid-cols-5 lg:grid-cols-4'>
     <Grid container spacing={0}>

@@ -15,21 +15,21 @@ import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
 import { Key, Mail } from '@mui/icons-material';
 import { STATUS } from '../components/Status';
-import { setSnackbar } from '../redux/snackbarSlice';
+import { useUI } from '../utils/UIContext';
 
 const LoginPage = () => {
   const [googleMail, setGoogleMail] = React.useState('');
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { status, user } = useSelector((state) => state.user);
+  const { showSnackbar } = useUI();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     if (data.get('email') != "" && data.get('password') != "") {
       dispatch(userLogin({ username: data.get('email'), password: data.get('password') })).then((res) => {
-        console.log(res)
-        dispatch(setSnackbar({ children: res?.payload == undefined ? "Girilen bilgiler hatalı" :"Giriş başarılı", color: res.payload.status == 200 ? 'success' : 'danger' }));
+        showSnackbar({ children: res?.payload == undefined ? "Girilen bilgiler hatalı" : "Giriş başarılı", color: res.payload.status == 200 ? 'success' : 'danger' });
         dispatch(getUserProfile());
       });
     }
@@ -108,7 +108,7 @@ const LoginPage = () => {
                     onSubmit={(event) => { handleSubmit(event) }}>
                     <FormControl required>
                       <FormLabel>Email</FormLabel>
-                      <Input startDecorator={<Mail />} placeholder='E-Mail' type="email" name="email" value={googleMail} onChange={(e) => setGoogleMail(e.target.value)} autoComplete='email'/>
+                      <Input startDecorator={<Mail />} placeholder='E-Mail' type="email" name="email" value={googleMail} onChange={(e) => setGoogleMail(e.target.value)} autoComplete='email' />
                     </FormControl>
                     <FormControl required>
                       <FormLabel>Şifre</FormLabel>

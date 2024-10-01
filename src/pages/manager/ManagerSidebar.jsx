@@ -2,42 +2,29 @@ import * as React from 'react';
 import GlobalStyles from '@mui/joy/GlobalStyles';
 import Avatar from '@mui/joy/Avatar';
 import Box from '@mui/joy/Box';
-import Button from '@mui/joy/Button';
-import Card from '@mui/joy/Card';
-import Chip from '@mui/joy/Chip';
 import Divider from '@mui/joy/Divider';
 import IconButton from '@mui/joy/IconButton';
-import Input from '@mui/joy/Input';
-import LinearProgress from '@mui/joy/LinearProgress';
 import List from '@mui/joy/List';
-import ListItem from '@mui/joy/ListItem';
-import ListItemButton, { listItemButtonClasses } from '@mui/joy/ListItemButton';
+import { listItemButtonClasses } from '@mui/joy/ListItemButton';
 import ListItemContent from '@mui/joy/ListItemContent';
 import Typography from '@mui/joy/Typography';
 import Sheet from '@mui/joy/Sheet';
-import Stack from '@mui/joy/Stack';
-import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
-import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
 import ShoppingCartRoundedIcon from '@mui/icons-material/ShoppingCartRounded';
-import GroupRoundedIcon from '@mui/icons-material/GroupRounded';
 import SupportRoundedIcon from '@mui/icons-material/SupportRounded';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import BrightnessAutoRoundedIcon from '@mui/icons-material/BrightnessAutoRounded';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { closeSidebar } from '../../components/Utils';
 import { useDispatch, useSelector } from 'react-redux';
 import MSidebarItems from '../../components/MSidebarItems';
 import axios from 'axios';
-import { setSnackbar } from '../../redux/snackbarSlice';
 import { useNavigate } from 'react-router';
 import { userLogout } from '../../redux/userSlice';
 import { PeopleRounded, RestaurantRounded } from '@mui/icons-material';
 import { Autocomplete, AutocompleteOption, CircularProgress, ListItemDecorator } from '@mui/joy';
-import { set } from 'date-fns';
 import { capitalize } from '@mui/material';
+import { useUI } from '../../utils/UIContext';
 
 function Toggler({ defaultExpanded = false, renderToggle, children }) {
     const [open, setOpen] = React.useState(defaultExpanded)
@@ -61,44 +48,43 @@ function Toggler({ defaultExpanded = false, renderToggle, children }) {
     )
 }
 
-
-
 const ManagerSidebar = () => {
     const [shops, setShops] = React.useState([]);
     const [selectedShop, setSelectedShop] = React.useState(null);
     const [shopStatus, setShopStatus] = React.useState('idle');
 
     const { user, token } = useSelector((state) => state.user);
+    const { showDoneSnackbar } = useUI();
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const logout = () => {
         dispatch(userLogout());
-        dispatch(setSnackbar({ children: "Başarıyla çıkış yapıldı.", color: "success" }));
+        showDoneSnackbar("Başarıyla çıkış yapıldı.");
         navigate('/');
     }
 
     React.useEffect(() => {
         setShopStatus('pending');
         const fetchData = async () => {
-          try {
-            const response = await axios.get("/manager/shop/getMyShop", {
-              headers: {
-                Authorization: `Bearer ${token}`
-              }
-            });
-            setShops(response.data);
-            setSelectedShop(response.data[0]);
-            setShopStatus('success');
-          } catch (error) {
-            console.log(error);
-            setShopStatus('error');
-          }
+            try {
+                const response = await axios.get("/manager/shop/getMyShop", {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                setShops(response.data);
+                setSelectedShop(response.data[0]);
+                setShopStatus('success');
+            } catch (error) {
+                console.log(error);
+                setShopStatus('error');
+            }
         };
         fetchData();
-      }, []);
-      
+    }, [token]);
+
     return (
         <Sheet
             className="Sidebar"
@@ -155,15 +141,15 @@ const ManagerSidebar = () => {
                 <IconButton variant="soft" color="primary" size="sm">
                     <BrightnessAutoRoundedIcon />
                 </IconButton>
-                <Typography level="title-lg">Ayağıma Gelsin</Typography>
+                <Typography level="title-lg">Ayağım Gelsin</Typography>
                 {/* <ColorSchemeToggle sx={{ ml: 'auto' }} /> */}
             </Box>
             <Autocomplete
                 id="country-select-demo"
-                placeholder="Restorant Seç"
+                placeholder="Restoran Seç"
                 slotProps={{
                     input: {
-                        autoComplete: 'new-password', // disable autocomplete and autofill
+                        autoComplete: 'new-password', 
                     },
                 }}
                 sx={{ zIndex: 10001 }}
@@ -171,13 +157,13 @@ const ManagerSidebar = () => {
                 value={selectedShop}
                 onChange={(_, newValue) => {
                     setSelectedShop(newValue)
-                  }}
+                }}
                 autoHighlight
                 disableClearable
                 getOptionLabel={(option) => option.shopName}
-                loading={shopStatus == 'pending'}
+                loading={shopStatus === 'pending'}
                 endDecorator={
-                    shopStatus == 'pending' ? (
+                    shopStatus === 'pending' ? (
                         <CircularProgress size="sm" sx={{ bgcolor: 'background.surface' }} />
                     ) : null
                 }
@@ -188,7 +174,6 @@ const ManagerSidebar = () => {
                                 loading="lazy"
                                 width="30"
                                 style={{ borderRadius: 5 }}
-                                //srcSet={`${option.imageUrl} 2x`}
                                 src={`${option.imageUrl}`}
                                 alt=""
                             />
@@ -202,7 +187,6 @@ const ManagerSidebar = () => {
                     </AutocompleteOption>
                 )}
             />
-            {/* <Input size="sm" startDecorator={<SearchRoundedIcon />} placeholder="Search" /> */}
             <Box
                 sx={{
                     minHeight: 0,
@@ -224,69 +208,8 @@ const ManagerSidebar = () => {
                     }}
                 >
                     <MSidebarItems selected={true} title="Anasayfa" link="/manager" icon={<HomeRoundedIcon />} />
-                    {/* <MSidebarItems title="Dashboard" icon={<DashboardRoundedIcon />} badge={4} /> */}
-
-                    {/* <ListItem nested>
-                        <Toggler
-                            renderToggle={({ open, setOpen }) => (
-                                <ListItemButton onClick={() => setOpen(!open)}>
-                                    <ShoppingCartRoundedIcon />
-                                    <ListItemContent>
-                                        <Typography level="title-sm">Mağazalarım</Typography>
-                                    </ListItemContent>
-                                    <KeyboardArrowDownIcon
-                                        sx={{ transform: open ? 'rotate(180deg)' : 'none' }}
-                                    />
-                                </ListItemButton>
-                            )}
-                        >
-                            <List sx={{ gap: 0.5 }}>
-                                {shops?.length > 0 ? shops?.map((shop) => (
-                                    <ListItem key={shop.shopId} sx={{ mt: 0.5 }}>
-                                        <ListItemButton component="a" href={`/manager/magaza/${shop.shopId}`} role="menuitem">{shop.shopName}</ListItemButton>
-                                    </ListItem>
-                                )) :
-                                    <Typography level="title-sm">Mağazanız Bulunmamaktadır.</Typography>}
-
-                            </List>
-                        </Toggler>
-                    </ListItem> */}
                     <MSidebarItems title="Siparişler" link="/manager" badge={4} icon={<ShoppingCartRoundedIcon />} />
                     <MSidebarItems title="Ürünler" link="/manager/urunler" icon={<RestaurantRounded />} />
-
-                    {/* <ListItem nested>
-                        <Toggler
-                            renderToggle={({ open, setOpen }) => (
-                                <ListItemButton onClick={() => setOpen(!open)}>
-                                    <GroupRoundedIcon />
-                                    <ListItemContent>
-                                        <Typography level="title-sm">Users</Typography>
-                                    </ListItemContent>
-                                    <KeyboardArrowDownIcon
-                                        sx={{ transform: open ? 'rotate(180deg)' : 'none' }}
-                                    />
-                                </ListItemButton>
-                            )}
-                        >
-                            <List sx={{ gap: 0.5 }}>
-                                <ListItem sx={{ mt: 0.5 }}>
-                                    <ListItemButton
-                                        role="menuitem"
-                                        component="a"
-                                        href="/joy-ui/getting-started/templates/profile-dashboard/"
-                                    >
-                                        My profile
-                                    </ListItemButton>
-                                </ListItem>
-                                <ListItem>
-                                    <ListItemButton>Create a new user</ListItemButton>
-                                </ListItem>
-                                <ListItem>
-                                    <ListItemButton>Roles & permission</ListItemButton>
-                                </ListItem>
-                            </List>
-                        </Toggler>
-                    </ListItem> */}
                 </List>
 
                 <List
@@ -303,34 +226,16 @@ const ManagerSidebar = () => {
                     <MSidebarItems title="Ayarlar" icon={<SettingsRoundedIcon />} />
                     <MSidebarItems title="Ana Sayfaya Dön" icon={<PeopleRounded />} link="/" />
                 </List>
-                {/* <Card
-                    invertedColors
-                    variant="soft"
-                    color="warning"
-                    size="sm"
-                    sx={{ boxShadow: 'none' }}
-                >
-                    <Stack direction="row" justifyContent="space-between" alignItems="center">
-                        <Typography level="title-sm">Used space</Typography>
-                        <IconButton size="sm">
-                            <CloseRoundedIcon />
-                        </IconButton>
-                    </Stack>
-                    <Typography level="body-xs">
-                        Your team has used 80% of your available space. Need more?
-                    </Typography>
-                    <LinearProgress variant="outlined" value={80} determinate sx={{ my: 1 }} />
-                    <Button size="sm" variant="solid">
-                        Upgrade plan
-                    </Button>
-                </Card> */}
+        
             </Box>
             <Divider />
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                 <Avatar
                     variant="outlined"
                     size="sm"
-                >{user.firstname.charAt(0).toUpperCase() + user.lastname.charAt(0).toUpperCase()}</Avatar>
+                >
+                    {user.firstname.charAt(0).toUpperCase() + user.lastname.charAt(0).toUpperCase()}
+                </Avatar>
                 <Box sx={{ minWidth: 0, flex: 1 }}>
                     <Typography level="title-sm">{`${capitalize(user.firstname)} ${user.lastname.charAt(0).toUpperCase()}.`}</Typography>
                     <Typography level="body-xs">{user.email}</Typography>

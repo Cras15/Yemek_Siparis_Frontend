@@ -8,11 +8,12 @@ import { BrowserRouter } from 'react-router-dom'
 import axios from 'axios'
 import { GoogleOAuthProvider } from '@react-oauth/google'
 import { PersistGate } from 'redux-persist/integration/react'
+import { UIProvider } from './utils/UIContext.jsx'
 
 //http://localhost:8080
 //https://api.ayagimagelsin.com.tr
 const local = "http://localhost:8080";
-const product = "https://api.ayagimagelsin.com.tr";
+const product = "https://api.ayagimagelsin.tr";
 
 if (process.env.NODE_ENV !== 'production')
   axios.defaults.baseURL = product;
@@ -28,7 +29,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <Provider store={store}>
       <PersistGate loading={null} persistor={Persistor}>
         <GoogleOAuthProvider clientId='711966364839-742q3cumeeg14lalepnlsavb1cup74i6.apps.googleusercontent.com'>
-          <App />
+          <UIProvider>
+            <App />
+          </UIProvider>
         </GoogleOAuthProvider>
       </PersistGate>
     </Provider>

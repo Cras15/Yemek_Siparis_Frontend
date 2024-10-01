@@ -3,12 +3,12 @@ import React from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import PersonIcon from '@mui/icons-material/Person';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import { Typography, Dropdown, Button, Snackbar, IconButton, ListDivider, ListItemDecorator, Menu, MenuButton, MenuItem, Divider } from '@mui/joy';
-import { Check, Home, LogoutOutlined, PersonOutline, SettingsOutlined, ShoppingBasketOutlined, SupervisorAccountOutlined } from '@mui/icons-material';
+import { Typography, Dropdown, Button,  IconButton, ListDivider, ListItemDecorator, Menu, MenuButton, MenuItem, Divider } from '@mui/joy';
+import { Home, LogoutOutlined, PersonOutline, SettingsOutlined, ShoppingBasketOutlined, SupervisorAccountOutlined } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { userLogout } from '../redux/userSlice';
 import BasketDropdown from './BasketDropdown';
-import { closeSnackbar, setSnackbar } from '../redux/snackbarSlice';
+import { useUI } from '../utils/UIContext';
 
 
 
@@ -16,10 +16,11 @@ const Navbar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
+  const { showDoneSnackbar } = useUI();
 
   const logout = () => {
     dispatch(userLogout());
-    dispatch(setSnackbar({ children: "Başarıyla çıkış yapıldı.", color: "success" }));
+    showDoneSnackbar("Başarıyla çıkış yapıldı.");
     navigate('/');
   }
 

@@ -4,7 +4,6 @@ import basketSlice from './basketSlice';
 import storage from 'redux-persist/lib/storage'
 import persistStore from 'redux-persist/es/persistStore';
 import { persistReducer } from 'redux-persist';
-import snackbarSlice from './snackbarSlice';
 
 const persistConfig  = {
     key: "user",
@@ -17,7 +16,6 @@ const store = configureStore({
     reducer: {
         user: userReducer,
         basket: basketSlice,
-        snackbar: snackbarSlice,
     },
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware({
