@@ -47,16 +47,18 @@ function ManagerProductTable({ products, getProducts }) {
     const [open, setOpen] = useState(false);
     const [openRowId, setOpenRowId] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
+    const [selectedCategory, setSelectedCategory] = useState("all");
     const [currentPage, setCurrentPage] = useState(1);
     const [category, setCategory] = useState(null);
     const rowsPerPage = 5;
 
-    const filteredProducts = products.filter(
-        (product) =>
-            product.productName.toLowerCase().includes(searchTerm) ||
+    const filteredProducts = products.filter((product) => {
+        const matchesCategory = selectedCategory === "all" || product.categories.some(cat => cat.categoryId === selectedCategory);
+        const matchesSearch = product.productName.toLowerCase().includes(searchTerm) ||
             product.productDesc.toLowerCase().includes(searchTerm) ||
-            product.price.toString().includes(searchTerm)
-    );
+            product.price.toString().includes(searchTerm);
+        return matchesCategory && matchesSearch;
+    });
 
     const pageCount = Math.ceil(filteredProducts.length / rowsPerPage);
     const currentProducts = filteredProducts
@@ -80,6 +82,12 @@ function ManagerProductTable({ products, getProducts }) {
             setStatus('error');
         });
     }
+
+    const handleCategoryChange = (e, newValue) => {
+        setSelectedCategory(newValue);
+        setCurrentPage(1);
+    };
+
 
     useEffect(() => {
         getCategories();
@@ -118,7 +126,7 @@ function ManagerProductTable({ products, getProducts }) {
                         <Sheet sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                             <FormControl size="sm">
                                 <FormLabel>Kategori</FormLabel>
-                                <Select size="sm" placeholder="Kategori Seç">
+                                <Select size="sm" placeholder="Kategori Seç" onChange={handleCategoryChange}>
                                     <Option value="all">Tümü</Option>
                                     {category?.map((option) => (
                                         <Option key={option.categoryId} value={option.categoryId}>
@@ -158,7 +166,7 @@ function ManagerProductTable({ products, getProducts }) {
                 </FormControl>
                 <FormControl size="sm">
                     <FormLabel>Kategori</FormLabel>
-                    <Select size="sm" placeholder="Kategori Seç" defaultValue="all">
+                    <Select size="sm" placeholder="Kategori Seç" defaultValue="all" onChange={handleCategoryChange}>
                         <Option value="all">Tümü</Option>
                         {category?.map((option) => (
                             <Option key={option.categoryId} value={option.categoryId}>
@@ -417,7 +425,7 @@ function Row({ row, isOpen, onRowClick, getProducts, category }) {
                                                 defaultValue={row.categories.map((category) => category.categoryId)}
                                                 renderValue={(selected) => (
                                                     <Box sx={{ display: 'flex', gap: '0.25rem' }}>
-                                                        {selected.map((selectedOption,i) => (
+                                                        {selected.map((selectedOption, i) => (
                                                             <Chip key={i} variant="soft" color="primary">
                                                                 {selectedOption.label}
                                                             </Chip>

@@ -23,7 +23,6 @@ else
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 
-
 ReactDOM.createRoot(document.getElementById('root')).render(
   <BrowserRouter>
     <Provider store={store}>

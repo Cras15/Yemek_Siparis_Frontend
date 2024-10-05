@@ -25,6 +25,7 @@ import { PeopleRounded, RestaurantRounded } from '@mui/icons-material';
 import { Autocomplete, AutocompleteOption, CircularProgress, ListItemDecorator } from '@mui/joy';
 import { capitalize } from '@mui/material';
 import { useUI } from '../../utils/UIContext';
+import { setSelectedShop } from '../../redux/shopSlice';
 
 function Toggler({ defaultExpanded = false, renderToggle, children }) {
     const [open, setOpen] = React.useState(defaultExpanded)
@@ -50,10 +51,10 @@ function Toggler({ defaultExpanded = false, renderToggle, children }) {
 
 const ManagerSidebar = () => {
     const [shops, setShops] = React.useState([]);
-    const [selectedShop, setSelectedShop] = React.useState(null);
     const [shopStatus, setShopStatus] = React.useState('idle');
 
     const { user, token } = useSelector((state) => state.user);
+    const { selectedShop } = useSelector((state) => state.shop);
     const { showDoneSnackbar } = useUI();
 
     const dispatch = useDispatch();
@@ -75,7 +76,8 @@ const ManagerSidebar = () => {
                     }
                 });
                 setShops(response.data);
-                setSelectedShop(response.data[0]);
+                if (selectedShop === null)
+                    dispatch(setSelectedShop(response.data[0]));
                 setShopStatus('success');
             } catch (error) {
                 console.log(error);
@@ -83,7 +85,7 @@ const ManagerSidebar = () => {
             }
         };
         fetchData();
-    }, [token]);
+    }, []);
 
     return (
         <Sheet
@@ -149,15 +151,16 @@ const ManagerSidebar = () => {
                 placeholder="Restoran Seç"
                 slotProps={{
                     input: {
-                        autoComplete: 'new-password', 
+                        autoComplete: 'new-password',
                     },
                 }}
                 sx={{ zIndex: 10001 }}
                 options={shops}
                 value={selectedShop}
                 onChange={(_, newValue) => {
-                    setSelectedShop(newValue)
+                    dispatch(setSelectedShop(newValue))
                 }}
+                isOptionEqualToValue={(option, value) => option.shopId === value.shopId}
                 autoHighlight
                 disableClearable
                 getOptionLabel={(option) => option.shopName}
@@ -168,7 +171,7 @@ const ManagerSidebar = () => {
                     ) : null
                 }
                 renderOption={(props, option) => (
-                    <AutocompleteOption {...props}>
+                    <AutocompleteOption {...props} key={option.shopId}>
                         <ListItemDecorator>
                             <img
                                 loading="lazy"
@@ -208,7 +211,7 @@ const ManagerSidebar = () => {
                     }}
                 >
                     <MSidebarItems selected={true} title="Anasayfa" link="/manager" icon={<HomeRoundedIcon />} />
-                    <MSidebarItems title="Siparişler" link="/manager" badge={4} icon={<ShoppingCartRoundedIcon />} />
+                    <MSidebarItems title="Siparişler" link="/manager/siparisler" badge={4} icon={<ShoppingCartRoundedIcon />} />
                     <MSidebarItems title="Ürünler" link="/manager/urunler" icon={<RestaurantRounded />} />
                 </List>
 
@@ -226,7 +229,7 @@ const ManagerSidebar = () => {
                     <MSidebarItems title="Ayarlar" icon={<SettingsRoundedIcon />} />
                     <MSidebarItems title="Ana Sayfaya Dön" icon={<PeopleRounded />} link="/" />
                 </List>
-        
+
             </Box>
             <Divider />
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>

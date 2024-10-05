@@ -18,8 +18,8 @@ export const OrderStatus = {
 };
 
 export const OrderStatusColor = {
-    RECEIVED: "success",
-    GETTING_READY: "success",
+    RECEIVED: "neutral",
+    GETTING_READY: "primary",
     ON_THE_WAY: "warning",
     DELIVERED: "success",
     CANCELED: "danger"
