@@ -6,18 +6,21 @@ import { useUI } from "../utils/UIContext";
 
 
 
-export const addBasketItem = createAsyncThunk("basket/add", async (data, { dispatch, getState }) => {
+export const addBasketItem = createAsyncThunk("basket/add", async (data, {  getState }) => {
+    
     const token = selectUserToken(getState());
-    const { showSnackbar } = useUI();
+
+    console.log(data.productsId);
+   
     const res = await axios.post(`/basket/add/${data.productsId}`, {}, {
         headers: {
             Authorization: `Bearer ${token}`
         }
     }).then(function (response) {
-        showSnackbar({ children: response.data, color: response.status == 200 ? 'success' : 'danger' })
+        //showSnackbar({ children: response.data, color: response.status == 200 ? 'success' : 'danger' })
         return response;
     }).catch(function (error) {
-        showSnackbar({ children: error.message, color: 'danger' })
+        //showSnackbar({ children: error.message, color: 'danger' })
         return error.message;
     });
     return res;
