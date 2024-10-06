@@ -4,8 +4,10 @@ import { format, parseISO } from 'date-fns'
 import tr from 'date-fns/locale/tr'
 import { OrderStatus, OrderStatusColor } from './Utils'
 import { ArrowDownward, LocationOnOutlined, StarBorder, StarBorderRounded, StarRounded, StartRounded } from '@mui/icons-material'
-import styled from '@emotion/styled'
-import { Rating } from '@mui/material'
+import { Rating, styled } from '@mui/material'
+import axios from 'axios'
+import { useSelector } from 'react-redux'
+import { useUI } from '../utils/UIContext'
 
 
 const StyledRating = styled(Rating)({
@@ -17,14 +19,35 @@ const StyledRating = styled(Rating)({
     },
 });
 
-const OrderCard = ({ data }) => {
+const OrderCard = ({ data, getOrders }) => {
     const [ratingOpen, setRatingOpen] = React.useState(false);
-    const [ratingValue, setRatingValue] = React.useState(1);
+    const { token } = useSelector((state) => state.user);
+    const { showDoneSnackbar, showErrorSnackbar } = useUI();
 
     const convertDate = (date) => {
         const dates = parseISO(date); // Tarihi ISO formatından Date objesine çevirir
 
         return format(dates, "d MMMM EEE HH:mm", { locale: tr });
+    }
+
+    const handleReviewSubmit = async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        await axios.post(`/reviews/order/${data.orderId}`, {
+            serviceRating: formData.get('serviceRating'),
+            tasteRating: formData.get('tasteRating'),
+            deliveryRating: formData.get('deliveryRating'),
+            comment: formData.get('comment')
+        }, { headers: { Authorization: `Bearer ${token}` } }).then((res) => {
+            if (res.status == 200) {
+                showDoneSnackbar("Yorumunuz gönderildi.");
+                getOrders();
+            }
+            else
+                showErrorSnackbar(res.data);
+        }).catch((error) => {
+            showErrorSnackbar(error.response.data);
+        });
     }
     return (
         <>
@@ -80,7 +103,7 @@ const OrderCard = ({ data }) => {
                                     </Typography>
                                 ))}</div>
                             {data.status == "DELIVERED" /*&& data.rating == null*/ &&
-                                <Button variant="soft" startDecorator={<StarRounded />} size='sm' sx={{ ml: 'auto', borderRadius: 'xl', height: 25 }} onClick={() => setRatingOpen(true)}>Değerlendir</Button>}
+                                <Button variant="soft" disabled={data.review !== null} startDecorator={<StarRounded />} size='sm' sx={{ ml: 'auto', borderRadius: 'xl', height: 25 }} onClick={() => setRatingOpen(true)}>Değerlendir</Button>}
                         </Stack>
                     </CardContent>
                 </Stack>
@@ -159,57 +182,60 @@ const OrderCard = ({ data }) => {
                     }}
                 >
                     <ModalClose variant="plain" sx={{ m: 1 }} />
-                    <Typography
-                        id="modal-title"
-                        level="title-lg"
-                        textColor="inherit"
-                        fontWeight="lg"
-                        pr={4}
-                        mb={1}
-                    >
-                        {data.shopName} için değerlendirme yapın
-                    </Typography>
-                    <Typography id="modal-desc" textColor="text.tertiary" mt={3}>
-                        Servis:<br />
-                        <StyledRating
-                            name="customized-color"
-                            defaultValue={1}
-                            size='large'
-                            getLabelText={(value) => `${value} Heart${value !== 1 ? 's' : ''}`}
-                            icon={<StarRounded fontSize="inherit" />}
-                            emptyIcon={<StarBorderRounded fontSize="inherit" />}
+                    <form onSubmit={(event) => { handleReviewSubmit(event) }}>
+                        <Typography
+                            id="modal-title"
+                            level="title-lg"
+                            textColor="inherit"
+                            fontWeight="lg"
+                            pr={4}
+                            mb={1}
+                        >
+                            {data.shopName} için değerlendirme yapın
+                        </Typography>
+                        <Typography id="modal-desc" textColor="text.tertiary" mt={3}>
+                            Servis:<br />
+                            <StyledRating
+                                name="serviceRating"
+                                defaultValue={1}
+                                size='large'
+                                getLabelText={(value) => `${value} Heart${value !== 1 ? 's' : ''}`}
+                                icon={<StarRounded fontSize="inherit" />}
+                                emptyIcon={<StarBorderRounded fontSize="inherit" />}
+                            />
+                        </Typography>
+                        <Typography id="modal-desc" textColor="text.tertiary" mt={2}>
+                            Lezzet:<br />
+                            <StyledRating
+                                name="tasteRating"
+                                defaultValue={1}
+                                size='large'
+                                getLabelText={(value) => `${value} Heart${value !== 1 ? 's' : ''}`}
+                                icon={<StarRounded fontSize="inherit" />}
+                                emptyIcon={<StarBorderRounded fontSize="inherit" />}
+                            />
+                        </Typography>
+                        <Typography id="modal-desc" textColor="text.tertiary" mt={2}>
+                            Teslimat:<br />
+                            <StyledRating
+                                name="deliveryRating"
+                                mb={2}
+                                defaultValue={1}
+                                size='large'
+                                getLabelText={(value) => `${value} Heart${value !== 1 ? 's' : ''}`}
+                                icon={<StarRounded fontSize="inherit" />}
+                                emptyIcon={<StarBorderRounded fontSize="inherit" />}
+                            />
+                        </Typography>
+                        <Textarea
+                            sx={{ mt: 2 }}
+                            minRows={3}
+                            placeholder="Yorumunuz..."
+                            variant="outlined"
+                            name='comment'
                         />
-                    </Typography>
-                    <Typography id="modal-desc" textColor="text.tertiary" mt={2}>
-                        Lezzet:<br />
-                        <StyledRating
-                            name="customized-color"
-                            defaultValue={1}
-                            size='large'
-                            getLabelText={(value) => `${value} Heart${value !== 1 ? 's' : ''}`}
-                            icon={<StarRounded fontSize="inherit" />}
-                            emptyIcon={<StarBorderRounded fontSize="inherit" />}
-                        />
-                    </Typography>
-                    <Typography id="modal-desc" textColor="text.tertiary" mt={2}>
-                        Teslimat:<br />
-                        <StyledRating
-                            name="customized-color"
-                            mb={2}
-                            defaultValue={1}
-                            size='large'
-                            getLabelText={(value) => `${value} Heart${value !== 1 ? 's' : ''}`}
-                            icon={<StarRounded fontSize="inherit" />}
-                            emptyIcon={<StarBorderRounded fontSize="inherit" />}
-                        />
-                    </Typography>
-                    <Textarea
-                        sx={{mt:2}}
-                        minRows={3}
-                        placeholder="Yorumunuz..."
-                        variant="outlined"
-                    />
-                    <Button variant="solid" fullWidth color="primary" sx={{ mt: 2, ml: 'auto', borderRadius: 'xl', height: 25 }}>Gönder</Button>
+                        <Button variant="solid" type='submit' fullWidth color="primary" sx={{ mt: 2, ml: 'auto', borderRadius: 'xl', height: 25 }}>Gönder</Button>
+                    </form>
                 </Sheet>
             </Modal>
         </>

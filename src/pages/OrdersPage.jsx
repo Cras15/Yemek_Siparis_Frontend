@@ -31,7 +31,7 @@ const OrdersPage = () => {
                 <Divider />
                 {loading ? <CircularProgress /> :
                     orders?.length != 0 ? orders?.map((data) => (
-                        <OrderCard data={data} key={data.orderId} />
+                        <OrderCard data={data} key={data.orderId} getOrders={getOrders} />
                     )) :
                         <Typography level="body-md" aria-describedby="card-description">Daha önce sipariş vermemişsin gibi görünüyor.</Typography>}
             </Stack>

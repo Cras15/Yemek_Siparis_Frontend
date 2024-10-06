@@ -57,10 +57,6 @@ export const UIProvider = ({ children }) => {
         });
     };
 
-    useEffect(() => {
-        console.log(snackbarProps);
-    }, [snackbarProps]);
-
     return (
         <UIContext.Provider
             value={{
@@ -100,7 +96,7 @@ export const UIProvider = ({ children }) => {
                     {...snackbarProps}
                     endDecorator={
                         <Button
-                            onClick={() => dispatch(closeSnackbar())}
+                            onClick={hideSnackbar}
                             size="sm"
                             variant="solid"
                             color={snackbarProps.color}

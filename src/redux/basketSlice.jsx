@@ -2,25 +2,18 @@ import { createAsyncThunk, createSlice, current } from "@reduxjs/toolkit";
 import { selectUserToken } from "./userSlice";
 import { STATUS } from "../components/Status";
 import axios from "axios";
-import { useUI } from "../utils/UIContext";
 
 
 
 export const addBasketItem = createAsyncThunk("basket/add", async (data, {  getState }) => {
-    
     const token = selectUserToken(getState());
-
-    console.log(data.productsId);
-   
     const res = await axios.post(`/basket/add/${data.productsId}`, {}, {
         headers: {
             Authorization: `Bearer ${token}`
         }
     }).then(function (response) {
-        //showSnackbar({ children: response.data, color: response.status == 200 ? 'success' : 'danger' })
         return response;
     }).catch(function (error) {
-        //showSnackbar({ children: error.message, color: 'danger' })
         return error.message;
     });
     return res;
@@ -65,11 +58,9 @@ const basketSlice = createSlice({
             })
             .addCase(addBasketItem.fulfilled, (state, action) => {
                 state.status = STATUS.COMPLETED;
-                console.log(action.payload.data);
             })
             .addCase(addBasketItem.rejected, (state, action) => {
                 state.status = STATUS.ERROR;
-                console.log(action.error);
             });
         builder
             .addCase(removeBasketItem.pending, (state) => {
@@ -81,7 +72,6 @@ const basketSlice = createSlice({
             })
             .addCase(removeBasketItem.rejected, (state, action) => {
                 state.status = STATUS.ERROR;
-                console.log(action.error);
             });
         builder
             .addCase(getBasket.pending, (state) => {
@@ -90,11 +80,9 @@ const basketSlice = createSlice({
             .addCase(getBasket.fulfilled, (state, action) => {
                 state.status = STATUS.COMPLETED;
                 state.baskets = action.payload.data;
-                console.log(action.payload.data)
             })
             .addCase(getBasket.rejected, (state, action) => {
                 state.status = STATUS.ERROR;
-                console.log(action.error);
             });
     },
 });

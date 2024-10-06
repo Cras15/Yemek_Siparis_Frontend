@@ -1,11 +1,23 @@
 import React from 'react'
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { AspectRatio, Box, Button, Card, CardContent, CardOverflow, Chip, Divider, Grid, IconButton, Link, Sheet, Skeleton, Stack, Typography } from '@mui/joy';
+import { AspectRatio, Box, Button, Card, CardContent, CardOverflow, Chip, DialogTitle, Divider, Grid, IconButton, Link, List, ListItem, Modal, ModalClose, ModalDialog, Sheet, Skeleton, Stack, Typography } from '@mui/joy';
 import { FavoriteRounded, FmdGoodRounded, InfoOutlined, KingBedRounded, MopedOutlined, ShoppingCartOutlined, Star, StarRounded, WifiRounded, WorkspacePremiumRounded } from '@mui/icons-material';
 import ProductsCard from '../components/ProductsCard';
+import { capitalizeFirstLetter, timeAgo } from '../components/Utils';
+import { Rating, styled } from '@mui/material';
+
+const StyledRating = styled(Rating)({
+  '& .MuiRating-iconFilled': {
+    color: '#4393E4',
+  },
+  '& .MuiRating-iconHover': {
+    color: '#06B6BCB',
+  },
+});
 
 const ShopsPage = () => {
+  const [commentModal, setCommentModal] = React.useState(false);
   const [shop, setShop] = React.useState([]);
   const [status, setStatus] = React.useState([]);
   const { id } = useParams();
@@ -36,11 +48,7 @@ const ShopsPage = () => {
           m: 'auto',
           mt: 4,
           background: 'transparent',
-          flexDirection: { xs: 'column', sm: 'row' },
-          // '&:hover': {
-          //   boxShadow: 'lg',
-          //   borderColor: 'var(--joy-palette-neutral-outlinedDisabledBorder)',
-          // },
+          flexDirection: { xs: 'column', sm: 'row' }
         }}
       >
         <CardOverflow
@@ -137,13 +145,13 @@ const ShopsPage = () => {
             <StarRounded sx={{ mr: -0.5 }} color='primary' />
             <Typography sx={{ mr: -0.5 }}>{shop.shopRating?.toFixed(1)}</Typography>
             <Typography level='body-xs'>(100+)</Typography>
-            <Link fontSize={13} underline='none' variant='plain' p={1} borderRadius={10}>Yorumları Gör</Link>
+            <Button fontSize={13} onClick={() => setCommentModal(true)} variant='plain' p={1} borderRadius={10}>Yorumları Gör</Button>
           </Box>
         </CardContent>
       </Card>
       <Divider sx={{ mt: 2 }} />
       {/*<div className='mx-8 mt-4 md:m-16 bg-white'>*/}
-      <Grid container spacing={5} sx={{ width:'93%', m:'auto' }}>
+      <Grid container spacing={5} sx={{ width: '93%', m: 'auto' }}>
         {status !== "pending" ?
           shop != "" && shop.products.length > 0 ? (
             shop.products.map((res) => (
@@ -184,7 +192,67 @@ const ShopsPage = () => {
             </CardContent>
           </Card>}
       </Grid>
-      {/*</div>*/}
+
+      <Modal
+        aria-labelledby="modal-title"
+        aria-describedby="modal-desc"
+        open={commentModal}
+        onClose={() => setCommentModal(false)}
+        sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+      >
+        <ModalDialog
+          layout="center"
+          sx={{
+            width: {
+              xs: '100%', // Ekran genişliği xs (ekran genişliği küçük) için %90 genişlik
+              sm: '80%', // sm (küçük) için %80 genişlik
+              md: 500,    // md (orta) ve üzeri için 500px genişlik
+            },
+            maxHeight: '80vh', // Yüksekliği ekranın %80'i ile sınırla
+            overflow: 'auto',  // İçerik taşarsa kaydırma ekle
+          }}
+        >
+          <ModalClose />
+          <DialogTitle id="modal-title">Değerlendirmeler</DialogTitle>
+          <Typography id="modal-desc" level="body-sm" mb={2}>
+            {shop?.shopName}
+          </Typography>
+          <List
+            sx={[
+              {
+                mx: 'calc(-1 * var(--ModalDialog-padding))',
+                px: 'var(--ModalDialog-padding)',
+              },
+              { overflow: 'auto' },
+            ]}
+          >
+            <ListItem>
+              <Card sx={{width:"100%"}}>
+                <CardContent>
+                  <Typography level="title-sm">Servis: &nbsp;&nbsp;&nbsp;&nbsp;<StyledRating sx={{ top: 4 }} value="3.2" size='small' readOnly /> <Typography fontWeight="bold" color='primary'>3.2</Typography></Typography>
+                  <Typography level="title-sm">Lezzet: &nbsp;&nbsp;&nbsp;<StyledRating sx={{ top: 4 }} value="4" size='small' readOnly /> <Typography fontWeight="bold" color='primary'>4.0</Typography></Typography>
+                  <Typography level="title-sm">Teslimat: <StyledRating sx={{ top: 4 }} value="3.7" size='small' readOnly /> <Typography fontWeight="bold" color='primary'>3.7</Typography></Typography>
+                </CardContent>
+              </Card>
+            </ListItem>
+            {shop?.orders?.map((data, index) => (
+              data?.review ? (
+                <ListItem key={index}>
+                  <Card variant="soft" sx={{ width: "100%", mx: 0.5 }}>
+                    <CardContent>
+                      <Typography level="title-lg">{capitalizeFirstLetter(data.review.reviewer)}</Typography>
+                      <Typography level='body-sm' sx={{ color: 'text.tertiary' }}> {timeAgo(data.review.reviewDate)} önce</Typography>
+                      <Typography level='body-md' sx={{ width: "100%", mb: 2 }}>Servis: <Typography color='primary'>{data.review.serviceRating}</Typography> Lezzet: <Typography color='primary'>{data.review.tasteRating}</Typography> Teslimat: <Typography color='primary'>{data.review.deliveryRating}</Typography></Typography>
+
+                      <Typography>{data.review.comment}</Typography>
+                    </CardContent>
+                  </Card>
+                </ListItem>
+              ) : <></>
+            ))}
+          </List>
+        </ModalDialog>
+      </Modal>
     </>
   )
 }

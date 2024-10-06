@@ -5,8 +5,12 @@ export const etcString = (str, maxChar) => {
 }
 
 export const capitalizeFirstLetter = (string) => {
-    return string.charAt(0).toUpperCase() + string.slice(1);
+  return string
+      .split(' ') // Boşluklardan böl
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // Her kelimenin ilk harfini büyük yap
+      .join(' '); // Tekrar birleştir
 }
+
 
 
 export const OrderStatus = {

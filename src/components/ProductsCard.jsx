@@ -9,13 +9,18 @@ import { useUI } from '../utils/UIContext';
 const ProductsCard = ({ data }) => {
   const status = useSelector((state) => state.basket.status);
   const token = useSelector((state) => state.user.token);
-  const { showErrorSnackbar } = useUI();
+  const { showSnackbar, showErrorSnackbar } = useUI();
   const dispatch = useDispatch();
 
   const addBasket = async () => {
     if (token === "") showErrorSnackbar("Sepete ürün eklemek için giriş yapınız!");
-    else await dispatch(addBasketItem(data)).then(() =>
-      dispatch(getBasket()));
+    else await dispatch(addBasketItem(data)).then((response) => {
+      showSnackbar({ children: response.payload.data, color: response.payload.status == 200 ? 'success' : 'danger' })
+      dispatch(getBasket())
+    }).catch((error) => {
+      showErrorSnackbar(error.message);
+    }
+    );
   };
 
   return (
