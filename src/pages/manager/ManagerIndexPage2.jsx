@@ -18,6 +18,7 @@ import {
     CircularProgress,
     ToggleButtonGroup,
     Grid,
+    Link,
 } from '@mui/joy'
 import { ArrowForward, WarningRounded } from '@mui/icons-material'
 import DOrdersListItems from '../../components/DOrdersListItems'
@@ -127,7 +128,7 @@ const ManagerIndexPage2 = () => {
             <Grid container spacing={2}>
                 <Grid xs={12} md={6} lg={4}>
                     <DashboardItems
-                        title='Marketlerim'
+                        title='Mağazalarım'
                         value={90}
                         icon={<ShopIcon />}
                         child={`${shopStats.shopCount} Tane`}
@@ -151,6 +152,7 @@ const ManagerIndexPage2 = () => {
                         icon={<OrderIcon />}
                         child={`${shopStats.totalOrderCount} Tane`}
                         color='warning'
+                        link='/manager/siparisler'
                     />
                 </Grid>
             </Grid>
@@ -171,14 +173,16 @@ const ManagerIndexPage2 = () => {
                                 <DOrdersListItems key={i} order={data} onClick={() => setClickedOrder(data)} />
                             ))}
                             <Divider sx={{ my: 2 }} />
-                            <Button
+                            <Link
                                 variant='plain'
+                                underline='none'
                                 size='md'
                                 sx={{ alignSelf: 'flex-start', borderRadius: 'xl', p: 1.3, mr: -1, my: -1 }}
                                 endDecorator={<ArrowForward />}
+                                href='/manager/siparisler'
                             >
                                 Tüm siparişleri gör
-                            </Button>
+                            </Link>
                         </List>
                     </Box>
                 </Grid>

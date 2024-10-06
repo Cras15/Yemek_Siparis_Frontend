@@ -3,8 +3,8 @@ import React from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import PersonIcon from '@mui/icons-material/Person';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import { Typography, Dropdown, Button,  IconButton, ListDivider, ListItemDecorator, Menu, MenuButton, MenuItem, Divider } from '@mui/joy';
-import { Home, LogoutOutlined, PersonOutline, SettingsOutlined, ShoppingBasketOutlined, SupervisorAccountOutlined } from '@mui/icons-material';
+import { Typography, Dropdown, Button, IconButton, ListDivider, ListItemDecorator, Menu, MenuButton, MenuItem, Divider } from '@mui/joy';
+import { AdminPanelSettingsOutlined, Home, LogoutOutlined, PersonOutline, SettingsOutlined, ShoppingBasketOutlined, SupervisorAccountOutlined } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { userLogout } from '../redux/userSlice';
 import BasketDropdown from './BasketDropdown';
@@ -89,7 +89,12 @@ const Navbar = () => {
                       "--List-gap": "1px",
                       "--List-nestedInsetStart": "var(--ListItemDecorator-size)"
                     }} placement="bottom-end">
-                      {user.role == "MANAGER" &&
+                      {user.role == "ADMIN" &&
+                        <MenuItem onClick={() => navigate('/admin')} color='primary'>
+                          <ListItemDecorator><AdminPanelSettingsOutlined /></ListItemDecorator> Admin Paneli
+                        </MenuItem>
+                      }
+                      {(user.role == "MANAGER" || user.role == "ADMIN") &&
                         <>
                           <MenuItem onClick={() => navigate('/manager')} color='primary'>
                             <ListItemDecorator><SupervisorAccountOutlined /></ListItemDecorator> Yetkili Paneli
@@ -150,7 +155,7 @@ const Navbar = () => {
                 </Collapse>*/}
         </div >
       </nav >
-      
+
       <Outlet />
     </>
   )

@@ -19,7 +19,7 @@ import { closeSidebar } from '../../components/Utils';
 import { useDispatch, useSelector } from 'react-redux';
 import MSidebarItems from '../../components/MSidebarItems';
 import axios from 'axios';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import { userLogout } from '../../redux/userSlice';
 import { PeopleRounded, RestaurantRounded } from '@mui/icons-material';
 import { Autocomplete, AutocompleteOption, CircularProgress, ListItemDecorator } from '@mui/joy';
@@ -57,8 +57,11 @@ const ManagerSidebar = () => {
     const { selectedShop } = useSelector((state) => state.shop);
     const { showDoneSnackbar } = useUI();
 
+    const location = useLocation();
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    
 
     const logout = () => {
         dispatch(userLogout());
@@ -210,9 +213,9 @@ const ManagerSidebar = () => {
                         '--ListItem-radius': (theme) => theme.vars.radius.sm,
                     }}
                 >
-                    <MSidebarItems selected={true} title="Anasayfa" link="/manager" icon={<HomeRoundedIcon />} />
-                    <MSidebarItems title="Siparişler" link="/manager/siparisler" badge={4} icon={<ShoppingCartRoundedIcon />} />
-                    <MSidebarItems title="Ürünler" link="/manager/urunler" icon={<RestaurantRounded />} />
+                    <MSidebarItems selected={location.pathname === "/manager"}  title="Anasayfa" link="/manager" icon={<HomeRoundedIcon />} />
+                    <MSidebarItems selected={location.pathname === "/manager/siparisler"}  title="Siparişler" link="/manager/siparisler" badge={4} icon={<ShoppingCartRoundedIcon />} />
+                    <MSidebarItems selected={location.pathname === "/manager/urunler"} title="Ürünler" link="/manager/urunler" icon={<RestaurantRounded />} />
                 </List>
 
                 <List

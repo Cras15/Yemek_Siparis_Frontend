@@ -6,6 +6,7 @@ import { Box, Breadcrumbs,  CssVarsProvider, Link, Typography } from '@mui/joy'
 import { CssBaseline, capitalize } from '@mui/material'
 import { ChevronRightRounded,  HomeRounded } from '@mui/icons-material'
 import { useSelector } from 'react-redux'
+import { currentTitle } from '../utils/ManagerPath'
 
 const ManagerLayout = () => {
     const location = useLocation();
@@ -81,7 +82,7 @@ const ManagerLayout = () => {
                         }}
                     >
                         <Typography level="h2" component="h1">
-                            Anasayfa
+                            {currentTitle(location.pathname)}
                         </Typography>
                         {/* <Button
                             color="primary"

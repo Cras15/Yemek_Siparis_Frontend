@@ -50,24 +50,26 @@ function getComparator(order, orderBy) {
 
 function ManagerOrdersTable({ orders, getOrders }) {
     const { showErrorSnackbar } = useUI();
-    const [order, setOrder] = useState("asc");
-    const [orderBy, setOrderBy] = useState("shopName");
+    const [order, setOrder] = useState("desc");
+    const [orderBy, setOrderBy] = useState("orderDate");
     const [open, setOpen] = useState(false);
     const [openRowId, setOpenRowId] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
+    const [selectedStatus, setSelectedStatus] = useState("all");
     const [currentPage, setCurrentPage] = useState(1);
     const rowsPerPage = 5;
 
-    const filteredProducts = orders?.filter(
-        (order) =>
-            order.shopName?.toLowerCase().includes(searchTerm) ||
-            order.address?.toLowerCase().includes(searchTerm) ||
-            order.finalPrice?.toString().includes(searchTerm) ||
-            order.orderDate?.toLowerCase().includes(searchTerm)
-    );
+    const filteredOrders = orders?.filter((order) => {
+        const matchesCategory = selectedStatus === "all" || order.status === selectedStatus;
+        const matchesSearch = order.shopName?.toLowerCase().includes(searchTerm) ||
+        order.address?.toLowerCase().includes(searchTerm) ||
+        order.finalPrice?.toString().includes(searchTerm) ||
+        order.orderDate?.toLowerCase().includes(searchTerm);
+        return matchesCategory && matchesSearch;
+    });
 
-    const pageCount = Math.ceil(filteredProducts.length / rowsPerPage);
-    const currentProducts = filteredProducts
+    const pageCount = Math.ceil(filteredOrders.length / rowsPerPage);
+    const currentProducts = filteredOrders
         .sort(getComparator(order, orderBy))
         .slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
 
@@ -79,8 +81,13 @@ function ManagerOrdersTable({ orders, getOrders }) {
     const handleRowClick = (rowId) =>
         setOpenRowId(openRowId === rowId ? null : rowId);
 
+    const handleChangeOrderStatus = (e, newValue) => {
+        setSelectedStatus(newValue);
+        setCurrentPage(1);
+    };
+
     return (
-        <>
+        <React.Fragment>
             <Sheet
                 sx={{
                     display: { xs: "flex", sm: "none" },
@@ -133,7 +140,7 @@ function ManagerOrdersTable({ orders, getOrders }) {
                 }}
             >
                 <FormControl sx={{ flex: 1 }} size="sm">
-                    <FormLabel>Ürünlerde ara</FormLabel>
+                    <FormLabel>Siparişlerde ara</FormLabel>
                     <Input
                         size="sm"
                         placeholder="Ara"
@@ -141,6 +148,17 @@ function ManagerOrdersTable({ orders, getOrders }) {
                         value={searchTerm}
                         onChange={handleSearch}
                     />
+                </FormControl>
+                <FormControl size="sm">
+                    <FormLabel>Kategori</FormLabel>
+                    <Select size="sm" placeholder="Kategori Seç" defaultValue="all" onChange={handleChangeOrderStatus}>
+                        <Option value="all">Tümü</Option>
+                        <Option value="RECEIVED">Sipariş Alındı</Option>
+                        <Option value="GETTING_READY">Sipariş Hazırlanıyor</Option>
+                        <Option value="ON_THE_WAY">Sipariş Yolda</Option>
+                        <Option value="DELIVERED">Teslim Edildi</Option>
+                        <Option value="CANCELED">İptal Edildi</Option>
+                    </Select>
                 </FormControl>
             </Box>
             <Sheet
@@ -239,7 +257,7 @@ function ManagerOrdersTable({ orders, getOrders }) {
                     Sonraki Sayfa
                 </Button>
             </Box>
-        </>
+        </React.Fragment>
     );
 }
 
