@@ -62,9 +62,9 @@ function ManagerOrdersTable({ orders, getOrders }) {
     const filteredOrders = orders?.filter((order) => {
         const matchesCategory = selectedStatus === "all" || order.status === selectedStatus;
         const matchesSearch = order.shopName?.toLowerCase().includes(searchTerm) ||
-        order.address?.toLowerCase().includes(searchTerm) ||
-        order.finalPrice?.toString().includes(searchTerm) ||
-        order.orderDate?.toLowerCase().includes(searchTerm);
+            order.address?.toLowerCase().includes(searchTerm) ||
+            order.finalPrice?.toString().includes(searchTerm) ||
+            order.orderDate?.toLowerCase().includes(searchTerm);
         return matchesCategory && matchesSearch;
     });
 
@@ -526,10 +526,11 @@ function RowMenu({ order, getOrders }) {
                     <MoreHorizRoundedIcon />
                 </MenuButton>
                 <Menu size="sm" sx={{ minWidth: 140 }}>
-                    <MenuItem sx={{ borderRadius: "sm", mx: 1 }}>
+                    <MenuItem sx={{ borderRadius: "sm", mx: 1 }} component={Link} underline="none" href={`/manager/siparisler/${order.orderId}`}>
                         <ListItemDecorator>
                             <Visibility />
-                        </ListItemDecorator>Görüntüle</MenuItem>
+                        </ListItemDecorator>Görüntüle
+                    </MenuItem>
                     <MenuItem sx={{ borderRadius: "sm", mx: 1, mb: 0.5 }} color="success"
                         disabled={order.status === "CANCELED" || order.status === "DELIVERED"} onClick={handleDone}>
                         <ListItemDecorator>

@@ -1,4 +1,4 @@
-import { Route, Routes, Outlet, useLocation } from "react-router-dom"
+import { Route, Routes, Outlet, useLocation, useNavigate } from "react-router-dom"
 import HomePage from "./pages/HomePage"
 import Navbar from "./components/Navbar"
 import SignInPage from "./pages/SignInPage"
@@ -9,7 +9,6 @@ import BasketPage from "./pages/BasketPage"
 import PaymentPage from "./pages/PaymentPage"
 import LoginPage from "./pages/LoginPage"
 import { Button, CssBaseline, Snackbar, ThemeProvider } from "@mui/joy"
-import ManagerShopPage from "./pages/manager/ManagerShopPage"
 import ErrorPage404 from "./pages/ErrorPage404"
 import ManagerShopEditPage from "./pages/manager/ManagerShopEditPage"
 import ManagerOrdersPage from "./pages/manager/ManagerOrdersPage"
@@ -22,16 +21,21 @@ import ResetPassword from "./pages/ResetPassword"
 import ManagerIndexPage2 from "./pages/manager/ManagerIndexPage2"
 import ManagerLayout from "./components/ManagerLayout"
 import ManagerProductsPage from "./pages/manager/products/ManagerProductsPage"
-import ManagerProductViewPage from "./pages/manager/products/ManagerProductViewPage"
+import ManagerOrderViewPage from "./pages/manager/ManagerOrderViewPage"
+import ManagerProductEditPage from "./pages/manager/products/ManagerProductEditPage"
+import UserProfile from "./pages/UserProfile"
 
 function App() {
   const { expireDate, user, token } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const location = useLocation();
+  const navigate = useNavigate();
 
   React.useEffect(() => {
-    if ((user != "" || token != "") && new Date().getTime() > expireDate)
+    if ((user != "" || token != "") && new Date().getTime() > expireDate) {
       dispatch(userLogout());
+      navigate("/");
+    }
   }, []);
   return (
     <>
@@ -42,6 +46,7 @@ function App() {
           <Route index element={<HomePage />} />
           <Route path="/kayit" element={<SignInPage />} />
           <Route path="/giris" element={<LoginPage />} />
+          <Route path="/profil" element={<UserProfile />} />
           <Route path="/sifremi-unuttum" element={<ForgotPassword />} />
           <Route path="/sifre-sifirla/:token" element={<ResetPassword />} />
           <Route path="/shop/:id" element={<ShopsPage />} />
@@ -50,11 +55,11 @@ function App() {
           <Route path="/siparislerim" element={<OrdersPage />} />
           <Route path="/manager" element={<ManagerLayout />} >
             <Route index element={<ManagerIndexPage2 />} />
-            <Route path='magazalarim' element={<ManagerShopPage />} />
             <Route path='magaza/:id' element={<ManagerShopEditPage />} />
             <Route path="siparisler" element={<ManagerOrdersPage />} />
+            <Route path="siparisler/:id" element={<ManagerOrderViewPage />} />
             <Route path="urunler" element={<ManagerProductsPage />} />
-            <Route path="urunler/:id" element={<ManagerProductViewPage />} />
+            <Route path="urunler/edit/:id" element={<ManagerProductEditPage />} />
           </Route>
         </Route>
         <Route path='*' element={<ErrorPage404 />} />

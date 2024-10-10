@@ -146,7 +146,7 @@ const ManagerSidebar = () => {
                 <IconButton variant="soft" color="primary" size="sm">
                     <BrightnessAutoRoundedIcon />
                 </IconButton>
-                <Typography level="title-lg">Ayağım Gelsin</Typography>
+                <Typography level="title-lg">Ayağıma Gelsin</Typography>
                 {/* <ColorSchemeToggle sx={{ ml: 'auto' }} /> */}
             </Box>
             <Autocomplete
@@ -240,7 +240,7 @@ const ManagerSidebar = () => {
                     variant="outlined"
                     size="sm"
                 >
-                    {user.firstname.charAt(0).toUpperCase() + user.lastname.charAt(0).toUpperCase()}
+                    {user?.firstname.charAt(0).toUpperCase() + user.lastname.charAt(0).toUpperCase()}
                 </Avatar>
                 <Box sx={{ minWidth: 0, flex: 1 }}>
                     <Typography level="title-sm">{`${capitalize(user.firstname)} ${user.lastname.charAt(0).toUpperCase()}.`}</Typography>

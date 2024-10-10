@@ -4,6 +4,7 @@ import {
     Option, Table, Sheet, Typography, Menu, MenuButton, MenuItem, Dropdown, Stack,
     Grid,
     Textarea,
+    ListItemDecorator,
 } from "@mui/joy";
 import {
     KeyboardArrowDown,
@@ -17,6 +18,9 @@ import {
     PlaylistAddCheckCircleOutlined,
     InfoOutlined,
     DoneOutline,
+    Visibility,
+    Edit,
+    DeleteForever,
 } from "@mui/icons-material";
 import { iconButtonClasses } from "@mui/joy/IconButton";
 import PropTypes from "prop-types";
@@ -214,7 +218,7 @@ function ManagerProductTable({ products, getProducts }) {
                                     />
                                 </th>
                             ))}
-                            <th style={{ width: 140 }} />
+                            <th style={{ width: 50 }} />
                         </tr>
                     </thead>
                     <tbody>
@@ -503,8 +507,10 @@ function RowMenu({ getProducts, productsId }) {
                     <MoreHorizRoundedIcon />
                 </MenuButton>
                 <Menu size="sm" sx={{ minWidth: 140 }}>
-                    <MenuItem sx={{ borderRadius: "sm", mx: 1 }}>Görüntüle</MenuItem>
-                    <MenuItem sx={{ borderRadius: "sm", mx: 1, mb: 0.5 }}>
+                    <MenuItem sx={{ borderRadius: "sm", mx: 1, mb: 0.5 }} component={Link} underline="none" href={`/manager/urunler/edit/${productsId}`}>
+                        <ListItemDecorator>
+                            <Edit />
+                        </ListItemDecorator>
                         Düzenle
                     </MenuItem>
                     <Divider />
@@ -513,6 +519,9 @@ function RowMenu({ getProducts, productsId }) {
                         color="danger"
                         onClick={() => handleDelete(productsId)}
                     >
+                        <ListItemDecorator>
+                            <DeleteForever />
+                        </ListItemDecorator>
                         Sil
                     </MenuItem>
                 </Menu>

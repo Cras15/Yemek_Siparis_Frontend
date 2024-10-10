@@ -81,16 +81,9 @@ const ManagerLayout = () => {
                             justifyContent: 'space-between',
                         }}
                     >
-                        <Typography level="h2" component="h1">
+                        {/*<Typography level="h4" component="h1">
                             {currentTitle(location.pathname)}
-                        </Typography>
-                        {/* <Button
-                            color="primary"
-                            startDecorator={<DownloadRounded />}
-                            size="sm"
-                        >
-                            Download PDF
-                        </Button> */}
+                        </Typography>*/}
                     </Box>
                     <Outlet />
                 </Box>

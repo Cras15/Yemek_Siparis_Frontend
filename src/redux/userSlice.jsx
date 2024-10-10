@@ -51,7 +51,9 @@ const userSlice = createSlice({
             state.token = '';
             state.expireDate = '';
         },
-
+        setUserData(state, action) {
+            state.user = action.payload;
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -100,5 +102,5 @@ const userSlice = createSlice({
 
 export const selectUserToken = (state) => state.user.token;
 
-export const { userLogout } = userSlice.actions
+export const { userLogout,setUserData } = userSlice.actions
 export default userSlice.reducer;

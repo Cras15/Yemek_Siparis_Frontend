@@ -6,6 +6,8 @@ import { FavoriteRounded, FmdGoodRounded, InfoOutlined, KingBedRounded, MopedOut
 import ProductsCard from '../components/ProductsCard';
 import { capitalizeFirstLetter, timeAgo } from '../components/Utils';
 import { Rating, styled } from '@mui/material';
+import { useSelector } from 'react-redux';
+import { useUI } from '../utils/UIContext';
 
 const StyledRating = styled(Rating)({
   '& .MuiRating-iconFilled': {
@@ -18,14 +20,16 @@ const StyledRating = styled(Rating)({
 
 const ShopsPage = () => {
   const [commentModal, setCommentModal] = React.useState(false);
+  const [isFavorite, setIsFavorite] = React.useState(false);
   const [shop, setShop] = React.useState([]);
   const [status, setStatus] = React.useState([]);
   const { id } = useParams();
+  const token = useSelector((state) => state.user.token);
+  const { showDoneSnackbar, showErrorSnackbar } = useUI();
 
   const getShopsById = async (shopId) => {
     await setStatus('pending');
     await axios.get(`/shop/getProducts?shopId=${shopId}`).then((res) => {
-      console.log(res);
       setShop(res.data);
       setStatus('success');
     }).catch((error) => {
@@ -33,8 +37,29 @@ const ShopsPage = () => {
     })
   }
 
+  const getShopFavorites = async (shopId) => {
+    if (token === "" || token === null) return;
+    await axios.get(`/shop/isFavorite?shopId=${shopId}`, { headers: { Authorization: `Bearer ${token}` } }).then((res) => {
+      setIsFavorite(res.data);
+    }).catch((error) => {
+      console.log(error);
+    });
+  }
+
+  const favoriteShop = async () => {
+    if (token === "" || token === null) return showErrorSnackbar("Önce giriş yapmalısın");
+    await axios.post(`/shop/toggleFavorite?shopId=${id}`, {}, { headers: { Authorization: `Bearer ${token}` } }).then((res) => {
+      setIsFavorite(res.data === "Mağaza favoriye eklendi" ? true : false);
+      showDoneSnackbar(res.data);
+    }).catch((error) => {
+      showErrorSnackbar(error.message);
+    });
+  }
+
   React.useEffect(() => {
     getShopsById(id);
+    getShopFavorites(id);
+
   }, []);
 
   return (
@@ -84,10 +109,10 @@ const ShopsPage = () => {
                 Ödüllü Restoran
               </Chip>
               <IconButton
-                variant="plain"
+                variant="soft"
                 size="sm"
-                // color={isLiked ? 'danger' : 'neutral'}
-                // onClick={() => setIsLiked((prev) => !prev)}
+                color={isFavorite ? 'danger' : 'neutral'}
+                onClick={favoriteShop}
                 sx={{
                   display: { xs: 'flex', sm: 'none' },
                   ml: 'auto',
@@ -116,8 +141,8 @@ const ShopsPage = () => {
             <IconButton
               variant="plain"
               size="sm"
-              // color={isLiked ? 'danger' : 'neutral'}
-              // onClick={() => setIsLiked((prev) => !prev)}
+              color={isFavorite ? 'danger' : 'neutral'}
+              onClick={favoriteShop}
               sx={{
                 display: { xs: 'none', sm: 'flex' },
                 borderRadius: '50%',
@@ -227,7 +252,7 @@ const ShopsPage = () => {
             ]}
           >
             <ListItem>
-              <Card sx={{width:"100%"}}>
+              <Card sx={{ width: "100%" }}>
                 <CardContent>
                   <Typography level="title-sm">Servis: &nbsp;&nbsp;&nbsp;&nbsp;<StyledRating sx={{ top: 4 }} value="3.2" size='small' readOnly /> <Typography fontWeight="bold" color='primary'>3.2</Typography></Typography>
                   <Typography level="title-sm">Lezzet: &nbsp;&nbsp;&nbsp;<StyledRating sx={{ top: 4 }} value="4" size='small' readOnly /> <Typography fontWeight="bold" color='primary'>4.0</Typography></Typography>
@@ -236,7 +261,7 @@ const ShopsPage = () => {
               </Card>
             </ListItem>
             {shop?.orders?.map((data, index) => (
-              data?.review ? (
+              data?.review && (
                 <ListItem key={index}>
                   <Card variant="soft" sx={{ width: "100%", mx: 0.5 }}>
                     <CardContent>
@@ -248,7 +273,7 @@ const ShopsPage = () => {
                     </CardContent>
                   </Card>
                 </ListItem>
-              ) : <></>
+              )
             ))}
           </List>
         </ModalDialog>
