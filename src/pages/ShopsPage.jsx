@@ -169,7 +169,7 @@ const ShopsPage = () => {
           <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, alignItems: 'center' }} >
             <StarRounded sx={{ mr: -0.5 }} color='primary' />
             <Typography sx={{ mr: -0.5 }}>{shop.shopRating?.toFixed(1)}</Typography>
-            <Typography level='body-xs'>(100+)</Typography>
+            <Typography level='body-xs'>({shop!= "" ? shop.reviewCount: '0'})</Typography>
             <Button fontSize={13} onClick={() => setCommentModal(true)} variant='plain' p={1} borderRadius={10}>Yorumları Gör</Button>
           </Box>
         </CardContent>

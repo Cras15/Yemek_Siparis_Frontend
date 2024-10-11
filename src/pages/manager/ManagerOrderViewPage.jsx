@@ -4,6 +4,7 @@ import React from 'react'
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useUI } from '../../utils/UIContext';
+import { PaymentTypes } from '../../components/Utils';
 
 const ManagerOrderViewPage = () => {
     const [order, setOrder] = React.useState(null);
@@ -180,16 +181,15 @@ const ManagerOrderViewPage = () => {
                         <Box sx={{ display: 'flex', boxShadow: 'lg', borderRadius: 10, flexDirection: 'column', gap: 0.5 }}>
                             <Typography level="title-md" fontWeight="bold" sx={{ px: 2, pt: 1 }}>Müşteri Bilgileri</Typography>
                             <Grid container spacing={1.3} alignItems="center" sx={{ width: "100%", my: 1 }}>
-                                <OrderListItem title="Ad Soyad" content="Mert Yener" />
-                                <OrderListItem title="Mail" content="asda@asd.asd" />
-                                <OrderListItem title="Telefon" content="0536 673 3976" />
+                                <OrderListItem title="Ad Soyad" content={order?.name + " " + order?.surname} />
+                                <OrderListItem title="Telefon" content={order?.phone}/>
                                 <OrderListItem title="Adres" content={order.address} />
                                 <OrderListItem title="Sipariş Notu" content="Mantar istemiyorum" />
                             </Grid>
                             <Divider />
                             <Typography level="title-md" fontWeight="bold" sx={{ px: 2, pt: 1 }}>Ödeme Bilgileri</Typography>
                             <Grid container spacing={1.3} alignItems="center" sx={{ width: "100%", my: 1 }}>
-                                <OrderListItem title="Ödeme" content="Online Ödeme" />
+                                <OrderListItem title="Ödeme" content={PaymentTypes[order?.paymentType]} />
                                 <OrderListItem title="Ara Toplam" content={`₺${order?.finalPrice.toFixed(2)}`} />
                                 <OrderListItem title="Yol Ücreti" content="₺0.00" />
                                 <OrderListItem title="İndirim" content={`₺${order?.discount.toFixed(2)}`} />

@@ -26,7 +26,7 @@ const ManagerOrdersPage = () => {
 
     React.useEffect(() => {
         getOrders();
-    }, []);
+    }, [selectedShop]);
 
     return (
         <>

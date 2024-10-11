@@ -7,7 +7,7 @@ import { IMaskInput } from 'react-imask';
 import { useDispatch, useSelector } from 'react-redux';
 import { getBasket, removeAllBasket } from '../redux/basketSlice';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useUI } from '../utils/UIContext';
 
 const TextMaskAdapter = React.forwardRef(function TextMaskAdapter(props, ref) {
@@ -33,20 +33,21 @@ TextMaskAdapter.propTypes = {
 
 const PaymentPage = () => {
     const { token } = useSelector((state) => state.user);
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const addressId = queryParams.get('addressId');
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { showDoneSnackbar, showErrorSnackbar } = useUI();
 
     const handlePurchase = () => {
-        axios.post("/orders/purchase", {}, { headers: { Authorization: `Bearer ${token}` } }).then((res) => {
+        axios.post(`/orders/purchase?addressId=${addressId}&paymentType=CREDIT_CARD`, {}, { headers: { Authorization: `Bearer ${token}` } }).then((res) => {
             showDoneSnackbar(res.data);
             dispatch(getBasket());
             navigate("/");
         }).catch((error) => {
             console.log(error);
         });
-
-        //dispatch(removeAllBasket());
     }
     return (
         <Container component="main">

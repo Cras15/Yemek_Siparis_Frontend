@@ -2,7 +2,6 @@ import React from 'react'
 
 import axios from 'axios';
 import ManagerProductTable from '../../../components/ManagerProductTable';
-import ManagerProductList from '../../../components/ManagerProductList';
 import { useSelector } from 'react-redux';
 
 const ManagerProductsPage = () => {
@@ -34,7 +33,6 @@ const ManagerProductsPage = () => {
       {status === 'pending' && <div>Loading...</div>}
       {status === 'success' && <>
         <ManagerProductTable products={products?.products} getProducts={getProducts} />
-        <ManagerProductList listItems={products?.products} />
       </>
       }
     </>

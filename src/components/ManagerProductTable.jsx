@@ -5,6 +5,12 @@ import {
     Grid,
     Textarea,
     ListItemDecorator,
+    useTheme,
+    List,
+    ListItem,
+    ListItemContent,
+    ListItemButton,
+    AspectRatio,
 } from "@mui/joy";
 import {
     KeyboardArrowDown,
@@ -27,6 +33,7 @@ import PropTypes from "prop-types";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { useUI } from "../utils/UIContext";
+import { useMediaQuery } from "@mui/material";
 
 function descendingComparator(a, b, orderBy) {
     const valA = a[orderBy];
@@ -55,9 +62,10 @@ function ManagerProductTable({ products, getProducts }) {
     const [currentPage, setCurrentPage] = useState(1);
     const [category, setCategory] = useState(null);
     const rowsPerPage = 5;
+    const isMobile = useMediaQuery('(max-width:600px)'); // Yeni eklendi
 
     const filteredProducts = products.filter((product) => {
-        const matchesCategory = selectedCategory === "all" || product.categories.some(cat => cat.categoryId === selectedCategory);
+        const matchesCategory = selectedCategory === "all" || product.categories.some(cat => cat.categoryId == selectedCategory);
         const matchesSearch = product.productName.toLowerCase().includes(searchTerm) ||
             product.productDesc.toLowerCase().includes(searchTerm) ||
             product.price.toString().includes(searchTerm);
@@ -80,10 +88,8 @@ function ManagerProductTable({ products, getProducts }) {
     const getCategories = async () => {
         await axios.get("/category").then((res) => {
             setCategory(res.data);
-            console.log(res.data);
         }).catch((error) => {
             showErrorSnackbar(error.message);
-            setStatus('error');
         });
     }
 
@@ -92,11 +98,10 @@ function ManagerProductTable({ products, getProducts }) {
         setCurrentPage(1);
     };
 
-
     useEffect(() => {
         getCategories();
-    }
-        , []);
+    }, []);
+
     return (
         <>
             <Sheet
@@ -111,6 +116,8 @@ function ManagerProductTable({ products, getProducts }) {
                     placeholder="Ara"
                     startDecorator={<SearchIcon />}
                     sx={{ flexGrow: 1 }}
+                    value={searchTerm}
+                    onChange={handleSearch}
                 />
                 <IconButton
                     size="sm"
@@ -180,67 +187,85 @@ function ManagerProductTable({ products, getProducts }) {
                     </Select>
                 </FormControl>
             </Box>
-            <Sheet
-                variant="outlined"
-                sx={{
-                    display: { xs: "none", sm: "initial" },
-                    width: "100%",
-                    borderRadius: "md",
-                    maxHeight: "55vh",
-                    overflow: "auto",
-                }}
-            >
-                <Table
-                    stickyHeader
-                    hoverRow
+            {isMobile ? (
+                // Mobil görünüm için kart tasarımı
+                <Box>
+                    {currentProducts.map((row) => (
+                        <ProductCard
+                            key={row.productsId}
+                            row={row}
+                            isOpen={row.productsId === openRowId}
+                            onRowClick={() => handleRowClick(row.productsId)}
+                            getProducts={getProducts}
+                            categoryList={category}
+                        />
+                    ))}
+                </Box>
+            ) : (
+                // Masaüstü görünümü için tablo
+                <Sheet
+                    variant="outlined"
                     sx={{
-                        "--TableCell-headBackground": "var(--joy-palette-background-level1)",
-                        "--Table-headerUnderlineThickness": "1px",
-                        "--TableRow-hoverBackground": "var(--joy-palette-background-level1)",
-                        "--TableCell-paddingY": "4px",
-                        "--TableCell-paddingX": "8px",
+                        display: { xs: "none", sm: "initial" },
+                        width: "100%",
+                        borderRadius: "md",
+                        maxHeight: "55vh",
+                        overflow: "auto",
                     }}
                 >
-                    <thead>
-                        <tr>
-                            <th style={{ width: 48, textAlign: "center" }} />
-                            {["Ürün Adı", "Açıklama", "Kategoriler", "Fiyat"].map((title, idx) => (
-                                <th key={idx} style={{ width: 140 }}>
-                                    <SortableTableHeader
-                                        title={title}
-                                        orderByValue={
-                                            ["productName", "productDesc", "", "price"][idx]
-                                        }
-                                        currentOrder={order}
-                                        currentOrderBy={orderBy}
-                                        setOrder={setOrder}
-                                        setOrderBy={setOrderBy}
-                                    />
-                                </th>
+                    <Table
+                        stickyHeader
+                        hoverRow
+                        sx={{
+                            "--TableCell-headBackground": "var(--joy-palette-background-level1)",
+                            "--Table-headerUnderlineThickness": "1px",
+                            "--TableRow-hoverBackground": "var(--joy-palette-background-level1)",
+                            "--TableCell-paddingY": "4px",
+                            "--TableCell-paddingX": "8px",
+                        }}
+                    >
+                        <thead>
+                            <tr>
+                                <th style={{ width: 48, textAlign: "center" }} />
+                                {["Ürün Adı", "Açıklama", "Kategoriler", "Fiyat"].map((title, idx) => (
+                                    <th key={idx} style={{ width: 140 }}>
+                                        <SortableTableHeader
+                                            title={title}
+                                            orderByValue={
+                                                ["productName", "productDesc", "", "price"][idx]
+                                            }
+                                            currentOrder={order}
+                                            currentOrderBy={orderBy}
+                                            setOrder={setOrder}
+                                            setOrderBy={setOrderBy}
+                                        />
+                                    </th>
+                                ))}
+                                <th style={{ width: 50 }} />
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {currentProducts.map((row) => (
+                                <Row
+                                    key={row.productsId}
+                                    row={row}
+                                    category={category}
+                                    getProducts={getProducts}
+                                    isOpen={row.productsId === openRowId}
+                                    onRowClick={() => handleRowClick(row.productsId)}
+                                />
                             ))}
-                            <th style={{ width: 50 }} />
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {currentProducts.map((row) => (
-                            <Row
-                                key={row.productsId}
-                                row={row}
-                                category={category}
-                                getProducts={getProducts}
-                                isOpen={row.productsId === openRowId}
-                                onRowClick={() => handleRowClick(row.productsId)}
-                            />
-                        ))}
-                    </tbody>
-                </Table>
-            </Sheet>
+                        </tbody>
+                    </Table>
+                </Sheet>
+            )}
             <Box
                 sx={{
                     pt: 2,
                     gap: 1,
                     [`& .${iconButtonClasses.root}`]: { borderRadius: "50%" },
-                    display: { xs: "none", md: "flex" },
+                    display: "flex",
+                    justifyContent: "center",
                 }}
             >
                 <Button
@@ -253,7 +278,6 @@ function ManagerProductTable({ products, getProducts }) {
                 >
                     Önceki Sayfa
                 </Button>
-                <Box sx={{ flex: 1 }} />
                 {[...Array(pageCount)].map((_, idx) => (
                     <IconButton
                         key={idx + 1}
@@ -265,7 +289,6 @@ function ManagerProductTable({ products, getProducts }) {
                         {idx + 1}
                     </IconButton>
                 ))}
-                <Box sx={{ flex: 1 }} />
                 <Button
                     size="sm"
                     variant="outlined"
@@ -331,7 +354,6 @@ function Row({ row, isOpen, onRowClick, getProducts, category }) {
     const EditProduct = async (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        console.log(data.get('categories'));
         await axios.post("/manager/products/updateProduct", {
             productsId: row.productsId,
             productName: data.get('productName'),
@@ -339,16 +361,15 @@ function Row({ row, isOpen, onRowClick, getProducts, category }) {
             imageUrl: data.get('imageUrl'),
             price: data.get('price'),
             stock: data.get('stock'),
-            categoryIds: JSON.parse(data.getAll('categories'))
+            categoryIds: data.getAll('categories').map(Number),
         }, { headers: { Authorization: `Bearer ${token}` } }).then((res) => {
             showDoneSnackbar(res.data);
+            getProducts();
         }).catch((error) => {
             showErrorSnackbar(error.message);
-            setStatus('error');
         });
-        await getProducts();
-
     }
+
     return (
         <>
             <tr>
@@ -372,7 +393,9 @@ function Row({ row, isOpen, onRowClick, getProducts, category }) {
                 <td>
                     <Typography level="body-xs">
                         {row.categories.map((category) => (
-                            <Chip key={category.categoryId} color={category.categoryColor}>{category.categoryName}</Chip>
+                            <Chip key={category.categoryId} color="primary" sx={{ mr: 0.5 }}>
+                                {category.categoryName}
+                            </Chip>
                         ))}
                     </Typography>
                 </td>
@@ -471,6 +494,148 @@ function Row({ row, isOpen, onRowClick, getProducts, category }) {
     );
 }
 
+function ProductCard({ row, getProducts, categoryList }) {
+    // Mobil görünüm için kart bileşeni
+    const [isOpen, setIsOpen] = useState(false);
+    const { token } = useSelector((state) => state.user);
+    const { showDoneSnackbar, showErrorSnackbar } = useUI();
+
+    const handleRowClick = () => {
+        setIsOpen(!isOpen);
+    };
+
+    const EditProduct = async (event) => {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        await axios.post("/manager/products/updateProduct", {
+            productsId: row.productsId,
+            productName: data.get('productName'),
+            productDesc: data.get('productDesc'),
+            imageUrl: data.get('imageUrl'),
+            price: data.get('price'),
+            stock: data.get('stock'),
+            categoryIds: data.getAll('categories').map(Number),
+        }, { headers: { Authorization: `Bearer ${token}` } }).then((res) => {
+            showDoneSnackbar(res.data);
+            getProducts();
+        }).catch((error) => {
+            showErrorSnackbar(error.message);
+        });
+    }
+
+    return (
+        <Sheet
+            variant="outlined"
+            sx={{
+                mb: 2,
+                borderRadius: "md",
+                overflow: "hidden",
+            }}
+        >
+            <Box sx={{ p: 2 }}>
+                <Typography level="body-xs">Ürün Adı: {row.productName}</Typography>
+                <Typography level="body-sm">{row.productDesc}</Typography>
+                <Typography level="body-sm" sx={{ fontWeight: "bold", mt: 1 }}>
+                    Fiyat: ₺{row.price.toFixed(2)}
+                </Typography>
+                <Box sx={{ mt: 1 }}>
+                    {row.categories.map((category) => (
+                        <Chip key={category.categoryId} color="primary" sx={{ mr: 0.5 }}>
+                            {category.categoryName}
+                        </Chip>
+                    ))}
+                </Box>
+                <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
+                    <IconButton
+                        aria-label="expand row"
+                        variant="plain"
+                        color="neutral"
+                        size="sm"
+                        onClick={handleRowClick}
+                    >
+                        {isOpen ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+                    </IconButton>
+                    <RowMenu getProducts={getProducts} productsId={row.productsId} />
+                </Box>
+            </Box>
+            {isOpen && (
+                <Box sx={{ p: 2 }}>
+                    <form onSubmit={(e) => EditProduct(e)}>
+                        <Grid container spacing={2}>
+                            <Grid xs={12}>
+                                <FormControl>
+                                    <FormLabel>Ürün Adı</FormLabel>
+                                    <Input placeholder="Ürün Adı" defaultValue={row.productName} name="productName" />
+                                </FormControl>
+                            </Grid>
+                            <Grid xs={12}>
+                                <FormControl>
+                                    <FormLabel>Fiyat</FormLabel>
+                                    <Input type="number" placeholder="Fiyat" defaultValue={row.price} name="price" />
+                                </FormControl>
+                            </Grid>
+                            <Grid xs={12}>
+                                <FormControl>
+                                    <FormLabel>Stok</FormLabel>
+                                    <Input type="number" placeholder="Stok" defaultValue={row.stock} name="stock" />
+                                </FormControl>
+                            </Grid>
+                            <Grid xs={12}>
+                                <FormControl>
+                                    <FormLabel>Resim URL</FormLabel>
+                                    <Input placeholder="URL" defaultValue={row.imageUrl} name="imageUrl" />
+                                </FormControl>
+                            </Grid>
+                            <Grid xs={12}>
+                                <FormControl>
+                                    <FormLabel>Kategoriler</FormLabel>
+                                    <Select
+                                        multiple
+                                        name="categories"
+                                        placeholder="Kategoriler"
+                                        defaultValue={row.categories.map((category) => category.categoryId)}
+                                        renderValue={(selected) => (
+                                            <Box sx={{ display: 'flex', gap: '0.25rem' }}>
+                                                {selected.map((selectedOption, i) => (
+                                                    <Chip key={i} variant="soft" color="primary">
+                                                        {selectedOption.label}
+                                                    </Chip>
+                                                ))}
+                                            </Box>
+                                        )}
+                                        sx={{ minWidth: '15rem' }}
+                                        slotProps={{
+                                            listbox: {
+                                                sx: {
+                                                    width: '100%',
+                                                },
+                                            },
+                                        }}
+                                    >
+                                        {categoryList?.map((option) => (
+                                            <Option key={option.categoryId} value={option.categoryId}>
+                                                {option?.categoryName}
+                                            </Option>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                            <Grid xs={12}>
+                                <FormControl>
+                                    <FormLabel>Ürün Açıklaması</FormLabel>
+                                    <Textarea minRows={2} variant="outlined" defaultValue={row.productDesc} name="productDesc" />
+                                </FormControl>
+                            </Grid>
+                        </Grid>
+                        <Divider sx={{ my: 1 }} />
+                        <Button color="primary" type="submit">Düzenle</Button>
+                    </form>
+                </Box>
+            )}
+        </Sheet>
+    );
+}
+
 function RowMenu({ getProducts, productsId }) {
     const { token } = useSelector((state) => state.user);
     const { openModal, showDoneSnackbar, showErrorSnackbar } = useUI();
@@ -478,11 +643,10 @@ function RowMenu({ getProducts, productsId }) {
     const DeleteProduct = async () => {
         await axios.post(`/manager/products/deleteProduct?productId=${productsId}`, {}, { headers: { Authorization: `Bearer ${token}` } }).then((res) => {
             showDoneSnackbar(res.data);
+            getProducts();
         }).catch((error) => {
             showErrorSnackbar(error.message);
-            setStatus('error');
         });
-        await getProducts();
     }
 
     const handleDelete = (productsId) => {
@@ -532,6 +696,7 @@ function RowMenu({ getProducts, productsId }) {
 
 ManagerProductTable.propTypes = {
     products: PropTypes.array.isRequired,
+    getProducts: PropTypes.func.isRequired,
 };
 
 export default ManagerProductTable;

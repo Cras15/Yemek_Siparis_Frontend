@@ -104,7 +104,6 @@ const UserProfile = () => {
             yesButtonColor: 'primary',
             onAccept: () => {
                 const data = addressFormRef.current.getData();
-                console.log('Güncellenmiş Adres:', data);
                 axios.put(`/address/${address.addressId}`, JSON.stringify(data), {
                     headers: {
                         Authorization: `Bearer ${token}`,

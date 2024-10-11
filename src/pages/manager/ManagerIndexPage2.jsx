@@ -20,31 +20,16 @@ import {
     Grid,
     Link,
 } from '@mui/joy'
-import { ArrowForward, WarningRounded } from '@mui/icons-material'
+import { ArrowForward } from '@mui/icons-material'
 import DOrdersListItems from '../../components/DOrdersListItems'
 import ShopIcon from '../../assets/ShopIcon'
 import ProductsIcon from '../../assets/ProductsIcon'
 import OrderIcon from '../../assets/OrderIcon'
 import { useSelector } from 'react-redux'
 import axios from 'axios'
-import { OrderStatus, OrderStatusColor, timeAgo } from '../../components/Utils'
+import { OrderStatus, OrderStatusColor, PaymentTypes } from '../../components/Utils'
 import { format, parseISO } from 'date-fns'
 import { useUI } from '../../utils/UIContext'
-
-const tableItems = (title, text) => (
-    <tr key={title}>
-        <td>
-            <Typography level='title-sm' sx={{ fontWeight: 600 }}>
-                {title}
-            </Typography>
-        </td>
-        <td style={{ width: '60%' }}>
-            <Typography component='div' level='body-sm'>
-                {text}
-            </Typography>
-        </td>
-    </tr>
-)
 
 const ManagerIndexPage2 = () => {
     const [shopStats, setShopStats] = React.useState([])
@@ -53,75 +38,89 @@ const ManagerIndexPage2 = () => {
     const { openModal, showDoneSnackbar, showErrorSnackbar } = useUI()
     const { token } = useSelector((state) => state.user)
 
-    const getShopStats = async () => {
-        await axios
-            .get('/manager/shop/getStats', {
+    const getShopStats = React.useCallback(async () => {
+        try {
+            const res = await axios.get('/manager/shop/getStats', {
                 headers: { Authorization: `Bearer ${token}` },
             })
-            .then((res) => {
-                console.log(res)
-                setShopStats(res.data)
-            })
-            .catch((error) => {
-                console.log(error)
-            })
-    }
+            setShopStats(res.data)
+        } catch (error) {
+            console.error(error)
+        }
+    }, [token])
 
     React.useEffect(() => {
         getShopStats()
-    }, [])
+    }, [getShopStats])
 
-    const ApproveOrder = async (order) => {
-        await openModal({
-            title: 'Sipariş Onayı',
-            body: 'Siparişi onaylamak istediğinize emin misiniz?',
-            yesButton: 'Onayla',
-            yesButtonColor: 'success',
-            noButton: 'Vazgeç',
-            onAccept: () => {
-                axios
-                    .post(
-                        `/orders/approveOrder?orderId=${order.orderId}`,
-                        {},
-                        { headers: { Authorization: `Bearer ${token}` } }
-                    )
-                    .then((res) => {
+    const ApproveOrder = React.useCallback(
+        async (order) => {
+            await openModal({
+                title: 'Sipariş Onayı',
+                body: 'Siparişi onaylamak istediğinize emin misiniz?',
+                yesButton: 'Onayla',
+                yesButtonColor: 'success',
+                noButton: 'Vazgeç',
+                onAccept: async () => {
+                    try {
+                        const res = await axios.post(
+                            `/orders/approveOrder?orderId=${order.orderId}`,
+                            {},
+                            { headers: { Authorization: `Bearer ${token}` } }
+                        )
                         showDoneSnackbar(res.data)
                         getShopStats()
                         setClickedOrder(null)
-                    })
-                    .catch((error) => {
+                    } catch (error) {
                         showErrorSnackbar(error.message)
-                    })
-            },
-        })
-    }
+                    }
+                },
+            })
+        },
+        [openModal, showDoneSnackbar, showErrorSnackbar, getShopStats, token]
+    )
 
-    const CancelOrder = async (order) => {
-        await openModal({
-            title: 'Sipariş İptali',
-            body: 'Siparişi iptal etmek istediğinize emin misiniz?',
-            yesButton: 'Onayla',
-            yesButtonColor: 'danger',
-            noButton: 'Vazgeç',
-            onAccept: () => {
-                axios
-                    .post(
-                        `/orders/cancelOrder?orderId=${order.orderId}`,
-                        {},
-                        { headers: { Authorization: `Bearer ${token}` } }
-                    )
-                    .then((res) => {
+    const CancelOrder = React.useCallback(
+        async (order) => {
+            await openModal({
+                title: 'Sipariş İptali',
+                body: 'Siparişi iptal etmek istediğinize emin misiniz?',
+                yesButton: 'Onayla',
+                yesButtonColor: 'danger',
+                noButton: 'Vazgeç',
+                onAccept: async () => {
+                    try {
+                        const res = await axios.post(
+                            `/orders/cancelOrder?orderId=${order.orderId}`,
+                            {},
+                            { headers: { Authorization: `Bearer ${token}` } }
+                        )
                         showDoneSnackbar(res.data)
                         getShopStats()
                         setClickedOrder(null)
-                    })
-                    .catch((error) => {
+                    } catch (error) {
                         showErrorSnackbar(error.message)
-                    })
-            },
-        })
-    }
+                    }
+                },
+            })
+        },
+        [openModal, showDoneSnackbar, showErrorSnackbar, getShopStats, token]
+    )
+
+    const tableItems = React.useCallback((title, text) => (
+        <tr key={title}>
+            <td>
+                <Typography level='title-sm' sx={{ fontWeight: 600 }}>
+                    {title}
+                </Typography>
+            </td>
+            <td style={{ width: '60%' }}>
+                <Typography component='div' level='body-sm'>
+                    {text}
+                </Typography>
+            </td>
+        </tr>
+    ), [])
 
     return (
         <div>
@@ -129,18 +128,18 @@ const ManagerIndexPage2 = () => {
                 <Grid xs={12} md={6} lg={4}>
                     <DashboardItems
                         title='Mağazalarım'
-                        value={90}
+                        value={shopStats.shopCount || 0}
                         icon={<ShopIcon />}
-                        child={`${shopStats.shopCount} Tane`}
+                        child={`${shopStats.shopCount || 0} Tane`}
                         color='success'
                     />
                 </Grid>
                 <Grid xs={12} md={6} lg={4}>
                     <DashboardItems
                         title='Ürünlerim'
-                        value={60}
+                        value={shopStats.totalProductCount || 0}
                         icon={<ProductsIcon />}
-                        child={`${shopStats.totalProductCount} Tane`}
+                        child={`${shopStats.totalProductCount || 0} Tane`}
                         color='primary'
                         link='/manager/urunler'
                     />
@@ -148,9 +147,9 @@ const ManagerIndexPage2 = () => {
                 <Grid xs={12} md={6} lg={4}>
                     <DashboardItems
                         title='Siparişler'
-                        value={35}
+                        value={shopStats.totalOrderCount || 0}
                         icon={<OrderIcon />}
-                        child={`${shopStats.totalOrderCount} Tane`}
+                        child={`${shopStats.totalOrderCount || 0} Tane`}
                         color='warning'
                         link='/manager/siparisler'
                     />
@@ -187,15 +186,15 @@ const ManagerIndexPage2 = () => {
                     </Box>
                 </Grid>
                 <Grid xs={12} md={4}>
-                    {/* Earnings area for daily, weekly and all */}
-                    <Card variant='soft' color={''} invertedColors sx={{ boxShadow: 'lg', borderRadius: 'xl' }}>
+                    <Card variant='soft' color={''} sx={{ boxShadow: 'lg', borderRadius: 'xl' }}>
                         <ToggleButtonGroup
-                            required
                             value={earningValue}
                             variant='soft'
                             sx={{ m: 'auto', mb: 1 }}
                             onChange={(event, newValue) => {
-                                setEarningValue(newValue)
+                                if (newValue !== null) {
+                                    setEarningValue(newValue)
+                                }
                             }}
                         >
                             <Button value='daily'>Günlük</Button>
@@ -210,7 +209,7 @@ const ManagerIndexPage2 = () => {
                             <Box sx={{ ml: 2 }}>
                                 <Typography level='body-md'>Kazanç</Typography>
                                 <Typography level='h3'>
-                                    {shopStats[earningValue + 'Earnings']?.toFixed(2)} TL
+                                    {shopStats[`${earningValue}Earnings`]?.toFixed(2) || '0.00'} TL
                                 </Typography>
                             </Box>
                         </CardContent>
@@ -218,16 +217,19 @@ const ManagerIndexPage2 = () => {
                 </Grid>
             </Grid>
 
-            <Drawer open={clickedOrder != null} onClose={() => setClickedOrder(null)} anchor='right'
+            <Drawer
+                open={Boolean(clickedOrder)}
+                onClose={() => setClickedOrder(null)}
+                anchor='right'
                 slotProps={{
                     backdrop: {
-                        // Bu, tıklanabilir arka plan oluşturur
                         style: {
-                            backdropFilter: "blur(0px)",
+                            backdropFilter: 'blur(0px)',
                             backgroundColor: 'transparent',
                         },
-                    }
-                }}>
+                    },
+                }}
+            >
                 <ModalClose sx={{ borderRadius: 'lg' }} />
                 <DialogTitle>Lahmacun Menü</DialogTitle>
                 <DialogContent>
@@ -236,16 +238,16 @@ const ManagerIndexPage2 = () => {
                     </Typography>
                     <Table sx={{ textAlign: 'left', px: 2 }} size='md'>
                         <tbody>
-                            {tableItems('ID', '1234567890')}
-                            {tableItems('Ad Soyad', 'Mert Yener')}
-                            {tableItems('Telefon', '0532 123 45 67')}
+                            {tableItems('ID', '#' + clickedOrder?.orderId)}
+                            {tableItems('Ad Soyad', `${clickedOrder?.name} ${clickedOrder?.surname}`)}
+                            {tableItems('Telefon', clickedOrder?.phone)}
                             {tableItems('Adres', clickedOrder?.address)}
                             {clickedOrder &&
                                 tableItems(
                                     'Sipariş Tarihi',
                                     format(parseISO(clickedOrder?.orderDate), 'dd/MM/yyyy HH:mm')
                                 )}
-                            {tableItems('Ödeme Tipi', 'Kart')}
+                            {tableItems('Ödeme Tipi', PaymentTypes[clickedOrder?.paymentType])}
                             {tableItems('Ürün Fiyatı', `${clickedOrder?.finalPrice.toFixed(2)} TL`)}
                             {tableItems(
                                 'Sipariş Durumu',
@@ -302,7 +304,7 @@ const ManagerIndexPage2 = () => {
                                     <td>
                                         <Typography level='body-md'>{oitems.orderName}</Typography>
                                     </td>
-                                    <td style={{ width: '60%' }}>
+                                    <td>
                                         <Typography level='body-md'>{oitems.unit}</Typography>
                                     </td>
                                     <td>
@@ -316,7 +318,7 @@ const ManagerIndexPage2 = () => {
                     </Table>
                 </DialogContent>
             </Drawer>
-        </div >
+        </div>
     )
 }
 

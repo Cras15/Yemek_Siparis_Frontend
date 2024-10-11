@@ -1,5 +1,5 @@
 import { Add, Check, Delete, Info, KeyboardArrowRight, Remove } from '@mui/icons-material';
-import { AspectRatio, ButtonGroup, Button, Card, CardContent, Chip, IconButton, List, ListDivider, ListItem, ListItemDecorator, Table, Typography, ListSubheader, Divider, CardActions, Skeleton, Input, Grid } from '@mui/joy'
+import { AspectRatio, ButtonGroup, Button, Card, CardContent, Chip, IconButton, List, ListDivider, ListItem, ListItemDecorator, Table, Typography, ListSubheader, Divider, CardActions, Skeleton, Input, Grid, Autocomplete, AutocompleteOption, ListItemContent, Select, Option } from '@mui/joy'
 import { useDispatch, useSelector } from 'react-redux';
 import { addBasket, addBasketItem, getBasket, removeBasket, removeBasketItem } from '../redux/basketSlice';
 import { Box } from '@mui/material';
@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { STATUS } from '../components/Status';
 import { useUI } from '../utils/UIContext';
+import axios from 'axios';
 
 
 const BasketPaymentItem = ({ title, price }) => {
@@ -23,11 +24,52 @@ const BasketPaymentItem = ({ title, price }) => {
 
 const BasketPage = () => {
   const [discount, setDiscount] = useState(0);
+  const [addresses, setAddresses] = useState([]);
+  const [selectedAddress, setSelectedAddress] = useState(null);
+  const [addressLoading, setAddressLoading] = useState(false);
+  const [paymentType, setPaymentType] = useState("CASH_ON_DELIVERY");
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { baskets, status } = useSelector((state) => state.basket);
-  const { showErrorSnackbar } = useUI();
+  const { user, token } = useSelector((state) => state.user);
+  const { showErrorSnackbar, showDoneSnackbar } = useUI();
+
+  const getAddresses = async () => {
+    setAddressLoading(true);
+    await axios.get("/address/all", {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }).then((res) => {
+      setAddresses(res.data);
+      setAddressLoading(false);
+    }).catch((error) => {
+      console.log(error);
+      showErrorSnackbar(error.message);
+      setAddressLoading(false);
+    });
+  }
+
+  const handlePurchase = () => {
+    if(selectedAddress == null) return showErrorSnackbar("Adres seçiniz");
+    if (paymentType == "CREDIT_CARD") return navigate(`/odeme?addressId=${selectedAddress.addressId}`);
+
+    axios.post(`/orders/purchase?addressId=${selectedAddress.addressId}&paymentType=CASH_ON_DELIVERY`, {}, { headers: { Authorization: `Bearer ${token}` } }).then((res) => {
+      showDoneSnackbar(res.data);
+      dispatch(getBasket());
+      navigate("/");
+    }).catch((error) => {
+      console.log(error);
+      showErrorSnackbar(error.message);
+    });
+  }
+
+
+  useEffect(() => {
+    getAddresses();
+  }
+    , []);
 
   return (
     <div className='m-auto mt-5 w-11/12 sm:w-10/12 rounded-lg grid gap-9 md:grid-flow-col grid-flow-row'>
@@ -188,8 +230,37 @@ const BasketPage = () => {
               </Button>
             }
           />
+          <Autocomplete
+            placeholder="Adres seçin"
+            options={addresses}
+            autoHighlight
+            value={selectedAddress}
+            onChange={(event, newValue) => {
+              setSelectedAddress(newValue);
+            }}
+            loading={addressLoading}
+            loadingText="Adresler yükleniyor..."
+            getOptionLabel={(option) => option.addressTitle}
+            renderOption={(props, option) => (
+              <AutocompleteOption {...props} key={option.addressId}>
+                <ListItemContent sx={{ fontSize: 'sm' }}>
+                  {option.addressTitle}
+                  <Typography level="body-xs">
+                    {option.addressLine}
+                  </Typography>
+                  <Typography level="body-xs">
+                    {option.name} {option.surname}  ({option.phone})
+                  </Typography>
+                </ListItemContent>
+              </AutocompleteOption>
+            )}
+          />
+          <Select defaultValue="CASH_ON_DELIVERY" value={paymentType} onChange={(e, newValue) => setPaymentType(newValue)}>
+            <Option value="CREDIT_CARD" defaultChecked>Kredi Kartı</Option>
+            <Option value="CASH_ON_DELIVERY">Kapıda Ödeme</Option>
+          </Select>
 
-          <Button color='primary' endDecorator={<KeyboardArrowRight />} onClick={() => navigate('/odeme')} disabled={baskets.basketItems?.length == 0}>Sepeti Onayla</Button>
+          <Button color='primary' endDecorator={<KeyboardArrowRight />} onClick={handlePurchase} disabled={baskets.basketItems?.length == 0}>Sepeti Onayla</Button>
         </Card>
 
       </div>

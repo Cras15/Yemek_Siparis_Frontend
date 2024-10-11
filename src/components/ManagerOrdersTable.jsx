@@ -31,6 +31,7 @@ import { useUI } from "../utils/UIContext";
 import { format, parseISO } from "date-fns";
 import { tr } from "date-fns/locale";
 import { OrderStatus, OrderStatusColor } from "./Utils";
+import { useMediaQuery } from "@mui/material";
 
 function descendingComparator(a, b, orderBy) {
     const valA = a[orderBy];
@@ -58,6 +59,7 @@ function ManagerOrdersTable({ orders, getOrders }) {
     const [selectedStatus, setSelectedStatus] = useState("all");
     const [currentPage, setCurrentPage] = useState(1);
     const rowsPerPage = 5;
+    const isMobile = useMediaQuery('(max-width:600px)'); // Yeni eklendi
 
     const filteredOrders = orders?.filter((order) => {
         const matchesCategory = selectedStatus === "all" || order.status === selectedStatus;
@@ -100,6 +102,8 @@ function ManagerOrdersTable({ orders, getOrders }) {
                     placeholder="Ara"
                     startDecorator={<SearchIcon />}
                     sx={{ flexGrow: 1 }}
+                    value={searchTerm}
+                    onChange={handleSearch}
                 />
                 <IconButton
                     size="sm"
@@ -119,6 +123,14 @@ function ManagerOrdersTable({ orders, getOrders }) {
                         <Sheet sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                             <FormControl size="sm">
                                 <FormLabel>Kategori</FormLabel>
+                                <Select size="sm" placeholder="Kategori Seç" defaultValue="all" onChange={handleChangeOrderStatus} value={selectedStatus}>
+                                    <Option value="all">Tümü</Option>
+                                    <Option value="RECEIVED">Sipariş Alındı</Option>
+                                    <Option value="GETTING_READY">Sipariş Hazırlanıyor</Option>
+                                    <Option value="ON_THE_WAY">Sipariş Yolda</Option>
+                                    <Option value="DELIVERED">Teslim Edildi</Option>
+                                    <Option value="CANCELED">İptal Edildi</Option>
+                                </Select>
                             </FormControl>
                             <Button color="primary" onClick={() => setOpen(false)}>
                                 Uygula
@@ -161,66 +173,83 @@ function ManagerOrdersTable({ orders, getOrders }) {
                     </Select>
                 </FormControl>
             </Box>
-            <Sheet
-                variant="outlined"
-                sx={{
-                    display: { xs: "none", sm: "initial" },
-                    width: "100%",
-                    borderRadius: "md",
-                    maxHeight: "55vh",
-                    overflow: "auto",
-                }}
-            >
-                <Table
-                    stickyHeader
-                    hoverRow
+            {isMobile ? (
+                // Mobil görünüm için kart tasarımı
+                <Box>
+                    {currentProducts.map((row) => (
+                        <OrderCard
+                            key={row.orderId}
+                            row={row}
+                            isOpen={row.orderId === openRowId}
+                            onRowClick={() => handleRowClick(row.orderId)}
+                            getOrders={getOrders}
+                        />
+                    ))}
+                </Box>
+            ) : (
+                // Masaüstü görünümü için tablo
+                <Sheet
+                    variant="outlined"
                     sx={{
-                        "--TableCell-headBackground": "var(--joy-palette-background-level1)",
-                        "--Table-headerUnderlineThickness": "1px",
-                        "--TableRow-hoverBackground": "var(--joy-palette-background-level1)",
-                        "--TableCell-paddingY": "4px",
-                        "--TableCell-paddingX": "8px",
+                        display: { xs: "none", sm: "initial" },
+                        width: "100%",
+                        borderRadius: "md",
+                        maxHeight: "55vh",
+                        overflow: "auto",
                     }}
                 >
-                    <thead>
-                        <tr>
-                            {["ID", "Müşteri", "Tarih", "Fiyat", "Durum"].map((title, idx) => (
-                                <th key={idx} style={{ width: idx == 0 ? 50 : 140 }}>
-                                    <SortableTableHeader
-                                        title={title}
-                                        orderByValue={
-                                            ["shopName", "address", "", "finalPrice"][idx]
-                                        }
-                                        currentOrder={order}
-                                        currentOrderBy={orderBy}
-                                        setOrder={setOrder}
-                                        setOrderBy={setOrderBy}
-                                    />
-                                </th>
+                    <Table
+                        stickyHeader
+                        hoverRow
+                        sx={{
+                            "--TableCell-headBackground": "var(--joy-palette-background-level1)",
+                            "--Table-headerUnderlineThickness": "1px",
+                            "--TableRow-hoverBackground": "var(--joy-palette-background-level1)",
+                            "--TableCell-paddingY": "4px",
+                            "--TableCell-paddingX": "8px",
+                        }}
+                    >
+                        <thead>
+                            <tr>
+                                {["ID", "Müşteri Ad Soyad", "Sipariş Tarihi", "Toplam Sipariş Tutarı", "Sipariş Durumu"].map((title, idx) => (
+                                    <th key={idx} style={{ width: idx == 0 ? 50 : 140 }}>
+                                        <SortableTableHeader
+                                            title={title}
+                                            orderByValue={
+                                                ["orderId", "name", "orderDate", "finalPrice", "status"][idx]
+                                            }
+                                            currentOrder={order}
+                                            currentOrderBy={orderBy}
+                                            setOrder={setOrder}
+                                            setOrderBy={setOrderBy}
+                                        />
+                                    </th>
+                                ))}
+                                <th style={{ width: 48, textAlign: "center" }} />
+                                <th style={{ width: 48 }} />
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {currentProducts.map((row) => (
+                                <Row
+                                    key={row.orderId}
+                                    row={row}
+                                    isOpen={row.orderId === openRowId}
+                                    getOrders={getOrders}
+                                    onRowClick={() => handleRowClick(row.orderId)}
+                                />
                             ))}
-                            <th style={{ width: 48, textAlign: "center" }} />
-                            <th style={{ width: 48 }} />
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {currentProducts.map((row) => (
-                            <Row
-                                key={row.orderId}
-                                row={row}
-                                isOpen={row.orderId === openRowId}
-                                getOrders={getOrders}
-                                onRowClick={() => handleRowClick(row.orderId)}
-                            />
-                        ))}
-                    </tbody>
-                </Table>
-            </Sheet>
+                        </tbody>
+                    </Table>
+                </Sheet>
+            )}
             <Box
                 sx={{
                     pt: 2,
                     gap: 1,
                     [`& .${iconButtonClasses.root}`]: { borderRadius: "50%" },
-                    display: { xs: "none", md: "flex" },
+                    display: "flex",
+                    justifyContent: "center",
                 }}
             >
                 <Button
@@ -233,7 +262,6 @@ function ManagerOrdersTable({ orders, getOrders }) {
                 >
                     Önceki Sayfa
                 </Button>
-                <Box sx={{ flex: 1 }} />
                 {[...Array(pageCount)].map((_, idx) => (
                     <IconButton
                         key={idx + 1}
@@ -245,7 +273,6 @@ function ManagerOrdersTable({ orders, getOrders }) {
                         {idx + 1}
                     </IconButton>
                 ))}
-                <Box sx={{ flex: 1 }} />
                 <Button
                     size="sm"
                     variant="outlined"
@@ -310,10 +337,10 @@ function Row({ row, isOpen, onRowClick, getOrders }) {
     const theme = useTheme();
 
     const convertDate = (date) => {
-        const dates = parseISO(date); // Tarihi ISO formatÄ±ndan Date objesine Ã§evirir
+        const dates = parseISO(date);
 
         return format(dates, "d MMMM EEE HH:mm", { locale: tr });
-    }
+    };
     return (
         <>
             <tr>
@@ -321,12 +348,12 @@ function Row({ row, isOpen, onRowClick, getOrders }) {
                     <Typography level="body-xs">#{row.orderId}</Typography>
                 </td>
                 <td>
-                    <Typography level="body-xs">Mert Yener</Typography>
+                    <Typography level="body-xs">
+                        {row.name} {row.surname}
+                    </Typography>
                 </td>
                 <td>
-                    <Typography level="body-xs">
-                        {convertDate(row.orderDate)}
-                    </Typography>
+                    <Typography level="body-xs">{convertDate(row.orderDate)}</Typography>
                 </td>
                 <td>
                     <Typography level="body-sm" sx={{ fontWeight: "bold" }}>
@@ -338,7 +365,6 @@ function Row({ row, isOpen, onRowClick, getOrders }) {
                         <Chip color={OrderStatusColor[row?.status]}>
                             {OrderStatus[row?.status]}
                         </Chip>
-
                     </Typography>
                 </td>
                 <td style={{ textAlign: "center", width: 120 }}>
@@ -357,47 +383,190 @@ function Row({ row, isOpen, onRowClick, getOrders }) {
                 </td>
             </tr>
             {isOpen && (
-                <tr style={{ backgroundColor: 'inherit', }}>
-                    <td colSpan={7} style={{ padding: 0, border: 'none' }}>
-                        <Box variant="soft" sx={{ background: theme.palette.background.level1, padding: 1 }}>
-                            <List variant="soft" color="" sx={{ boxShadow: 'm', background: theme.palette.background.body, minWidth: 240, borderRadius: 'sm' }}>
+                <tr style={{ backgroundColor: "inherit" }}>
+                    <td colSpan={7} style={{ padding: 0, border: "none" }}>
+                        <Box
+                            variant="soft"
+                            sx={{
+                                background: theme.palette.background.level1,
+                                padding: 1,
+                            }}
+                        >
+                            <List
+                                variant="soft"
+                                color=""
+                                sx={{
+                                    boxShadow: "m",
+                                    background: theme.palette.background.body,
+                                    minWidth: 240,
+                                    borderRadius: "sm",
+                                }}
+                            >
                                 {row.orderItems?.map((data, i) => (
-                                    <>
+                                    <React.Fragment key={i}>
                                         <ListItem>
                                             <ListItemDecorator>
-                                                <AspectRatio ratio="1" sx={{ width: '48px', borderRadius: "12px", mr: 2 }}>
-                                                    <img
-                                                        src={data.imageUrl}
-                                                        loading="lazy"
-                                                        alt=""
-                                                    />
+                                                <AspectRatio
+                                                    ratio="1"
+                                                    sx={{
+                                                        width: "48px",
+                                                        borderRadius: "12px",
+                                                        mr: 2,
+                                                    }}
+                                                >
+                                                    <img src={data.imageUrl} loading="lazy" alt="" />
                                                 </AspectRatio>
                                             </ListItemDecorator>
-                                            <Grid container spacing={2} alignItems="center" sx={{ width: "100%" }}>
+                                            <Grid
+                                                container
+                                                spacing={2}
+                                                alignItems="center"
+                                                sx={{ width: "100%" }}
+                                            >
                                                 <Grid xs={8} sm={8} md={10}>
                                                     <ListItemContent>
-                                                        <Typography level="title-sm" noWrap>{data.orderDesc}</Typography>
-                                                        <Typography level="body-sm" noWrap>{data.orderName}</Typography>
+                                                        <Typography level="title-sm" noWrap>
+                                                            {data.orderDesc}
+                                                        </Typography>
+                                                        <Typography level="body-sm" noWrap>
+                                                            {data.orderName}
+                                                        </Typography>
                                                     </ListItemContent>
                                                 </Grid>
                                                 <Grid xs={2} sm={2} md={1}>
-                                                    <Typography level="title-sm">x{data.unit}</Typography>
+                                                    <Typography level="title-sm">
+                                                        x{data.unit}
+                                                    </Typography>
                                                 </Grid>
                                                 <Grid xs={2} sm={2} md={1}>
-                                                    <Typography level="title-sm">₺{data.price.toFixed(2)}</Typography>
+                                                    <Typography level="title-sm">
+                                                        ₺{data.price.toFixed(2)}
+                                                    </Typography>
                                                 </Grid>
                                             </Grid>
                                         </ListItem>
                                         {row.orderItems.length - 1 !== i && <ListDivider />}
-                                    </>
+                                    </React.Fragment>
                                 ))}
                             </List>
                         </Box>
                     </td>
-                </tr >
-            )
-            }
+                </tr>
+            )}
         </>
+    );
+}
+
+function OrderCard({ row, isOpen, onRowClick, getOrders }) {
+    // Mobil görünüm için kart bileşeni
+    const theme = useTheme();
+
+    const convertDate = (date) => {
+        const dates = parseISO(date);
+        return format(dates, "d MMMM EEE HH:mm", { locale: tr });
+    };
+
+    return (
+        <Sheet
+            variant="outlined"
+            sx={{
+                mb: 2,
+                borderRadius: "md",
+                overflow: "hidden",
+            }}
+        >
+            <Box sx={{ p: 2 }}>
+                <Typography level="body-xs">Sipariş ID: #{row.orderId}</Typography>
+                <Typography level="body-sm">
+                    {row.name} {row.surname}
+                </Typography>
+                <Typography level="body-xs" sx={{ color: "text.secondary" }}>
+                    {convertDate(row.orderDate)}
+                </Typography>
+                <Typography level="body-sm" sx={{ fontWeight: "bold", mt: 1 }}>
+                    Toplam: ₺{row.finalPrice.toFixed(2)}
+                </Typography>
+                <Chip color={OrderStatusColor[row?.status]} sx={{ mt: 1 }}>
+                    {OrderStatus[row?.status]}
+                </Chip>
+                <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
+                    <IconButton
+                        aria-label="expand row"
+                        variant="plain"
+                        color="neutral"
+                        size="sm"
+                        onClick={onRowClick}
+                    >
+                        {isOpen ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+                    </IconButton>
+                    <RowMenu order={row} getOrders={getOrders} />
+                </Box>
+            </Box>
+            {isOpen && (
+                <Box
+                    variant="soft"
+                    sx={{
+                        background: theme.palette.background.level1,
+                        padding: 1,
+                    }}
+                >
+                    <List
+                        variant="soft"
+                        color=""
+                        sx={{
+                            boxShadow: "m",
+                            background: theme.palette.background.body,
+                            minWidth: 240,
+                            borderRadius: "sm",
+                        }}
+                    >
+                        {row.orderItems?.map((data, i) => (
+                            <React.Fragment key={i}>
+                                <ListItem>
+                                    <ListItemDecorator>
+                                        <AspectRatio
+                                            ratio="1"
+                                            sx={{
+                                                width: "48px",
+                                                borderRadius: "12px",
+                                                mr: 2,
+                                            }}
+                                        >
+                                            <img src={data.imageUrl} loading="lazy" alt="" />
+                                        </AspectRatio>
+                                    </ListItemDecorator>
+                                    <Box sx={{ width: "100%" }}>
+                                        <ListItemContent>
+                                            <Typography level="title-sm" noWrap>
+                                                {data.orderDesc}
+                                            </Typography>
+                                            <Typography level="body-sm" noWrap>
+                                                {data.orderName}
+                                            </Typography>
+                                        </ListItemContent>
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                justifyContent: "space-between",
+                                                mt: 1,
+                                            }}
+                                        >
+                                            <Typography level="body-sm">
+                                                x{data.unit}
+                                            </Typography>
+                                            <Typography level="body-sm">
+                                                ₺{data.price.toFixed(2)}
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+                                </ListItem>
+                                {row.orderItems.length - 1 !== i && <ListDivider />}
+                            </React.Fragment>
+                        ))}
+                    </List>
+                </Box>
+            )}
+        </Sheet>
     );
 }
 
@@ -407,19 +576,20 @@ function RowMenu({ order, getOrders }) {
 
     const handleCancelOrder = async (orderId) => {
         await openModal({
-            title: 'Sipariş İptali',
-            body: 'Siparişi iptal etmek istediğine emin misin?',
-            yesButton: 'Siparişi iptal et',
-            noButton: 'Vazgeç',
+            title: "Sipariş İptali",
+            body: "Siparişi iptal etmek istediğine emin misin?",
+            yesButton: "Siparişi iptal et",
+            noButton: "Vazgeç",
             onAccept: () => {
                 axios
-                    .post(`/orders/cancelOrder?orderId=${orderId}`, {
+                    .post(`/orders/cancelOrder?orderId=${orderId}`, null, {
                         headers: {
                             Authorization: `Bearer ${token}`,
                         },
                     })
                     .then((response) => {
                         showDoneSnackbar("Sipariş başarıyla iptal edildi.");
+                        getOrders();
                         return response;
                     })
                     .catch((error) => {
@@ -427,15 +597,15 @@ function RowMenu({ order, getOrders }) {
                     });
             },
         });
-    }
+    };
 
     const ApproveOrder = async () => {
         await openModal({
-            title: 'Sipariş Onayı',
-            body: 'Siparişi onaylamak istediğinize emin misiniz?',
-            yesButton: 'Onayla',
-            yesButtonColor: 'success',
-            noButton: 'Vazgeç',
+            title: "Sipariş Onayı",
+            body: "Siparişi onaylamak istediğinize emin misiniz?",
+            yesButton: "Onayla",
+            yesButtonColor: "success",
+            noButton: "Vazgeç",
             onAccept: () => {
                 axios
                     .post(
@@ -444,23 +614,23 @@ function RowMenu({ order, getOrders }) {
                         { headers: { Authorization: `Bearer ${token}` } }
                     )
                     .then((res) => {
-                        showDoneSnackbar(res.data)
-                        getOrders()
+                        showDoneSnackbar(res.data);
+                        getOrders();
                     })
                     .catch((error) => {
-                        showErrorSnackbar(error.message)
-                    })
+                        showErrorSnackbar(error.message);
+                    });
             },
-        })
-    }
+        });
+    };
 
     const assignCourier = async () => {
         await openModal({
-            title: 'Kurye Atama',
-            body: 'Siparişin durumunu kureye teslim edildi yapmak istersiniz?',
-            yesButtonColor: 'success',
-            yesButton: 'Onayla',
-            noButton: 'Vazgeç',
+            title: "Kurye Atama",
+            body: "Siparişin durumunu 'kuryeye teslim edildi' yapmak ister misiniz?",
+            yesButtonColor: "success",
+            yesButton: "Onayla",
+            noButton: "Vazgeç",
             onAccept: () => {
                 axios
                     .post(
@@ -469,23 +639,23 @@ function RowMenu({ order, getOrders }) {
                         { headers: { Authorization: `Bearer ${token}` } }
                     )
                     .then((res) => {
-                        showDoneSnackbar(res.data)
-                        getOrders()
+                        showDoneSnackbar(res.data);
+                        getOrders();
                     })
                     .catch((error) => {
-                        showErrorSnackbar(error.message)
-                    })
+                        showErrorSnackbar(error.message);
+                    });
             },
-        })
-    }
+        });
+    };
 
     const markAsDelivered = async () => {
         await openModal({
-            title: 'Teslim Edildi',
-            body: 'Siparişin durumunu teslim edildi yapmak istersiniz?',
-            yesButtonColor: 'success',
-            yesButton: 'Onayla',
-            noButton: 'Vazgeç',
+            title: "Teslim Edildi",
+            body: "Siparişin durumunu 'teslim edildi' yapmak ister misiniz?",
+            yesButtonColor: "success",
+            yesButton: "Onayla",
+            noButton: "Vazgeç",
             onAccept: () => {
                 axios
                     .post(
@@ -494,74 +664,89 @@ function RowMenu({ order, getOrders }) {
                         { headers: { Authorization: `Bearer ${token}` } }
                     )
                     .then((res) => {
-                        showDoneSnackbar(res.data)
-                        getOrders()
+                        showDoneSnackbar(res.data);
+                        getOrders();
                     })
                     .catch((error) => {
-                        showErrorSnackbar(error.message)
-                    })
+                        showErrorSnackbar(error.message);
+                    });
             },
-        })
-    }
+        });
+    };
 
     const handleDone = () => {
         if (order.status === "RECEIVED") {
-            return ApproveOrder()
+            return ApproveOrder();
         } else if (order.status === "GETTING_READY") {
-            return assignCourier()
+            return assignCourier();
         } else if (order.status === "ON_THE_WAY") {
-            return markAsDelivered()
+            return markAsDelivered();
         }
-    }
+    };
 
     return (
-        <>
-            <Dropdown>
-                <MenuButton
-                    slots={{ root: IconButton }}
-                    slotProps={{
-                        root: { variant: "plain", color: "neutral", size: "sm" },
-                    }}
+        <Dropdown>
+            <MenuButton
+                slots={{ root: IconButton }}
+                slotProps={{
+                    root: { variant: "plain", color: "neutral", size: "sm" },
+                }}
+            >
+                <MoreHorizRoundedIcon />
+            </MenuButton>
+            <Menu size="sm" sx={{ minWidth: 140 }}>
+                <MenuItem
+                    sx={{ borderRadius: "sm", mx: 1 }}
+                    component={Link}
+                    underline="none"
+                    href={`/manager/siparisler/${order.orderId}`}
                 >
-                    <MoreHorizRoundedIcon />
-                </MenuButton>
-                <Menu size="sm" sx={{ minWidth: 140 }}>
-                    <MenuItem sx={{ borderRadius: "sm", mx: 1 }} component={Link} underline="none" href={`/manager/siparisler/${order.orderId}`}>
-                        <ListItemDecorator>
-                            <Visibility />
-                        </ListItemDecorator>Görüntüle
-                    </MenuItem>
-                    <MenuItem sx={{ borderRadius: "sm", mx: 1, mb: 0.5 }} color="success"
-                        disabled={order.status === "CANCELED" || order.status === "DELIVERED"} onClick={handleDone}>
-                        <ListItemDecorator>
-                            <Done />
-                        </ListItemDecorator>
-                        {
-                            order.status === "RECEIVED" ? "Onayla" :
-                                order.status === "GETTING_READY" ? "Kureyeye Verildi" :
-                                    order.status === "ON_THE_WAY" ? "Teslim Edildi" :
-                                        order.status === "DELIVERED" ? "Teslim Edildi" : "Onayla"
-                        }
-                    </MenuItem>
-                    <Divider />
-                    <MenuItem
-                        sx={{ borderRadius: "sm", mx: 1, mt: 0.5 }}
-                        color="danger"
-                        disabled={order.status === "CANCELED"}
-                        onClick={() => handleCancelOrder(order.orderId)}>
-                        <ListItemDecorator>
-                            <DeleteForever />
-                        </ListItemDecorator>
-                        Sipariş İptali
-                    </MenuItem>
-                </Menu>
-            </Dropdown >
-        </>
+                    <ListItemDecorator>
+                        <Visibility />
+                    </ListItemDecorator>
+                    Görüntüle
+                </MenuItem>
+                <MenuItem
+                    sx={{ borderRadius: "sm", mx: 1, mb: 0.5 }}
+                    color="success"
+                    disabled={
+                        order.status === "CANCELED" || order.status === "DELIVERED"
+                    }
+                    onClick={handleDone}
+                >
+                    <ListItemDecorator>
+                        <Done />
+                    </ListItemDecorator>
+                    {order.status === "RECEIVED"
+                        ? "Onayla"
+                        : order.status === "GETTING_READY"
+                        ? "Kuryeye Verildi"
+                        : order.status === "ON_THE_WAY"
+                        ? "Teslim Edildi"
+                        : order.status === "DELIVERED"
+                        ? "Teslim Edildi"
+                        : "Onayla"}
+                </MenuItem>
+                <Divider />
+                <MenuItem
+                    sx={{ borderRadius: "sm", mx: 1, mt: 0.5 }}
+                    color="danger"
+                    disabled={order.status === "CANCELED"}
+                    onClick={() => handleCancelOrder(order.orderId)}
+                >
+                    <ListItemDecorator>
+                        <DeleteForever />
+                    </ListItemDecorator>
+                    Sipariş İptali
+                </MenuItem>
+            </Menu>
+        </Dropdown>
     );
 }
 
 ManagerOrdersTable.propTypes = {
     orders: PropTypes.array.isRequired,
+    getOrders: PropTypes.func.isRequired,
 };
 
 export default ManagerOrdersTable;
