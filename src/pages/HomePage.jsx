@@ -3,6 +3,7 @@ import React from 'react';
 import ShopsCard from '../components/ShopsCard';
 import {
   AspectRatio,
+  Box,
   Button,
   Card,
   CardActions,
@@ -109,9 +110,30 @@ const HomePage = () => {
         Filtrele
       </Button>
       <Grid xs={12} md={12} lg={10}>
-        <div className="mx-8 mt-4 md:mx-32 text-center bg-white xl:col-span-4 lg:col-span-3">
+        <Box
+          sx={{
+            mx: { xs: 8, md: 16 },
+            mt: 4,
+            textAlign: 'center',
+            gridColumn: {
+              lg: 'span 3',
+              xl: 'span 4',
+            },
+          }}
+        >
           {status !== 'pending' ? (
-            <div className="grid gap-3 grid-flow-row-dense lg:grid-cols-3 sm:grid-cols-2 grid-cols-1">
+            <Box
+              sx={{
+                display: 'grid',
+                gap: 3,
+                gridAutoFlow: 'row dense',
+                gridTemplateColumns: {
+                  xs: 'repeat(1, 1fr)',
+                  sm: 'repeat(2, 1fr)',
+                  lg: 'repeat(3, 1fr)',
+                },
+              }}
+            >
               {shops.length !== 0 ? (
                 shops.map((data, i) => (
                   <ShopsCard key={i} data={data} />
@@ -122,15 +144,16 @@ const HomePage = () => {
                   justifyContent="center"
                   textAlign="center"
                   level="h3"
+                  sx={{ gridColumn: '1/-1' }} // Tüm sütunlara yayılması için eklendi.
                 >
                   Bu bölgede henüz hizmet veremiyoruz.
                 </Typography>
               )}
-            </div>
+            </Box>
           ) : (
             <Card
               variant="outlined"
-              sx={{ width: 343, display: 'flex', gap: 2 }}
+              sx={{ width: 343, display: 'flex', gap: 2, mx: 'auto', mt: 4 }}
             >
               <AspectRatio ratio="21/9">
                 <Skeleton variant="overlay">
@@ -142,13 +165,12 @@ const HomePage = () => {
               </AspectRatio>
               <Typography>
                 <Skeleton>
-                  Lorem ipsum is placeholder text commonly used in the
-                  graphic, print, and publishing industries.
+                  Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries.
                 </Skeleton>
               </Typography>
             </Card>
           )}
-        </div>
+        </Box>
       </Grid>
       <HomePageFilterModal
         open={modalOpen}

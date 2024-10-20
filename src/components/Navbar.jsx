@@ -1,59 +1,86 @@
-import { Stack, capitalize, keyframes } from '@mui/material'
-import React from 'react'
-import { Outlet, useNavigate } from 'react-router-dom'
+import React from 'react';
+import { Outlet } from 'react-router-dom';
 import PersonIcon from '@mui/icons-material/Person';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import { Typography, Dropdown, Button, IconButton, ListDivider, ListItemDecorator, Menu, MenuButton, MenuItem, Divider } from '@mui/joy';
-import { AdminPanelSettingsOutlined, Home, LogoutOutlined, PersonOutline, SettingsOutlined, ShoppingBasketOutlined, SupervisorAccountOutlined } from '@mui/icons-material';
-import { useDispatch, useSelector } from 'react-redux';
-import { userLogout } from '../redux/userSlice';
+import {
+  Typography,
+  Dropdown,
+  Button,
+  IconButton,
+  ListDivider,
+  ListItemDecorator,
+  Menu,
+  MenuButton,
+  MenuItem,
+  Divider,
+  Link,
+  Box,
+} from '@mui/joy';
+import {
+  AdminPanelSettingsOutlined,
+  Home,
+  LogoutOutlined,
+  PersonOutline,
+  SettingsOutlined,
+  ShoppingBasketOutlined,
+  SupervisorAccountOutlined,
+} from '@mui/icons-material';
+import { useSelector } from 'react-redux';
 import BasketDropdown from './BasketDropdown';
-import { useUI } from '../utils/UIContext';
-
-
+import useUserLogout from '../hooks/useUserLogout';
+import { capitalize } from '@mui/material';
 
 const Navbar = () => {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
-  const { showDoneSnackbar } = useUI();
-
-  const logout = () => {
-    dispatch(userLogout());
-    showDoneSnackbar("Başarıyla çıkış yapıldı.");
-    navigate('/');
-  }
+  const logout = useUserLogout();
 
   return (
     <>
-      <nav className="bg-gray-50 shadow-lg">
-        <div className="mx-auto px-2 sm:px-6 lg:px-8 mr-10">
-          <div className="relative flex h-16 items-center justify-between">
-            <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
-              <IconButton onClick={() => navigate('/')} size='sm' color='primary'>
+      <Box component="nav" sx={{ boxShadow: 'lg' }}>
+        <Box
+          sx={{
+            mx: 'auto',
+            px: { xs: 2, sm: 6, lg: 8 },
+            mr: 10,
+          }}
+        >
+          <Box
+            sx={{
+              position: 'relative',
+              display: 'flex',
+              height: 64,
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                left: 0,
+                display: { xs: 'flex', sm: 'none' },
+                alignItems: 'center',
+              }}
+            >
+              <IconButton component={Link} href="/" size="sm" color="primary">
                 <Home />
               </IconButton>
-              {/*<button onClick={() => setActive(!active)} type="button" className="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
-                <span className="absolute -inset-0.5"></span>
-
-                <span className="sr-only">Ana menüyü aç</span>
-
-                <svg className="block h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-                </svg>
-
-                <svg className="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>*/}
-            </div>
-            <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
+            </Box>
+            <Box
+              sx={{
+                display: 'flex',
+                flexGrow: 1,
+                alignItems: { xs: 'center', sm: 'stretch' },
+                justifyContent: { xs: 'center', sm: 'flex-start' },
+              }}
+            >
               <Typography
                 variant="h6"
                 noWrap
-                component="a"
+                component={Link}
                 href="/"
-                color='primary'
+                color="primary"
                 sx={{
                   mr: 2,
                   ml: 6,
@@ -63,102 +90,129 @@ const Navbar = () => {
                   borderRadius: 5,
                   p: 1,
                 }}
+                underline="none"
               >
                 Ayağımagelsin
               </Typography>
+            </Box>
 
-            </div>
-
-            {user != "" ?
-              <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                <div className="relative mr-3">
+            {user != '' ? (
+              <Box
+                sx={{
+                  position: { xs: 'absolute', sm: 'static' },
+                  top: { xs: 0, sm: 'auto' },
+                  bottom: { xs: 0, sm: 'auto' },
+                  right: { xs: 0, sm: 'auto' },
+                  display: 'flex',
+                  alignItems: 'center',
+                  pr: { xs: 2, sm: 0 },
+                  ml: { xs: 0, sm: 6 },
+                }}
+              >
+                <Box sx={{ position: 'relative', mr: 3 }}>
                   <Dropdown>
-                    <MenuButton
-                      slots={{ root: IconButton }}
-                      color='primary'
-                    >
-                      <PersonOutline color='primary' />
-                      <Typography color='primary'>{capitalize(user.firstname) + " " + capitalize(user.lastname)}</Typography>
+                    <MenuButton slots={{ root: IconButton }} color="primary">
+                      <PersonOutline color="primary" />
+                      <Typography color="primary">
+                        {user?.firstname && user?.lastname ?
+                          `${capitalize(user.firstname)} ${capitalize(user.lastname)}`
+                          : ''}
 
+                      </Typography>
                     </MenuButton>
-                    <Menu sx={{
-                      mx: 44,
-                      "--List-radius": "20px",
-                      "--ListItem-minHeight": "44px",
-                      "--List-padding": "8px",
-                      "--List-gap": "1px",
-                      "--List-nestedInsetStart": "var(--ListItemDecorator-size)"
-                    }} placement="bottom-end">
-                      {user.role == "ADMIN" &&
-                        <MenuItem onClick={() => navigate('/admin')} color='primary'>
-                          <ListItemDecorator><AdminPanelSettingsOutlined /></ListItemDecorator> Admin Paneli
+                    <Menu
+                      sx={{
+                        mx: 44,
+                        '--List-radius': '20px',
+                        '--ListItem-minHeight': '44px',
+                        '--List-padding': '8px',
+                        '--List-gap': '1px',
+                        '--List-nestedInsetStart': 'var(--ListItemDecorator-size)',
+                      }}
+                      placement="bottom-end"
+                    >
+                      {user.role === 'ADMIN' && (
+                        <MenuItem component={Link} href="/admin" color="primary" underline="none">
+                          <ListItemDecorator>
+                            <AdminPanelSettingsOutlined />
+                          </ListItemDecorator>
+                          Admin Paneli
                         </MenuItem>
-                      }
-                      {(user.role == "MANAGER" || user.role == "ADMIN") &&
+                      )}
+                      {(user.role === 'MANAGER' || user.role === 'ADMIN') && (
                         <>
-                          <MenuItem onClick={() => navigate('/manager')} color='primary'>
-                            <ListItemDecorator><SupervisorAccountOutlined /></ListItemDecorator> Yetkili Paneli
+                          <MenuItem component={Link} href="/manager" color="primary" underline="none">
+                            <ListItemDecorator>
+                              <SupervisorAccountOutlined />
+                            </ListItemDecorator>
+                            Yetkili Paneli
                           </MenuItem>
                           <Divider sx={{ my: 1 }} />
                         </>
-                      }
-                      <MenuItem onClick={() => navigate("/siparislerim")} color='primary' sx={{ pr: 8 }}>
+                      )}
+                      <MenuItem
+                        component={Link}
+                        href="/siparislerim"
+                        color="primary"
+                        underline="none"
+                        sx={{ pr: 8 }}
+                      >
                         <ListItemDecorator>
                           <ShoppingBasketOutlined />
-                        </ListItemDecorator>Siparişlerim
+                        </ListItemDecorator>
+                        Siparişlerim
                       </MenuItem>
-                      <MenuItem onClick={() => navigate("/profil")} color='primary'>
-                        <ListItemDecorator >
+                      <MenuItem component={Link} href="/profil" color="primary" underline="none">
+                        <ListItemDecorator>
                           <PersonOutline />
-                        </ListItemDecorator>Profil
+                        </ListItemDecorator>
+                        Profil
                       </MenuItem>
-                      <MenuItem color='primary'>
-                        <ListItemDecorator >
+                      <MenuItem color="primary" underline="none">
+                        <ListItemDecorator>
                           <SettingsOutlined />
-                        </ListItemDecorator>Ayarlar
+                        </ListItemDecorator>
+                        Ayarlar
                       </MenuItem>
                       <ListDivider />
-                      <MenuItem onClick={() => logout()} color='primary'>
-                        <ListItemDecorator >
+                      <MenuItem onClick={logout} color="primary" underline="none">
+                        <ListItemDecorator>
                           <LogoutOutlined />
-                        </ListItemDecorator>Çıkış Yap
+                        </ListItemDecorator>
+                        Çıkış Yap
                       </MenuItem>
                     </Menu>
                   </Dropdown>
-                </div>
+                </Box>
                 <BasketDropdown />
-              </div>
-              : <>
-                <Stack spacing={2} direction="row">
-                  {user != "" &&
-                    <BasketDropdown />}
-                  <Button
-                    color="primary"
-                    startDecorator={<PersonIcon />} onClick={() => navigate("/giris")}>
-                    Giriş Yap
-                  </Button>
-                  <Button
-                    color="primary"
-                    startDecorator={<PersonAddIcon />} onClick={() => navigate("/kayit")}>
-                    Kayıt Ol
-                  </Button>
-                </Stack>
-              </>}
-          </div>
-
-          {/* <Collapse in={active}>
-            <div className="sm:hidden" id="mobile-menu">
-              <div className="space-y-1 px-2 pb-3 pt-2">
-
-              </div>
-            </div>
-                </Collapse>*/}
-        </div >
-      </nav >
-
-      <Outlet />
+              </Box>
+            ) : (
+              <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
+                <Button
+                  color="primary"
+                  startDecorator={<PersonIcon />}
+                  component={Link}
+                  underline="none"
+                  href="/giris"
+                >
+                  Giriş Yap
+                </Button>
+                <Button
+                  color="primary"
+                  startDecorator={<PersonAddIcon />}
+                  component={Link}
+                  underline="none"
+                  href="/kayit"
+                >
+                  Kayıt Ol
+                </Button>
+              </Box>
+            )}
+          </Box>
+        </Box>
+      </Box>
     </>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;

@@ -125,7 +125,7 @@ const ShopsCard = ({ data }) => {
             left: 0,
             width: '100%',
             height: '100%',
-            bgcolor: 'rgba(0, 0, 0, 0.8)',
+            bgcolor: 'rgba(0, 0, 0, 0.6)',
             color: 'white',
             display: 'flex',
             alignItems: 'center',

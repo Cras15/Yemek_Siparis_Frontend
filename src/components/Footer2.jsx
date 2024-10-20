@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { AspectRatio, Box, IconButton, Card, CardContent, Divider, Input, List, ListSubheader, ListItem, ListItemButton, Typography, Sheet, Stack } from '@mui/joy';
+import { AspectRatio, Box, IconButton, Card, CardContent, Divider, Input, List, ListSubheader, ListItem, ListItemButton, Typography, Sheet, Stack, useColorScheme } from '@mui/joy';
 import FacebookRoundedIcon from '@mui/icons-material/FacebookRounded';
 import SendIcon from '@mui/icons-material/Send';
 import ColorLensRoundedIcon from '@mui/icons-material/ColorLensRounded';
@@ -24,6 +24,7 @@ const kesfet = [
     createData("Hakkımızda", "#"),
     createData("Kariyer", "#"),
     createData("Teknoloji Kariyeri", "#"),
+    createData("Mağaza Başvurusu", "/magaza-basvuru"),
 ];
 
 const yardim = [
@@ -46,6 +47,13 @@ const bilgi = [
 export default function Footer2() {
     const [color, setColor] = React.useState('neutral');
     const instaLink = "https://www.instagram.com/ayagima.gelsin";
+    const { mode, setMode } = useColorScheme();
+
+    const toggleTheme = () => {
+        console.log(mode);
+        if(mode === 'dark') setMode('light');
+        else setMode('dark');
+      };
 
     return (
         <Sheet
@@ -53,7 +61,6 @@ export default function Footer2() {
             color="primary"
             invertedColors
             sx={{
-                bgcolor: "#fff",
                 flexGrow: 1,
                 p: 2,
                 borderRadius: { xs: 0, sm: 'sm' },
@@ -65,11 +72,7 @@ export default function Footer2() {
                 <IconButton
                     variant="soft"
                     size="sm"
-                    onClick={() => {
-                        const colors = ['primary', 'neutral', 'danger', 'success', 'warning'];
-                        const nextColorIndex = colors.indexOf(color) + 1;
-                        setColor(colors[nextColorIndex] ?? colors[0]);
-                    }}
+                    onClick={toggleTheme}
                 >
                     <ColorLensRoundedIcon fontSize="small" />
                 </IconButton>
@@ -83,7 +86,7 @@ export default function Footer2() {
                 <IconButton variant="plain" color='primary'>
                     <Twitter />
                 </IconButton>
-                <Input
+                {/*<Input
                     variant="soft"
                     placeholder="Ara"
                     type="email"
@@ -94,7 +97,7 @@ export default function Footer2() {
                         </IconButton>
                     }
                     sx={{ ml: 'auto', display: { xs: 'none', md: 'flex' } }}
-                />
+                />*/}
             </Box>
             <Divider sx={{ my: 2 }} />
             <Box

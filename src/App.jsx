@@ -8,7 +8,7 @@ import ShopsPage from "./pages/ShopsPage"
 import BasketPage from "./pages/BasketPage"
 import PaymentPage from "./pages/PaymentPage"
 import LoginPage from "./pages/LoginPage"
-import { Button, CssBaseline, Snackbar, ThemeProvider } from "@mui/joy"
+import { Box, Button, CssBaseline, extendTheme, Snackbar } from "@mui/joy"
 import ErrorPage404 from "./pages/ErrorPage404"
 import ManagerShopEditPage from "./pages/manager/ManagerShopEditPage"
 import ManagerOrdersPage from "./pages/manager/ManagerOrdersPage"
@@ -24,12 +24,29 @@ import ManagerProductsPage from "./pages/manager/products/ManagerProductsPage"
 import ManagerOrderViewPage from "./pages/manager/ManagerOrderViewPage"
 import ManagerProductEditPage from "./pages/manager/products/ManagerProductEditPage"
 import UserProfile from "./pages/UserProfile"
+import AdminIndexPage from "./pages/admin/AdminIndexPage"
+import AdminLayout from "./pages/admin/AdminLayout"
+import AdminUserListPage from "./pages/admin/AdminUserListPage"
+import AdminShopApplicationPage from "./pages/admin/AdminShopApplicationPage"
+import {
+  extendTheme as materialExtendTheme,
+  CssVarsProvider as MaterialCssVarsProvider,
+  THEME_ID as MATERIAL_THEME_ID,
+} from '@mui/material/styles';
+import { CssVarsProvider as JoyCssVarsProvider } from '@mui/joy/styles';
+import Layout from "./components/Layout"
+import ShopApplicationPage from "./pages/ShopApplicationPage"
 
 function App() {
   const { expireDate, user, token } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
+  const materialTheme = materialExtendTheme();
+
+  const theme = extendTheme({
+    colorSchemeSelector: 'media',
+  });
 
   React.useEffect(() => {
     if ((user != "" || token != "") && new Date().getTime() > expireDate) {
@@ -38,37 +55,46 @@ function App() {
     }
   }, []);
   return (
-    <>
-      <CssBaseline />
-      {/* {location.pathname.startsWith("/manager") && <ManagerSidebar />} */}
-      <Routes>
-        <Route path='/' element={!location.pathname.startsWith('/manager') && <Navbar />}>
-          <Route index element={<HomePage />} />
-          <Route path="/kayit" element={<SignInPage />} />
-          <Route path="/giris" element={<LoginPage />} />
-          <Route path="/profil" element={<UserProfile />} />
-          <Route path="/sifremi-unuttum" element={<ForgotPassword />} />
-          <Route path="/sifre-sifirla/:token" element={<ResetPassword />} />
-          <Route path="/shop/:id" element={<ShopsPage />} />
-          <Route path="/sepet" element={<BasketPage />} />
-          <Route path="/odeme" element={<PaymentPage />} />
-          <Route path="/siparislerim" element={<OrdersPage />} />
-          <Route path="/manager" element={<ManagerLayout />} >
-            <Route index element={<ManagerIndexPage2 />} />
-            <Route path='magaza/:id' element={<ManagerShopEditPage />} />
-            <Route path="siparisler" element={<ManagerOrdersPage />} />
-            <Route path="siparisler/:id" element={<ManagerOrderViewPage />} />
-            <Route path="urunler" element={<ManagerProductsPage />} />
-            <Route path="urunler/edit/:id" element={<ManagerProductEditPage />} />
+    <MaterialCssVarsProvider theme={{ [MATERIAL_THEME_ID]: materialTheme }}>
+      <JoyCssVarsProvider theme={theme}>
+        <CssBaseline />
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<HomePage />} />
+            <Route path="/kayit" element={<SignInPage />} />
+            <Route path="/giris" element={<LoginPage />} />
+            <Route path="/profil" element={<UserProfile />} />
+            <Route path="/sifremi-unuttum" element={<ForgotPassword />} />
+            <Route path="/sifre-sifirla/:token" element={<ResetPassword />} />
+            <Route path="/shop/:id" element={<ShopsPage />} />
+            <Route path="/sepet" element={<BasketPage />} />
+            <Route path="/odeme" element={<PaymentPage />} />
+            <Route path="/siparislerim" element={<OrdersPage />} />
+            <Route path="/magaza-basvuru" element={<ShopApplicationPage />} />
+
+            {/* Yönetici */}
+            <Route path="/manager" element={<ManagerLayout />}>
+              <Route index element={<ManagerIndexPage2 />} />
+              <Route path='magaza/:id' element={<ManagerShopEditPage />} />
+              <Route path="siparisler" element={<ManagerOrdersPage />} />
+              <Route path="siparisler/:id" element={<ManagerOrderViewPage />} />
+              <Route path="urunler" element={<ManagerProductsPage />} />
+              <Route path="urunler/edit/:id" element={<ManagerProductEditPage />} />
+            </Route>
+
+            {/* Admin */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminIndexPage />} />
+              <Route path="kullanicilar" element={<AdminUserListPage />} />
+              <Route path="magaza-basvuru" element={<AdminShopApplicationPage />} />
+            </Route>
+
+            {/* Hata */}
+            <Route path='*' element={<ErrorPage404 />} />
           </Route>
-        </Route>
-        <Route path='*' element={<ErrorPage404 />} />
-      </Routes>
-      {//if url inside manager
-        !location.pathname.startsWith("/manager") &&
-        <Footer2 />
-      }
-    </>
+        </Routes>
+      </JoyCssVarsProvider>
+    </MaterialCssVarsProvider>
   )
 }
 

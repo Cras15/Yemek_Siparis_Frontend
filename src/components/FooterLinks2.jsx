@@ -1,4 +1,4 @@
-import { List, ListItem, ListItemButton, ListSubheader } from '@mui/joy'
+import { Link, List, ListItem, ListItemButton, ListSubheader } from '@mui/joy'
 import React from 'react'
 
 const FooterLinks2 = (props) => {
@@ -8,7 +8,7 @@ const FooterLinks2 = (props) => {
             <List sx={{ '--ListItemDecorator-size': '32px' }}>
                 {props.data.map((row, i) => (
                     <ListItem key={i}>
-                        <ListItemButton >{row.name}</ListItemButton>
+                        <ListItemButton component={Link} underline='none' href={row.link}>{row.name}</ListItemButton>
                     </ListItem>
 
                 ))}
