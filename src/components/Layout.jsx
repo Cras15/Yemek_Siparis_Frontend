@@ -2,7 +2,7 @@ import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Box } from '@mui/joy';
 import Navbar from './Navbar';
-import Footer2 from './Footer2';
+import Footer from './Footer';
 
 const Layout = () => {
   const location = useLocation();
@@ -27,7 +27,7 @@ const Layout = () => {
       >
         <Outlet />
       </Box>
-      {!isManagerOrAdmin && <Footer2 />}
+      {!isManagerOrAdmin && <Footer />}
     </Box>
   );
 };

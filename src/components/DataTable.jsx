@@ -50,6 +50,7 @@ function DataTable({
     rowKey,
     actions,
     filters,
+    search = true,
     defaultOrder = "asc",
     defaultOrderBy,
     rowsPerPageOptions = [5, 10, 25],
@@ -142,149 +143,155 @@ function DataTable({
 
     return (
         <>
-            {/* Filtreler ve Arama */}
-            <Sheet
-                sx={{
-                    display: { xs: "flex", sm: "none" },
-                    my: 1,
-                    gap: 1,
-                }}
-            >
-                <Input
-                    size="sm"
-                    placeholder="Ara"
-                    startDecorator={<SearchIcon />}
-                    sx={{ flexGrow: 1 }}
-                    value={searchTerm}
-                    onChange={handleSearch}
-                />
-                {/* Diğer filtreler mobil için modal içinde olabilir */}
-            </Sheet>
-            <Box
-                sx={{
-                    borderRadius: "sm",
-                    py: 2,
-                    display: { xs: "none", sm: "flex" },
-                    flexWrap: "wrap",
-                    gap: 1.5,
-                    "& > *": {
-                        minWidth: { xs: "120px", md: "160px" },
-                    },
-                }}
-            >
-                <FormControl sx={{ flex: 1 }} size="sm">
-                    <FormLabel>Arama</FormLabel>
+            {search && <>
+                {/* Filtreler ve Arama */}
+                < Sheet
+                    sx={{
+                        display: { xs: "flex", sm: "none" },
+                        my: 1,
+                        gap: 1,
+                    }}
+                >
                     <Input
                         size="sm"
                         placeholder="Ara"
                         startDecorator={<SearchIcon />}
+                        sx={{ flexGrow: 1 }}
                         value={searchTerm}
                         onChange={handleSearch}
                     />
-                </FormControl>
-                {filters &&
-                    filters.map((filter) => (
-                        <FormControl size="sm" key={filter.field}>
-                            <FormLabel>{filter.label}</FormLabel>
-                            <Select
-                                size="sm"
-                                placeholder={filter.placeholder}
-                                value={selectedFilters[filter.field] || "all"}
-                                onChange={(e, value) =>
-                                    handleFilterChange(filter.field, value)
-                                }
-                            >
-                                {filter.options.map((option) => (
-                                    <Option key={option.value} value={option.value}>
-                                        {option.label}
-                                    </Option>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    ))}
-            </Box>
-            {isMobile ? (
-                // Mobil görünüm
-                <Box>
-                    {paginatedData.map((row) => (
-                        <MobileRow
-                            key={row[rowKey]}
-                            row={row}
-                            columns={columns}
-                            isOpen={row[rowKey] === expandedRowId}
-                            onRowClick={expandableRows ? () => handleRowClick(row[rowKey]) : null}
-                            actions={getRowActions ? getRowActions(row) : null}
-                            renderDetailPanel={renderDetailPanel}
-                        />
-                    ))}
-                </Box>
-            ) : (
-                // Masaüstü görünümü
-                <Sheet
-                    variant="outlined"
+                    {/* Diğer filtreler mobil için modal içinde olabilir */}
+                </Sheet >
+            </>}
+            {search &&
+                <Box
                     sx={{
-                        display: { xs: "none", sm: "initial" },
-                        width: "100%",
-                        borderRadius: "md",
-                        maxHeight: "55vh",
-                        overflow: "auto",
+                        borderRadius: "sm",
+                        py: 2,
+                        display: { xs: "none", sm: "flex" },
+                        flexWrap: "wrap",
+                        gap: 1.5,
+                        "& > *": {
+                            minWidth: { xs: "120px", md: "160px" },
+                        },
                     }}
                 >
-                    <Table
-                        stickyHeader
-                        hoverRow
+                    <FormControl sx={{ flex: 1 }} size="sm">
+                        <FormLabel>Arama</FormLabel>
+                        <Input
+                            size="sm"
+                            placeholder="Ara"
+                            startDecorator={<SearchIcon />}
+                            value={searchTerm}
+                            onChange={handleSearch}
+                        />
+                    </FormControl>
+                    {filters &&
+                        filters.map((filter) => (
+                            <FormControl size="sm" key={filter.field}>
+                                <FormLabel>{filter.label}</FormLabel>
+                                <Select
+                                    size="sm"
+                                    placeholder={filter.placeholder}
+                                    value={selectedFilters[filter.field] || "all"}
+                                    onChange={(e, value) =>
+                                        handleFilterChange(filter.field, value)
+                                    }
+                                >
+                                    {filter.options.map((option) => (
+                                        <Option key={option.value} value={option.value}>
+                                            {option.label}
+                                        </Option>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        ))}
+                </Box>
+            }
+            {
+                isMobile ? (
+                    // Mobil görünüm
+                    <Box>
+                        {paginatedData.map((row) => (
+                            <MobileRow
+                                key={row[rowKey]}
+                                row={row}
+                                columns={columns}
+                                isOpen={row[rowKey] === expandedRowId}
+                                onRowClick={expandableRows ? () => handleRowClick(row[rowKey]) : null}
+                                actions={getRowActions ? getRowActions(row) : null}
+                                renderDetailPanel={renderDetailPanel}
+                            />
+                        ))}
+                    </Box>
+                ) : (
+                    // Masaüstü görünümü
+                    <Sheet
+                        variant="outlined"
                         sx={{
-                            "--TableCell-headBackground": "var(--joy-palette-background-level1)",
-                            "--Table-headerUnderlineThickness": "1px",
-                            "--TableRow-hoverBackground":
-                                "var(--joy-palette-background-level1)",
-                            "--TableCell-paddingY": "4px",
-                            "--TableCell-paddingX": "8px",
+                            display: { xs: "none", sm: "initial" },
+                            width: "100%",
+                            borderRadius: "md",
+                            maxHeight: "55vh",
+                            overflow: "auto",
                         }}
                     >
-                        <thead>
-                            <tr>
-                                {columns.map((column) => (
-                                    <th key={column.field} style={{ width: column.width }}>
-                                        {column.sortable ? (
-                                            <SortableTableHeader
-                                                title={column.headerName}
-                                                orderByValue={column.field}
-                                                currentOrder={order}
-                                                currentOrderBy={orderBy}
-                                                setOrder={setOrder}
-                                                setOrderBy={setOrderBy}
-                                            />
-                                        ) : (
-                                            <Typography level="body-sm" fontWeight="lg">
-                                                {column.headerName}
-                                            </Typography>
-                                        )}
-                                    </th>
+                        <Table
+                            stickyHeader
+                            hoverRow
+                            sx={{
+                                "--TableCell-headBackground": "var(--joy-palette-background-level1)",
+                                "--Table-headerUnderlineThickness": "1px",
+                                "--TableRow-hoverBackground":
+                                    "var(--joy-palette-background-level1)",
+                                "--TableCell-paddingY": "4px",
+                                "--TableCell-paddingX": "8px",
+                            }}
+                        >
+                            <thead>
+                                <tr>
+                                    {columns.map((column) => (
+                                        <th key={column.field} style={{ width: column.width }}>
+                                            {column.sortable ? (
+                                                <SortableTableHeader
+                                                    title={column.headerName}
+                                                    orderByValue={column.field}
+                                                    currentOrder={order}
+                                                    currentOrderBy={orderBy}
+                                                    setOrder={setOrder}
+                                                    setOrderBy={setOrderBy}
+                                                />
+                                            ) : (
+                                                <Typography level="body-sm" fontWeight="lg">
+                                                    {column.headerName}
+                                                </Typography>
+                                            )}
+                                        </th>
+                                    ))}
+                                    {expandableRows && (
+                                        <th style={{ width: 48 }} /> // Expand/Kapat butonu için sütun
+                                    )}
+                                    {actions && <th style={{ width: 48 }} />}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {paginatedData.map((row) => (
+                                    <Row
+                                        key={row[rowKey]}
+                                        row={row}
+                                        columns={columns}
+                                        isOpen={row[rowKey] === expandedRowId}
+                                        onRowClick={expandableRows ? () => handleRowClick(row[rowKey]) : null}
+                                        actions={getRowActions ? getRowActions(row) : null}
+                                        renderDetailPanel={renderDetailPanel}
+                                        expandableRows={expandableRows}
+                                    />
                                 ))}
-                                {expandableRows && (
-                                    <th style={{ width: 48 }} /> // Expand/Kapat butonu için sütun
-                                )}
-                                {actions && <th style={{ width: 48 }} />}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {paginatedData.map((row) => (
-                                <Row
-                                    key={row[rowKey]}
-                                    row={row}
-                                    columns={columns}
-                                    isOpen={row[rowKey] === expandedRowId}
-                                    onRowClick={expandableRows ? () => handleRowClick(row[rowKey]) : null}
-                                    actions={getRowActions ? getRowActions(row) : null}
-                                    renderDetailPanel={renderDetailPanel}
-                                    expandableRows={expandableRows}
-                                />
-                            ))}
-                        </tbody>
-                    </Table>
-                </Sheet>
-            )}
+                            </tbody>
+                        </Table>
+                    </Sheet>
+                )
+            }
             {/* Sayfalama */}
             <Box
                 sx={{
@@ -509,7 +516,9 @@ function RowMenu({ actions }) {
                 {actions.map((action, index) => (
                     <React.Fragment key={index}>
                         <MenuItem
-                            
+                            component={action.href ? Link : MenuItem}
+                            href={action.href}
+                            underline="none"
                             sx={{ borderRadius: "sm", mx: 1 }}
                             onClick={action.onClick}
                             disabled={action.disabled}

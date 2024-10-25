@@ -85,10 +85,7 @@ const AdminShopApplicationPage = () => {
             label: "Görüntüle",
             icon: <VisibilityOutlined />,
             divider: true,
-            onClick: () => {
-                // Sipariş detay sayfasına yönlendirme
-                window.location.href = `/admin/magaza-basvuru/${row.applicationId}`;
-            },
+            href: `/admin/magaza-basvuru/${row.applicationId}`,
         },
         {
             label: "Başvuruyu Onayla",

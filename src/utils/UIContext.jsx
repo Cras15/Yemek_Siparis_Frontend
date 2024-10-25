@@ -39,7 +39,7 @@ export const UIProvider = ({ children }) => {
     const showSnackbar = (props) => setSnackbarProps({ ...props, open: true });
     const hideSnackbar = () => setSnackbarProps(null);
 
-    const showDoneSnackbar = (message = 'Ýþlem baþarýlý!') => {
+    const showDoneSnackbar = (message = 'ï¿½ï¿½lem baï¿½arï¿½lï¿½!') => {
         showSnackbar({
             children: message,
             color: 'success',
@@ -48,7 +48,7 @@ export const UIProvider = ({ children }) => {
         });
     };
 
-    const showErrorSnackbar = (message = 'Bir hata oluþtu.') => {
+    const showErrorSnackbar = (message = 'Bir hata oluï¿½tu.') => {
         showSnackbar({
             children: message,
             color: 'danger',
@@ -91,7 +91,7 @@ export const UIProvider = ({ children }) => {
                     open={snackbarProps.open}
                     onClose={hideSnackbar}
                     anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                    startDecorator={<Check />}
+                    startDecorator={snackbarProps.color === 'success' ? <Check /> : <WarningRounded />}
                     autoHideDuration={3000}
                     {...snackbarProps}
                     endDecorator={

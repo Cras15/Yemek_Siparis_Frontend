@@ -13,6 +13,7 @@ import {
 import { useSelector } from 'react-redux';
 import { useUI } from '../utils/UIContext';
 import axios from 'axios';
+import { IMaskInput } from 'react-imask';
 
 const ShopApplicationPage = () => {
   const [loading, setLoading] = useState(false);
@@ -128,6 +129,56 @@ const ShopApplicationPage = () => {
             value={formData.deliveryTime}
             onChange={handleChange}
             placeholder="Örneğin: 30"
+          />
+        </FormControl>
+        <FormControl required sx={{ mt: 2 }}>
+          <FormLabel>Açılış Saati</FormLabel>
+          <Input
+            placeholder="00:00"
+            name="openTime"
+            slotProps={{
+              input: {
+                as: IMaskInput,
+                mask: "HH:mm",
+                blocks: {
+                  HH: {
+                    mask: IMask.MaskedRange,
+                    from: 0,
+                    to: 23,
+                  },
+                  mm: {
+                    mask: IMask.MaskedRange,
+                    from: 0,
+                    to: 59,
+                  },
+                },
+              },
+            }}
+          />
+        </FormControl>
+        <FormControl required sx={{ mt: 2 }}>
+          <FormLabel>Kapanış Saati</FormLabel>
+          <Input
+            placeholder="23:59"
+            name="closeTime"
+            slotProps={{
+              input: {
+                as: IMaskInput,
+                mask: "HH:mm",
+                blocks: {
+                  HH: {
+                    mask: IMask.MaskedRange,
+                    from: 0,
+                    to: 23,
+                  },
+                  mm: {
+                    mask: IMask.MaskedRange,
+                    from: 0,
+                    to: 59,
+                  },
+                },
+              },
+            }}
           />
         </FormControl>
 

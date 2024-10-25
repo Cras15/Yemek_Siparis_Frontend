@@ -1,6 +1,5 @@
 import { Route, Routes, Outlet, useLocation, useNavigate } from "react-router-dom"
 import HomePage from "./pages/HomePage"
-import Navbar from "./components/Navbar"
 import SignInPage from "./pages/SignInPage"
 import React from "react"
 import '@fontsource/inter';
@@ -8,21 +7,21 @@ import ShopsPage from "./pages/ShopsPage"
 import BasketPage from "./pages/BasketPage"
 import PaymentPage from "./pages/PaymentPage"
 import LoginPage from "./pages/LoginPage"
-import { Box, Button, CssBaseline, extendTheme, Snackbar } from "@mui/joy"
+import { CssBaseline, extendTheme } from "@mui/joy"
 import ErrorPage404 from "./pages/ErrorPage404"
 import ManagerShopEditPage from "./pages/manager/ManagerShopEditPage"
 import ManagerOrdersPage from "./pages/manager/ManagerOrdersPage"
 import { useDispatch, useSelector } from "react-redux"
 import { userLogout } from "./redux/userSlice"
-import Footer2 from "./components/Footer2"
 import OrdersPage from "./pages/OrdersPage"
 import ForgotPassword from "./pages/ForgotPassword"
 import ResetPassword from "./pages/ResetPassword"
-import ManagerIndexPage2 from "./pages/manager/ManagerIndexPage2"
+import ManagerIndexPage from "./pages/manager/ManagerIndexPage"
 import ManagerLayout from "./components/ManagerLayout"
 import ManagerProductsPage from "./pages/manager/products/ManagerProductsPage"
 import ManagerOrderViewPage from "./pages/manager/ManagerOrderViewPage"
 import ManagerProductEditPage from "./pages/manager/products/ManagerProductEditPage"
+import ManagerProductCreatePage from "./pages/manager/products/ManagerProductCreatePage"
 import UserProfile from "./pages/UserProfile"
 import AdminIndexPage from "./pages/admin/AdminIndexPage"
 import AdminLayout from "./pages/admin/AdminLayout"
@@ -36,11 +35,13 @@ import {
 import { CssVarsProvider as JoyCssVarsProvider } from '@mui/joy/styles';
 import Layout from "./components/Layout"
 import ShopApplicationPage from "./pages/ShopApplicationPage"
+import AdminRegisterUser from "./pages/admin/AdminRegisterUser"
+import AdminUserViewPage from "./pages/admin/AdminUserViewPage"
+import '@fontsource/inter';
 
 function App() {
   const { expireDate, user, token } = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  const location = useLocation();
   const navigate = useNavigate();
   const materialTheme = materialExtendTheme();
 
@@ -74,18 +75,21 @@ function App() {
 
             {/* Yönetici */}
             <Route path="/manager" element={<ManagerLayout />}>
-              <Route index element={<ManagerIndexPage2 />} />
+              <Route index element={<ManagerIndexPage />} />
               <Route path='magaza/:id' element={<ManagerShopEditPage />} />
               <Route path="siparisler" element={<ManagerOrdersPage />} />
               <Route path="siparisler/:id" element={<ManagerOrderViewPage />} />
               <Route path="urunler" element={<ManagerProductsPage />} />
+              <Route path="urunler/olustur" element={<ManagerProductCreatePage />} />
               <Route path="urunler/edit/:id" element={<ManagerProductEditPage />} />
             </Route>
 
             {/* Admin */}
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminIndexPage />} />
+              <Route path="kullanici-ekle" element={<AdminRegisterUser />} />
               <Route path="kullanicilar" element={<AdminUserListPage />} />
+              <Route path="kullanicilar/:id" element={<AdminUserViewPage />} />
               <Route path="magaza-basvuru" element={<AdminShopApplicationPage />} />
             </Route>
 

@@ -1,10 +1,12 @@
 import { AccountCircle, Add, Business } from '@mui/icons-material'
-import { Box, Button, Card, CardContent, CardOverflow, Chip, Divider, FormControl, FormLabel, Grid, Input, ListItemDecorator, Tab, tabClasses, TabList, TabPanel, Tabs, Textarea, Typography } from '@mui/joy'
+import { Box, Button, Card, CardContent, CardOverflow, Chip, Divider, FormControl, FormLabel, Grid, Input, Link, ListItemDecorator, Tab, tabClasses, TabList, TabPanel, Tabs, Textarea, Typography } from '@mui/joy'
 import axios from 'axios'
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getUserProfile, setUserData } from '../redux/userSlice'
 import { useUI } from '../utils/UIContext'
+import AddressCard from '../components/AddressCard'
+import AddressForm from '../components/AddressForm'
 
 const UserProfile = () => {
     const [index, setIndex] = React.useState(0)
@@ -121,6 +123,19 @@ const UserProfile = () => {
         });
     }
 
+    const handleVerifySend = async() => {
+        await axios.post("/auth/resend-verification", null, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }).then((res) => {
+            showDoneSnackbar(res.data);
+        }).catch((error) => {
+            console.log(error);
+            showErrorSnackbar(error.response.data);
+        });
+    }
+
     return (
         <Box sx={{ width: { sm: "95%", md: "80%", lg: "70%" }, m: 'auto', mt: 5, borderRadius: 10, background: 'transparent' }}>
             <Tabs
@@ -185,7 +200,12 @@ const UserProfile = () => {
                                     <Grid xs={12} sm={6}>
                                         <FormControl required>
                                             <FormLabel>Mail Adresi</FormLabel>
-                                            <Input placeholder="E-Mail" type='email' defaultValue={user?.email} disabled />
+                                            <Input placeholder="E-Mail" type='email' defaultValue={user?.email} readOnly
+                                                endDecorator={user?.status === "UNVERIFIED"&&
+                                                    <Button variant="soft" onClick={handleVerifySend}>
+                                                        Onay Gönder
+                                                    </Button>} />
+
                                         </FormControl>
                                     </Grid>
                                     <Grid xs={12} sm={6}>
@@ -222,211 +242,4 @@ const UserProfile = () => {
     )
 }
 
-const AddressCard = ({ address, handleAddressDelete, handleAddressEdit }) => {
-    return (
-        <Grid xs={12} sm={6} md={4}>
-            <Card variant="outlined" sx={{ width: "100%", height: "100%" }}>
-                <CardOverflow variant="soft" sx={{ bgcolor: 'background.level1' }}>
-                    <CardContent orientation="horizontal">
-                        <Typography
-                            level="title-md"
-                            textColor="text.secondary"
-                            sx={{
-                                fontWeight: 'bold',
-                                whiteSpace: 'nowrap',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                            }}
-                        >
-                            {address.addressTitle}
-                        </Typography>
-                    </CardContent>
-                    <Divider inset="context" />
-                </CardOverflow>
-                <CardContent>
-                    <Typography level="body-md" mb={1} gutterBottom>{address.name} {address.surname}</Typography>
-                    <Typography level="title-sm" fontSize={12}>{address.addressLine} no:{address.apartment}/{address.door} {address.state}/{address.city}</Typography>
-                    <Typography level="title-sm" fontSize={12} my={1}>{address.phone}</Typography>
-                    <Box sx={{ display: 'flex', gap: 1 }}>
-                        <Button variant='plain' color='danger' onClick={() => handleAddressDelete(address.addressId)}>Sil</Button>
-                        <Button variant='outlined' color='primary' sx={{ ml: 'auto' }} onClick={() => handleAddressEdit(address)}>Düzenle</Button>
-                    </Box>
-                </CardContent>
-            </Card>
-        </Grid>
-    )
-}
-
 export default UserProfile;
-
-const AddressForm = forwardRef(({ initialData, mode }, ref) => {
-    const [formData, setFormData] = useState({
-        addressLine: '',
-        city: '',
-        state: '',
-        apartment: '',
-        door: '',
-        floor: '',
-        addressTitle: '',
-        phone: '',
-        name: '',
-        surname: '',
-        postalCode: '',
-        description: '',
-        isDefault: false
-    });
-
-    useImperativeHandle(ref, () => ({
-        getData: () => formData
-    }));
-
-    useEffect(() => {
-        if (initialData) {
-            setFormData(initialData);
-        }
-    }, [initialData]);
-
-    const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setFormData(prevState => ({
-            ...prevState,
-            [name]: type === 'checkbox' ? checked : value
-        }));
-    };
-
-    return (
-        <Box
-            sx={{
-                width: { xs: '100%', sm: '100%', md: 600, lg: 800 },
-                p: 2,
-            }}
-        >
-            <Grid container spacing={2}>
-                <Grid xs={12}>
-                    <FormControl required>
-                        <FormLabel>Adres Başlığı</FormLabel>
-                        <Input
-                            placeholder="Adres Başlığı"
-                            name="addressTitle"
-                            value={formData.addressTitle}
-                            onChange={handleChange}
-                        />
-                    </FormControl>
-                </Grid>
-                <Grid xs={12} md={6}>
-                    <FormControl required>
-                        <FormLabel>Ad</FormLabel>
-                        <Input
-                            placeholder="Ad"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleChange}
-                        />
-                    </FormControl>
-                </Grid>
-                <Grid xs={12} md={6}>
-                    <FormControl required>
-                        <FormLabel>Soyad</FormLabel>
-                        <Input
-                            placeholder="Soyad"
-                            name="surname"
-                            value={formData.surname}
-                            onChange={handleChange}
-                        />
-                    </FormControl>
-                </Grid>
-                <Grid xs={12} md={6}>
-                    <FormControl required>
-                        <FormLabel>Telefon</FormLabel>
-                        <Input
-                            placeholder="Telefon"
-                            name="phone"
-                            value={formData.phone}
-                            onChange={handleChange}
-                        />
-                    </FormControl>
-                </Grid>
-                <Grid xs={12} md={6}>
-                    <FormControl required>
-                        <FormLabel>İl</FormLabel>
-                        <Input
-                            placeholder="Şehir"
-                            name="city"
-                            value={formData.city}
-                            onChange={handleChange}
-                        />
-                    </FormControl>
-                </Grid>
-                <Grid xs={12} md={6}>
-                    <FormControl required>
-                        <FormLabel>İlçe</FormLabel>
-                        <Input
-                            placeholder="İlçe"
-                            name="state"
-                            value={formData.state}
-                            onChange={handleChange}
-                        />
-                    </FormControl>
-                </Grid>
-                <Grid xs={12} md={6}>
-                    <FormControl required>
-                        <FormLabel>Apartman No</FormLabel>
-                        <Input
-                            placeholder="Apartman No"
-                            name="apartment"
-                            value={formData.apartment}
-                            onChange={handleChange}
-                        />
-                    </FormControl>
-                </Grid>
-                <Grid xs={12} md={6}>
-                    <FormControl required>
-                        <FormLabel>Kapı No</FormLabel>
-                        <Input
-                            placeholder="Kapı No"
-                            name="door"
-                            value={formData.door}
-                            onChange={handleChange}
-                        />
-                    </FormControl>
-                </Grid>
-                <Grid xs={12} md={6}>
-                    <FormControl required>
-                        <FormLabel>Kat</FormLabel>
-                        <Input
-                            placeholder="Kat"
-                            name="floor"
-                            type="number"
-                            value={formData.floor}
-                            onChange={handleChange}
-                        />
-                    </FormControl>
-                </Grid>
-                <Grid xs={12}>
-                    <FormControl required>
-                        <FormLabel>Posta Kodu</FormLabel>
-                        <Input
-                            placeholder="Posta Kodu"
-                            name="postalCode"
-                            type="number"
-                            value={formData.postalCode}
-                            onChange={handleChange}
-                        />
-                    </FormControl>
-                </Grid>
-                <Grid xs={12}>
-                    <FormControl required>
-                        <FormLabel>Adres</FormLabel>
-                        <Textarea
-                            placeholder="Mahalle, sokak"
-                            name="addressLine"
-                            value={formData.addressLine}
-                            onChange={handleChange}
-                            minRows={3}
-                        />
-                    </FormControl>
-                </Grid>
-            </Grid>
-        </Box>
-    );
-});

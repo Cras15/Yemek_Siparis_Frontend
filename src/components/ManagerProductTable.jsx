@@ -27,6 +27,7 @@ import {
     Visibility,
     Edit,
     DeleteForever,
+    Add,
 } from "@mui/icons-material";
 import { iconButtonClasses } from "@mui/joy/IconButton";
 import PropTypes from "prop-types";
@@ -185,6 +186,12 @@ function ManagerProductTable({ products, getProducts }) {
                             </Option>
                         ))}
                     </Select>
+                </FormControl>
+                <FormControl size="xs">
+                    <FormLabel>&nbsp;</FormLabel>
+                    <IconButton size="md" component={Link} href="/manager/urunler/olustur" underline="none">
+                        <Add /> Ürün Ekle
+                    </IconButton>
                 </FormControl>
             </Box>
             {isMobile ? (

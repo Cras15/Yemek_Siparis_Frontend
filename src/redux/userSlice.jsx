@@ -1,18 +1,27 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { STATUS } from "../components/Status";
-import { useSelector } from "react-redux";
 
-export const userLogin = createAsyncThunk("auth/login", async (data) => {
-    console.log(data);
-    const res = await axios.post("/auth/login", {
-        username: data.username,
-        password: data.password
-    }).then(function (response) {
-        return response;
-    })
-    return res;
-});
+export const userLogin = createAsyncThunk(
+    'auth/login',
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await axios.post('/auth/login', {
+                username: data.username,
+                password: data.password
+            });
+            return response; // Başarılı yanıtı döndür
+        } catch (error) {
+            // Hata yanıtını kontrol edin ve rejectWithValue ile geri iletin
+            if (error.response && error.response.data) {
+                return rejectWithValue(error.response.data);
+            } else {
+                // Beklenmeyen hatalar için genel bir mesaj döndürün
+                return rejectWithValue({ message: 'Bir hata oluştu' });
+            }
+        }
+    }
+);
 
 export const userRegister = createAsyncThunk("auth/register", async (data) => {
     const res = await axios.post("/auth/register", data).then(function (response) {
@@ -70,7 +79,7 @@ const userSlice = createSlice({
             })
             .addCase(userLogin.rejected, (state, action) => {
                 state.status = STATUS.ERROR;
-                console.log(action.error);
+                state.error = action.payload.message || 'Giriş sırasında bir hata oluştu';
             });
         builder
             .addCase(userRegister.pending, (state) => {
@@ -102,5 +111,5 @@ const userSlice = createSlice({
 
 export const selectUserToken = (state) => state.user.token;
 
-export const { userLogout,setUserData } = userSlice.actions
+export const { userLogout, setUserData } = userSlice.actions
 export default userSlice.reducer;

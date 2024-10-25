@@ -1,21 +1,19 @@
-import React from 'react'
-import { Grid, Paper, Stack } from "@mui/material";
-import FooterLinks from './FooterLinks';
-import PhoneIcon from '@mui/icons-material/Phone';
+import * as React from 'react';
+
+import { AspectRatio, Box, IconButton, Card, CardContent, Divider, Input, List, ListSubheader, ListItem, ListItemButton, Typography, Sheet, Stack, useColorScheme } from '@mui/joy';
 import FacebookRoundedIcon from '@mui/icons-material/FacebookRounded';
-import TwitterIcon from '@mui/icons-material/Twitter';
-import InstagramIcon from '@mui/icons-material/Instagram';
-import styled from '@emotion/styled';
-import { Accordion, AccordionDetails, AccordionGroup, AccordionSummary, Divider, IconButton, Typography } from '@mui/joy';
-import Copyright from './Copyright';
+import SendIcon from '@mui/icons-material/Send';
+import ColorLensRoundedIcon from '@mui/icons-material/ColorLensRounded';
+import { Instagram, Twitter } from '@mui/icons-material';
 import AppStoreIcon from '../assets/AppStoreIcon';
 import GooglePlayIcon from '../assets/GooglePlayIcon';
 import HuaweiStoreIcon from '../assets/HuaweiStoreIcon';
+import FooterLinks from './FooterLinks';
+import Copyright from './Copyright';
 
 function createData(name, link) {
     return { name, link };
 }
-
 const indir = [
     createData(<AppStoreIcon />, "#"),
     createData(<GooglePlayIcon />, "#"),
@@ -26,6 +24,7 @@ const kesfet = [
     createData("Hakkımızda", "#"),
     createData("Kariyer", "#"),
     createData("Teknoloji Kariyeri", "#"),
+    createData("Mağaza Başvurusu", "/magaza-basvuru"),
 ];
 
 const yardim = [
@@ -45,97 +44,96 @@ const bilgi = [
 ];
 
 
-
-const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: '#fff',
-    textAlign: 'left',
-    paddingTop: 15,
-}));
-
-const Footer = () => {
+export default function Footer() {
+    const [color, setColor] = React.useState('neutral');
     const instaLink = "https://www.instagram.com/ayagima.gelsin";
+    const { mode, setMode } = useColorScheme();
+
+    const toggleTheme = () => {
+        console.log(mode);
+        if(mode === 'dark') setMode('light');
+        else setMode('dark');
+      };
+
     return (
-        <div style={{ width: "100%" }} className='mt-16'>
+        <Sheet
+            variant="plain"
+            color="primary"
+            invertedColors
+            sx={{
+                flexGrow: 1,
+                p: 2,
+                borderRadius: { xs: 0, sm: 'sm' },
+                mt: 5,
+            }}
+        >
             <Divider />
-            {/* desktop part */}
-            <section style={{ background: "white" }} >
-                <section style={{ background: "white" }} className="hidden lg:flex w-full h-full items-center justify-between">
-                    <Grid style={{ width: '80%', margin: 'auto' }}>
-                        <div style={{ marginTop: 50, marginBottom: 50 }} className='grid gap-3 grid-flow-col'>
-                            <FooterLinks title="Uygulamayı İndirin" data={indir} />
-                            <FooterLinks title="Keşfet" data={kesfet} />
-                            <FooterLinks title="Yardım" data={yardim} />
-                            <FooterLinks title="Hakkımızda" data={bilgi} />
-                        </div>
-                        <div className='w-full text-left pb-4'>
-                            <Divider sx={{ mb: 3 }} />
-                            <div className='grid gap-3 grid-flow-col'>
-                                <Copyright />
-                                <div className='col-span-3 ml-auto my-auto'>
-                                    <IconButton onClick={() => window.open('http://facebook.com', "_blank")} sx={{ "&:hover": { color: '#4267B2' } }}>
-                                        <FacebookRoundedIcon />
-                                    </IconButton>
-                                    <IconButton onClick={() => window.open('http://twitter.com', "_blank")} sx={{ "&:hover": { color: '#1DA1F2' } }}>
-                                        <TwitterIcon />
-                                    </IconButton>
-                                    <IconButton onClick={() => window.open(instaLink, "_blank")} sx={{ "&:hover": { color: '#FD1D1D' } }}>
-                                        <InstagramIcon />
-                                    </IconButton>
-                                </div>
-                            </div>
-                        </div>
-                    </Grid>
-                </section>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2 }}>
+                <IconButton
+                    variant="soft"
+                    size="sm"
+                    onClick={toggleTheme}
+                >
+                    <ColorLensRoundedIcon fontSize="small" />
+                </IconButton>
+                <Divider orientation="vertical" />
+                <IconButton variant="plain" color='primary'>
+                    <FacebookRoundedIcon />
+                </IconButton>
+                <IconButton variant="plain" color='danger' onClick={() => window.open(instaLink, "_blank")} sx={{ "&:hover": { color: '#FD1D1D' } }}>
+                    <Instagram />
+                </IconButton>
+                <IconButton variant="plain" color='primary'>
+                    <Twitter />
+                </IconButton>
+                {/*<Input
+                    variant="soft"
+                    placeholder="Ara"
+                    type="email"
+                    name="email"
+                    endDecorator={
+                        <IconButton variant="soft" aria-label="subscribe">
+                            <SendIcon />
+                        </IconButton>
+                    }
+                    sx={{ ml: 'auto', display: { xs: 'none', md: 'flex' } }}
+                />*/}
+            </Box>
+            <Divider sx={{ my: 2 }} />
+            <Box
+                sx={{
+                    display: 'flex',
+                    flexDirection: { xs: 'column', md: 'row' },
+                    alignItems: { md: 'flex-start' },
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: 2,
+                }}
+            >
 
 
-                {/* mobile */}
-                <section className="flex items-center justify-between lg:hidden w-full h-full bg-white">
-                    <Stack spacing={0} style={{ width: "100%" }}>
-                        <div className='w-full'>
-                            <AccordionGroup >
-                                <Accordion>
-                                    <AccordionSummary>Keşfet</AccordionSummary>
-                                    <AccordionDetails>
-                                        <FooterLinks title={""} data={kesfet} />
-                                    </AccordionDetails>
-                                </Accordion>
-                                <Accordion>
-                                    <AccordionSummary>Yardım</AccordionSummary>
-                                    <AccordionDetails>
-                                        <FooterLinks title={""} data={yardim} />
-                                    </AccordionDetails>
-                                </Accordion>
-                                <Accordion>
-                                    <AccordionSummary>Hakkımızda</AccordionSummary>
-                                    <AccordionDetails>
-                                        <FooterLinks title={""} data={bilgi} />
-                                    </AccordionDetails>
-                                </Accordion>
-                            </AccordionGroup>
+                <div className='m-auto '>
+                    <List
+                        size="sm"
+                        orientation="horizontal"
+                        wrap
+                        sx={{ flexGrow: 0, '--ListItem-radius': '8px', '--ListItem-gap': '0px', }}>
+                        <div className='hidden lg:block mr-32'>
+                            <Typography level='h4' color='primary' mb={2}>Uygulamayı İndirin</Typography>
+                            <Stack spacing={0.5} sx={{ cursor: 'pointer' }}>
+                                <div onClick={() => window.open("https://www.apple.com/tr/app-store/", "_blank")}><AppStoreIcon /></div>
+                                <div onClick={() => window.open("https://play.google.com/", "_blank")}><GooglePlayIcon /></div>
+                                <div onClick={() => window.open("https://consumer.huawei.com/tr/mobileservices/appgallery/", "_blank")}><HuaweiStoreIcon /></div>
+                            </Stack>
                         </div>
-                        <div className='w-full text-center pb-4'>
-                            <Divider sx={{ mb: 3 }} />
-                            <div className='grid gap-3 grid-flow-row'>
-                                <Copyright />
-                                <div>
-                                    <IconButton onClick={() => window.open('http://facebook.com', "_blank")} sx={{ "&:hover": { color: '#4267B2' } }}>
-                                        <FacebookRoundedIcon />
-                                    </IconButton>
-                                    <IconButton onClick={() => window.open('http://twitter.com', "_blank")} sx={{ "&:hover": { color: '#1DA1F2' } }}>
-                                        <TwitterIcon />
-                                    </IconButton>
-                                    <IconButton onClick={() => window.open(instaLink, "_blank")} sx={{ "&:hover": { color: '#FD1D1D' } }}>
-                                        <InstagramIcon />
-                                    </IconButton>
-                                </div>
-                            </div>
-                        </div>
-                    </Stack>
-                </section>
+                        <FooterLinks title="Keşfet" data={kesfet} md={180} />
+                        <FooterLinks title="Hakkımızda" data={bilgi} md={240} />
+                        <FooterLinks title="Yardım" data={yardim} md={240} />
+                    </List>
+                </div>
 
-            </section >
-        </div >
-    )
+            </Box><Divider sx={{ mb: 3, mt: 2 }} />
+            <Copyright />
+        </Sheet>
+    );
 }
-
-export default Footer;

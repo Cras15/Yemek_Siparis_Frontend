@@ -10,11 +10,13 @@ import { Block, VerifiedOutlined, WarningAmberRounded, DeleteOutlineRounded, Edi
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { format } from 'date-fns';
-import { tr } from 'date-fns/locale';
+import { hr, tr } from 'date-fns/locale';
+import { useUI } from '../../utils/UIContext';
 
 const AdminUserListPage = () => {
     const [users, setUsers] = useState([]);
     const { token } = useSelector((state) => state.user);
+    const { showDoneSnackbar, showErrorSnackbar, openModal } = useUI();
 
     const getUsers = async () => {
         await axios.get(`/admin/user/all`, {
@@ -28,22 +30,100 @@ const AdminUserListPage = () => {
             console.log(error);
         });
     }
+
+    const handleVerifyMail = async (userId) => {
+        await openModal({
+            title: "Kullanıcı Doğrulama",
+            body: "Kullanıcıyı doğrulamak istediğine emin misin?",
+            yesButton: "Kullanıcıyı Doğrula",
+            yesButtonColor: "success",
+            noButton: "Vazgeç",
+            onAccept: () => {
+                axios
+                    .post(`/admin/user/verify?id=${userId}`, null, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    })
+                    .then((response) => {
+                        showDoneSnackbar(response.data);
+                        getUsers();
+                        return response;
+                    })
+                    .catch((error) => {
+                        showErrorSnackbar(error.message);
+                    });
+            },
+        });
+    };
+    const handleUserBanned = async (userId) => {
+        await openModal({
+            title: "Kullanıcı Yasaklama",
+            body: "Kullanıcıyı yasaklamak istediğine emin misin?",
+            yesButton: "Kullanıcıyı Yasakla",
+            noButton: "Vazgeç",
+            onAccept: () => {
+                axios
+                    .post(`/admin/user/banned?id=${userId}`, null, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    })
+                    .then((response) => {
+                        showDoneSnackbar(response.data);
+                        getUsers();
+                        return response;
+                    })
+                    .catch((error) => {
+                        showErrorSnackbar(error.message);
+                    });
+            },
+        });
+    };
+
+    const getRowActions = (row) => [
+        {
+            label: "Görüntüle",
+            icon: <VisibilityOutlined />,
+            href: `/admin/kullanicilar/${row.userId}`,
+        },
+        {
+            label: "Düzenle",
+            icon: <EditOutlined />,
+            divider: true,
+            onClick: () => {
+                console.log("Düzenle", row);
+            },
+        },
+        {
+            label: "Maili Doğrula",
+            icon: <VerifiedOutlined />,
+            color: "success",
+            onClick: () => handleVerifyMail(row.userId),
+            disabled: row.status !== "UNVERIFIED",
+        },
+        {
+            label: row.status === "BANNED" ? "Yasağı Kaldır" : "Yasakla",
+            icon: <BlockOutlined />,
+            color: "danger",
+            onClick: () => (handleUserBanned(row.userId)),
+        },
+    ];
+
     useEffect(() => {
         getUsers();
     }, []);
 
     return (
-        <>
-            <DataTable
-                columns={columns}
-                data={users}
-                rowKey="userId"
-                filters={filters}
-                defaultOrderBy="userId"
-                actions
-                getRowActions={getRowActions}
-            />
-        </>
+        <DataTable
+            columns={columns}
+            data={users}
+            rowKey="userId"
+            filters={filters}
+            defaultOrderBy="userId"
+            actions
+            getRowActions={getRowActions}
+        />
     )
 }
 
@@ -90,10 +170,14 @@ const columns = [
         headerName: "Rol",
         width: 100,
         sortable: true,
-        renderCell: (row) => (
-            row.role === "ADMIN" ? "Admin" :
-                row.role === "MANAGER" ? "Mağaza Yetkilisi" :
-                    row.role === "USER" ? "Üye" : "Rol Yok"
+        renderCell: (row) => (<Chip color={
+            row.role === "ADMIN" ? "danger" :
+                row.role === "MANAGER" ? "warning" :
+                    row.role === "USER" ? "primary" : "neutral"
+        }>{
+                row.role === "ADMIN" ? "Admin" :
+                    row.role === "MANAGER" ? "Mağaza Yetkilisi" :
+                        row.role === "USER" ? "Üye" : "Rol Yok"}</Chip>
 
         ),
     },
@@ -164,50 +248,5 @@ const filters = [
             { value: "VERIFIED", label: "Doğrulanmış" },
             { value: "BANNED", label: "Yasaklı" },
         ],
-    },
-];
-
-// Satır eylemleri
-const getRowActions = (row) => [
-    {
-        label: "Görüntüle",
-        icon: <VisibilityOutlined />,
-        onClick: () => {
-            console.log("Görüntüle", row);
-        },
-    },
-    {
-        label: "Düzenle",
-        icon: <EditOutlined />,
-        onClick: () => {
-            console.log("Düzenle", row);
-        },
-    },
-    {
-        label: "Sil",
-        divider: true,
-        icon: <DeleteOutlineRounded />,
-        color: "danger",
-        onClick: () => {
-            console.log("Sil", row);
-        },
-    },
-    {
-        label: "Maili Doğrula",
-        icon: <VerifiedOutlined />,
-        color: "success",
-        onClick: () => {
-            console.log("Sil", row);
-        },
-        disabled: row.status !== "UNVERIFIED",
-    },
-    {
-        label: "Yasakla",
-        icon: <BlockOutlined />,
-        color: "danger",
-        onClick: () => {
-            console.log("Sil", row);
-        },
-        disabled: row.status === "BANNED",
     },
 ];

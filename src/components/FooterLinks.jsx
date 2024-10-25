@@ -1,21 +1,20 @@
+import { Link, List, ListItem, ListItemButton, ListSubheader } from '@mui/joy'
 import React from 'react'
-import { Grid, Stack, Box } from "@mui/material";
-import { Link, Typography } from '@mui/joy';
 
 const FooterLinks = (props) => {
-
     return (
-        <Grid xs={3} item={true}>
-            <Typography level='h4' color='primary'>{props.title}</Typography>
-            <Box sx={{ width: '100%', marginTop: 2, fontSize: "15px", lineHeight: "22px", fontWeight: "500px" }}>
-                <Stack spacing={1}>
-                    {props.data.map((row,i) => (
-                        <Link key={i} href={row.link} style={{ color: 'rgb(82, 82, 82)', fontSize: "14px", lineHeight: "22px" }} underline="none">{row.name}</Link>
-                    ))}
-                </Stack>
-            </Box>
-        </Grid>
+        <ListItem nested sx={{ width: { xs: '50%', md: props.md } }}>
+            <ListSubheader sx={{ fontWeight: 'xl',color:'var(--variant-plainColor, rgba(var(--joy-palette-primary-mainChannel, 11 107 203) / 1))' }}>{props.title}</ListSubheader>
+            <List sx={{ '--ListItemDecorator-size': '32px' }}>
+                {props.data.map((row, i) => (
+                    <ListItem key={i}>
+                        <ListItemButton component={Link} underline='none' href={row.link}>{row.name}</ListItemButton>
+                    </ListItem>
+
+                ))}
+            </List>
+        </ListItem>
     )
 }
 
-export default FooterLinks;
+export default FooterLinks

@@ -10,7 +10,7 @@ const AdminSidebar = () => {
                 title: "Kullanıcılar",
                 icon: <GroupRounded />,
                 children: [ // Alt menüler
-                    { title: "Yeni Hesap Oluştur", link: "/admin/profile" },
+                    { title: "Yeni Hesap Oluştur", link: "/admin/kullanici-ekle" },
                     { title: "Kullanıcı Listesi", link: "/admin/kullanicilar" }
                 ],
             },

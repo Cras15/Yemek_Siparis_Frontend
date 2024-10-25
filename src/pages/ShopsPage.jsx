@@ -169,7 +169,7 @@ const ShopsPage = () => {
           <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, alignItems: 'center' }} >
             <StarRounded sx={{ mr: -0.5 }} color='primary' />
             <Typography sx={{ mr: -0.5 }}>{shop.shopRating?.toFixed(1)}</Typography>
-            <Typography level='body-xs'>({shop!= "" ? shop.reviewCount: '0'})</Typography>
+            <Typography level='body-xs'>({shop != "" ? shop.reviewCount : '0'})</Typography>
             <Button fontSize={13} onClick={() => setCommentModal(true)} variant='plain' p={1} borderRadius={10}>Yorumları Gör</Button>
           </Box>
         </CardContent>
@@ -254,9 +254,9 @@ const ShopsPage = () => {
             <ListItem>
               <Card sx={{ width: "100%" }}>
                 <CardContent>
-                  <Typography level="title-sm">Servis: &nbsp;&nbsp;&nbsp;&nbsp;<StyledRating sx={{ top: 4 }} value="3.2" size='small' readOnly /> <Typography fontWeight="bold" color='primary'>3.2</Typography></Typography>
-                  <Typography level="title-sm">Lezzet: &nbsp;&nbsp;&nbsp;<StyledRating sx={{ top: 4 }} value="4" size='small' readOnly /> <Typography fontWeight="bold" color='primary'>4.0</Typography></Typography>
-                  <Typography level="title-sm">Teslimat: <StyledRating sx={{ top: 4 }} value="3.7" size='small' readOnly /> <Typography fontWeight="bold" color='primary'>3.7</Typography></Typography>
+                  <Typography level="title-sm">Servis: &nbsp;&nbsp;&nbsp;&nbsp;<StyledRating sx={{ top: 4 }} value={shop?.shopServiceRating} precision={0.2} size='small' readOnly /> <Typography fontWeight="bold" color='primary'>{shop?.shopServiceRating >= 0 ? shop.shopServiceRating.toFixed(1) : "Yükleniyor..."}</Typography></Typography>
+                  <Typography level="title-sm">Lezzet: &nbsp;&nbsp;&nbsp;<StyledRating sx={{ top: 4 }} value={shop?.shopTasteRating} precision={0.2} size='small' readOnly /> <Typography fontWeight="bold" color='primary'>{shop?.shopTasteRating >= 0 ? shop.shopTasteRating.toFixed(1) : "Yükleniyor..."}</Typography></Typography>
+                  <Typography level="title-sm">Teslimat: <StyledRating sx={{ top: 4 }} value={shop?.shopDeliveryRating} precision={0.2} size='small' readOnly /> <Typography fontWeight="bold" color='primary'>{shop?.shopDeliveryRating >= 0 ? shop.shopDeliveryRating.toFixed(1) : "Yükleniyor..."}</Typography></Typography>
                 </CardContent>
               </Card>
             </ListItem>

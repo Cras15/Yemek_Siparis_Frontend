@@ -27,11 +27,28 @@ const LoginPage = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    if (data.get('email') != "" && data.get('password') != "") {
-      dispatch(userLogin({ username: data.get('email'), password: data.get('password') })).then((res) => {
-        showSnackbar({ children: res?.payload == undefined ? "Girilen bilgiler hatalı" : "Giriş başarılı", color: res.payload.status == 200 ? 'success' : 'danger' });
+    const email = data.get('email');
+    const password = data.get('password');
+
+    if (email !== "" && password !== "") {
+      try {
+        // Thunk'u dispatch edip, sonucu unwrap ederek alın
+        const res = await dispatch(userLogin({ username: email, password: password })).unwrap();
+        showSnackbar({ children: "Giriş başarılı", color: 'success' });
         dispatch(getUserProfile());
-      });
+      } catch (error) {
+        console.log(error);
+        let errorMessage = "Girilen bilgiler hatalı";
+
+        // rejectWithValue ile döndürülen payload'a eriş
+        if (error.message) { // API'den gelen özel hata mesajı
+          errorMessage = error.message;
+        }
+
+        showSnackbar({ children: errorMessage, color: 'danger' });
+      }
+    } else {
+      showSnackbar({ children: "Lütfen email ve şifrenizi girin.", color: 'danger' });
     }
   };
 
