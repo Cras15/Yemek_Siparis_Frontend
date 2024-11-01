@@ -17,7 +17,7 @@ const AdminSidebar = () => {
             { title: "Mağaza Başvuruları", link: "/admin/magaza-basvuru", icon: <DashboardRounded /> },
         ],
         footer: [
-            { title: "Destek Talepleri", icon: <SupportRounded />, link: "/support" },
+            { title: "Destek Talepleri", icon: <SupportRounded />, link: "/admin/destek-talepleri" },
             { title: "Ana Sayfaya Dön", icon: <PeopleRounded />, link: "/" },
         ]
     };

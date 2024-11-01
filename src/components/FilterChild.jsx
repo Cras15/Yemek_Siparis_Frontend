@@ -46,7 +46,7 @@ import {
       if (minOrderPrice)
         queryParams.append('minOrderPrice', minOrderPrice);
       queryParams.append('sortType', sortType);
-      navigate(`/?${queryParams.toString()}`);
+      navigate(`?${queryParams.toString()}`);
       if (closeModal) closeModal();
     };
   

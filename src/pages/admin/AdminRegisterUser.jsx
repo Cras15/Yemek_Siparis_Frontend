@@ -1,15 +1,20 @@
 import { Key, Mail } from '@mui/icons-material'
 import { Box, Button, Checkbox, Divider, FormControl, FormLabel, Grid, Input, Stack, Typography } from '@mui/joy'
+import axios from 'axios';
 import React, { useState } from 'react'
+import { useUI } from '../../utils/UIContext';
+import { useSelector } from 'react-redux';
 
 const AdminRegisterUser = () => {
+  const { showErrorSnackbar, showDoneSnackbar } = useUI();
+  const token = useSelector((state) => state.user.token);
   const [formData, setFormData] = useState({
     firstname: '',
     lastname: '',
     email: '',
     phone: '',
     password: '',
-    emailVerification: false,
+    verified: false,
   });
 
   const handleChange = (e) => {
@@ -22,7 +27,18 @@ const AdminRegisterUser = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
+    axios.post('/admin/user/create', formData, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    }).then(res => {
+      console.log(res.data);
+      showDoneSnackbar(res.data);
+    }).catch(err => {
+      console.error(err);
+      showErrorSnackbar(err.response.data || err.message);
+    });
   };
 
   return (
@@ -30,8 +46,8 @@ const AdminRegisterUser = () => {
       component="form"
       onSubmit={handleSubmit}
       sx={{
-        maxWidth: '800px', 
-        width: '90%', 
+        maxWidth: '800px',
+        width: '90%',
         margin: '50px auto',
         padding: 4,
         display: 'flex',
@@ -131,8 +147,8 @@ const AdminRegisterUser = () => {
           <FormControl>
             <Stack direction="row" alignItems="center" spacing={1}>
               <Checkbox
-                name="emailVerification"
-                checked={formData.emailVerification}
+                name="verified"
+                checked={formData.verified}
                 onChange={handleChange}
                 size="md"
               />

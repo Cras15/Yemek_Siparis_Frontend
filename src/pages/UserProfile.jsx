@@ -7,6 +7,7 @@ import { getUserProfile, setUserData } from '../redux/userSlice'
 import { useUI } from '../utils/UIContext'
 import AddressCard from '../components/AddressCard'
 import AddressForm from '../components/AddressForm'
+import MaskedInput from '../components/MaskedInput'
 
 const UserProfile = () => {
     const [index, setIndex] = React.useState(0)
@@ -123,7 +124,7 @@ const UserProfile = () => {
         });
     }
 
-    const handleVerifySend = async() => {
+    const handleVerifySend = async () => {
         await axios.post("/auth/resend-verification", null, {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -201,7 +202,8 @@ const UserProfile = () => {
                                         <FormControl required>
                                             <FormLabel>Mail Adresi</FormLabel>
                                             <Input placeholder="E-Mail" type='email' defaultValue={user?.email} readOnly
-                                                endDecorator={user?.status === "UNVERIFIED"&&
+                                                disabled={user?.status !== "UNVERIFIED"}
+                                                endDecorator={user?.status === "UNVERIFIED" &&
                                                     <Button variant="soft" onClick={handleVerifySend}>
                                                         Onay Gönder
                                                     </Button>} />
@@ -211,7 +213,21 @@ const UserProfile = () => {
                                     <Grid xs={12} sm={6}>
                                         <FormControl required>
                                             <FormLabel>Telefon</FormLabel>
-                                            <Input placeholder="Telefon" defaultValue={user?.phone} name='phone' />
+                                            <Input
+                                                placeholder="(5XX) XXX-XXXX"
+                                                name='phone'
+                                                defaultValue={user?.phone}
+                                                slotProps={{
+                                                    input: {
+                                                        component: MaskedInput,
+                                                        mask: '(#00) 000-0000',
+                                                        definitions: {
+                                                            '#': /[1-9]/,
+                                                        },
+                                                    },
+                                                }}
+                                            />
+                                            
                                         </FormControl>
                                     </Grid>
                                 </Grid>

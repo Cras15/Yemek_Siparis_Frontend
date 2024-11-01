@@ -86,14 +86,7 @@ const AdminUserListPage = () => {
             label: "Görüntüle",
             icon: <VisibilityOutlined />,
             href: `/admin/kullanicilar/${row.userId}`,
-        },
-        {
-            label: "Düzenle",
-            icon: <EditOutlined />,
             divider: true,
-            onClick: () => {
-                console.log("Düzenle", row);
-            },
         },
         {
             label: "Maili Doğrula",

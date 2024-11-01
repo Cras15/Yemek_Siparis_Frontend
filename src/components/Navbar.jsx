@@ -24,6 +24,7 @@ import {
   SettingsOutlined,
   ShoppingBasketOutlined,
   SupervisorAccountOutlined,
+  SupportOutlined,
 } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import BasketDropdown from './BasketDropdown';
@@ -41,7 +42,8 @@ const Navbar = () => {
           sx={{
             mx: 'auto',
             px: { xs: 2, sm: 6, lg: 8 },
-            mr: 10,
+            // mr: 10, // Kaldırıldı veya aşağıdaki gibi duyarlı hale getirildi
+            mr: { xs: 2, sm: 6, lg: 8 },
           }}
         >
           <Box
@@ -49,6 +51,7 @@ const Navbar = () => {
               position: 'relative',
               display: 'flex',
               height: 64,
+              width: '100%',
               alignItems: 'center',
               justifyContent: 'space-between',
             }}
@@ -114,10 +117,9 @@ const Navbar = () => {
                     <MenuButton slots={{ root: IconButton }} color="primary">
                       <PersonOutline color="primary" />
                       <Typography color="primary">
-                        {user?.firstname && user?.lastname ?
-                          `${capitalize(user.firstname)} ${capitalize(user.lastname)}`
+                        {user?.firstname && user?.lastname
+                          ? `${capitalize(user.firstname)} ${capitalize(user.lastname)}`
                           : ''}
-
                       </Typography>
                     </MenuButton>
                     <Menu
@@ -168,11 +170,11 @@ const Navbar = () => {
                         </ListItemDecorator>
                         Profil
                       </MenuItem>
-                      <MenuItem color="primary" underline="none">
+                      <MenuItem component={Link} href="/destek" color="primary" underline="none">
                         <ListItemDecorator>
-                          <SettingsOutlined />
+                          <SupportOutlined />
                         </ListItemDecorator>
-                        Ayarlar
+                        Destek Taleplerim
                       </MenuItem>
                       <ListDivider />
                       <MenuItem onClick={logout} color="primary" underline="none">
@@ -187,13 +189,26 @@ const Navbar = () => {
                 <BasketDropdown />
               </Box>
             ) : (
-              <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  gap: 2,
+                  ml: { xs: 0, sm: 6 }, // Duyarlı margin-left
+                  width: { xs: '100%', sm: 'auto' }, // Mobilde tam genişlik
+                  justifyContent: { xs: 'center', sm: 'flex-start' }, // Mobilde ortala
+                }}
+              >
                 <Button
                   color="primary"
                   startDecorator={<PersonIcon />}
                   component={Link}
                   underline="none"
                   href="/giris"
+                  sx={{
+                    padding: { xs: '6px 12px', sm: '8px 16px' }, // Duyarlı padding
+                    minWidth: { xs: 'auto', sm: 'unset' }, // Mobilde minimum genişliği kaldır
+                  }}
                 >
                   Giriş Yap
                 </Button>
@@ -203,6 +218,10 @@ const Navbar = () => {
                   component={Link}
                   underline="none"
                   href="/kayit"
+                  sx={{
+                    padding: { xs: '6px 12px', sm: '8px 16px' }, // Duyarlı padding
+                    minWidth: { xs: 'auto', sm: 'unset' }, // Mobilde minimum genişliği kaldır
+                  }}
                 >
                   Kayıt Ol
                 </Button>

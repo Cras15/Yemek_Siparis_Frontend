@@ -1,9 +1,9 @@
 import { Add, EditOutlined, HomeOutlined, MoreHorizOutlined, PeopleRounded, PersonOutlineOutlined, ShoppingCartOutlined } from '@mui/icons-material';
-import { Box, Card, CardContent, Chip, Divider, Grid, IconButton, Typography } from '@mui/joy';
+import { Box, Button, Card, CardContent, Chip, Divider, Grid, IconButton, Input, TextField, Typography } from '@mui/joy';
 import axios from 'axios';
-import { format } from 'date-fns';
+import { format, set } from 'date-fns';
 import { tr } from 'date-fns/locale';
-import React, { useMemo, useRef } from 'react'
+import React, { useMemo, useRef, useState } from 'react'
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import DataTable from '../../components/DataTable';
@@ -11,9 +11,18 @@ import { OrderStatus, OrderStatusColor } from '../../components/Utils';
 import AddressCard from '../../components/AddressCard';
 import { useUI } from '../../utils/UIContext';
 import AddressForm from '../../components/AddressForm';
+import MaskedInput from '../../components/MaskedInput';
 
 const AdminUserViewPage = () => {
-    const [userInfo, setUserInfo] = React.useState(null);
+    const [isEditing, setIsEditing] = useState(false);
+    const [userInfo, setUserInfo] = useState(null);
+    const [saveLoading, setSaveLoading] = useState(false);
+    const [editedInfo, setEditedInfo] = useState({
+        firstname: userInfo?.firstname,
+        lastname: userInfo?.lastname,
+        email: userInfo?.email,
+        phone: userInfo?.phone,
+    });
     const { token } = useSelector((state) => state.user);
     const id = useParams().id;
     const { showDoneSnackbar, showErrorSnackbar, openModal } = useUI();
@@ -26,7 +35,7 @@ const AdminUserViewPage = () => {
             }
         }).then((response) => {
             setUserInfo(response.data);
-            return response;
+            return response.data;
         }).catch((error) => {
             console.log(error);
         });
@@ -42,6 +51,56 @@ const AdminUserViewPage = () => {
             return new Date(order.orderDate) > new Date(latest.orderDate) ? order : latest;
         }, userInfo.orders[0]);
     }, [userInfo]);
+
+    const handleEditClick = () => {
+        setIsEditing(true);
+    };
+
+    const handleSaveClick = () => {
+        setSaveLoading(true);
+        const editedInfoCopy = { ...editedInfo };
+        editedInfoCopy.userId = userInfo.userId;
+        axios.put(`/admin/user`, JSON.stringify(editedInfoCopy), {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        })
+            .then((res) => {
+                showDoneSnackbar('Kullanıcı bilgileri başarıyla güncellendi.');
+                getUserInfo(id);
+                setIsEditing(false);
+                setSaveLoading(false);
+            })
+            .catch((error) => {
+                showErrorSnackbar(error.response?.data || error.message);
+                getUserInfo(id);
+                setIsEditing(false);
+                setSaveLoading(false);
+            });
+    };
+
+    // İptal butonuna tıklandığında
+    const handleCancelClick = () => {
+        // Değişiklikleri geri al
+        if (userInfo) {
+            setEditedInfo({
+                firstname: userInfo?.firstname,
+                lastname: userInfo?.lastname,
+                email: userInfo?.email,
+                phone: userInfo?.phone,
+            });
+            setIsEditing(false);
+        }
+    };
+
+    // Input alanlarındaki değişiklikleri yönetmek için
+    const handleChange = (field) => (event) => {
+        setEditedInfo({
+            ...editedInfo,
+            [field]: event.target.value,
+        });
+    };
 
     const handleAddressDelete = (addressId) => {
         openModal({
@@ -73,12 +132,12 @@ const AdminUserViewPage = () => {
             yesButtonColor: 'success',
             onAccept: () => {
                 const data = addressFormRef.current.getData();
-                 axios.post(`/address/admin?userId=${userInfo?.userId}`, JSON.stringify(data), { headers: { Authorization: `Bearer ${token}` } }).then((res) => {
-                     showDoneSnackbar(res.data);
-                     getUserInfo(id);
-                 }).catch((error) => {
-                     showErrorSnackbar(error.message);
-                 });
+                axios.post(`/address/admin?userId=${userInfo?.userId}`, JSON.stringify(data), { headers: { Authorization: `Bearer ${token}` } }).then((res) => {
+                    showDoneSnackbar(res.data);
+                    getUserInfo(id);
+                }).catch((error) => {
+                    showErrorSnackbar(error.message);
+                });
             }
         });
     }
@@ -109,9 +168,43 @@ const AdminUserViewPage = () => {
         });
     }
 
+    const infoRows = (title, value, fields = [], isEditable = false, divider = true) => (
+        <>
+            <Typography level="body-sm">{title}</Typography>
+            {isEditing && isEditable && fields.length > 0 ? (
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                    {fields.map((field) => (
+                        <Input
+                            key={field}
+                            value={editedInfo[field]}
+                            onChange={handleChange(field)}
+                            variant="outlined"
+                            size="sm"
+                            fullWidth
+                        />
+                    ))}
+                </Box>
+            ) : (
+                <Typography level="body-md" fontWeight={500}>
+                    {value}
+                </Typography>
+            )}
+            {divider && <Divider sx={{ my: 1 }} />}
+        </>
+    );
+
     React.useEffect(() => {
-        getUserInfo(id);
+        getUserInfo(id)
     }, []);
+
+    React.useEffect(() => {
+        setEditedInfo({
+            firstname: userInfo?.firstname,
+            lastname: userInfo?.lastname,
+            email: userInfo?.email,
+            phone: userInfo?.phone,
+        });
+    }, [userInfo]);
     return (
         <>
             {userInfo && (
@@ -131,18 +224,62 @@ const AdminUserViewPage = () => {
                                         <PersonOutlineOutlined sx={{ mr: 1 }} />
                                         Kullanıcı Bilgileri
                                     </Typography>
-                                    <IconButton>
-                                        <EditOutlined />
-                                    </IconButton>
+                                    {isEditing ? (
+                                        <Box>
+                                            <Button variant="solid" color="primary" onClick={handleSaveClick} sx={{ mr: 1 }} loading={saveLoading}>
+                                                Kaydet
+                                            </Button>
+                                            <Button variant="plain" color="neutral" onClick={handleCancelClick}>
+                                                İptal
+                                            </Button>
+                                        </Box>
+                                    ) : (
+                                        <IconButton onClick={handleEditClick}>
+                                            <EditOutlined />
+                                        </IconButton>
+                                    )}
                                 </Box>
                                 <CardContent>
                                     {infoRows("Kullanıcı ID", "#" + userInfo.userId)}
-                                    {infoRows("Ad Soyad", userInfo.firstname + " " + userInfo.lastname)}
-                                    {infoRows("E-Mail", userInfo.email)}
-                                    {infoRows("Telefon", userInfo.phone)}
+                                    {infoRows(
+                                        "Ad Soyad",
+                                        `${editedInfo.firstname} ${editedInfo.lastname}`,
+                                        ["firstname", "lastname"],
+                                        true
+                                    )}
+                                    {infoRows("E-Mail", editedInfo.email, ['email'], true)}
+                                    <>
+                                        <Typography level="body-sm">Telefon</Typography>
+                                        {isEditing ? (
+                                            <Box sx={{ display: 'flex', gap: 1 }}>
+                                                <Input
+                                                    key="phone"
+                                                    placeholder="(5XX) XXX-XXXX"
+                                                    size='sm'
+                                                    fullWidth
+                                                    value={editedInfo['phone']}
+                                                    onChange={handleChange(['phone'])}
+                                                    slotProps={{
+                                                        input: {
+                                                            component: MaskedInput,
+                                                            mask: '(#00) 000-0000',
+                                                            definitions: {
+                                                                '#': /[1-9]/,
+                                                            },
+                                                        },
+                                                    }}
+                                                />
+                                            </Box>
+                                        ) : (
+                                            <Typography level="body-md" fontWeight={500}>
+                                                {editedInfo.phone}
+                                            </Typography>
+                                        )}
+                                        <Divider sx={{ my: 1 }} />
+                                    </>
                                     {infoRows("Son Giriş Tarihi", dateConverter(userInfo.last_login))}
                                     {infoRows("Son Güncellenme Tarihi", dateConverter(userInfo.updated_at))}
-                                    {infoRows("Kayıt Tarihi", dateConverter(userInfo.created), false)}
+                                    {infoRows("Kayıt Tarihi", dateConverter(userInfo.created), null, false, false)}
                                 </CardContent>
                             </Card>
                         </Grid>
@@ -184,14 +321,14 @@ const AdminUserViewPage = () => {
                                             </Typography>
                                             <Typography level="body-md" sx={{ fontWeight: 'bold', mt: 1 }}>{userInfo.orders.length}</Typography>
                                         </Box>
-                                        <Divider orientation="vertical" flexItem />
+                                        <Divider orientation="vertical" />
                                         <Box textAlign="center" flex={1}>
                                             <Typography level="body-sm">
                                                 SİPARİŞ DEĞERİ
                                             </Typography>
                                             <Typography level="body-md" sx={{ fontWeight: 'bold', mt: 1 }}>{totalAmount.toFixed(2)} TL</Typography>
                                         </Box>
-                                        <Divider orientation="vertical" flexItem />
+                                        <Divider orientation="vertical" />
                                         <Box textAlign="end" flex={1}>
                                             <Typography level="body-sm">
                                                 SON SİPARİŞ
@@ -246,16 +383,6 @@ const AdminUserViewPage = () => {
 }
 
 export default AdminUserViewPage
-
-const infoRows = (title, value, divider = true) => (
-    <>
-        <Typography level="body-sm">{title}</Typography>
-        <Typography level="body-md" fontWeight={500}>
-            {value}
-        </Typography>
-        {divider && <Divider sx={{ my: 1 }} />}
-    </>
-)
 
 const dateConverter = (date) => {
     const dateValue = date ? new Date(date) : null;

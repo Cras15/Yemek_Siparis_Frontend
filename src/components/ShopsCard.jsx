@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { capitalizeFirstLetter } from './Utils';
 import { useUI } from '../utils/UIContext';
 
-const ShopsCard = ({ data }) => {
+const ShopsCard = ({ data, maxWidth = 450, minWidth = 220 }) => {
   const navigate = useNavigate();
   const { showErrorSnackbar } = useUI();
 
@@ -38,9 +38,9 @@ const ShopsCard = ({ data }) => {
     <Card
       variant="outlined"
       sx={{
-        minWidth: 220,
+        minWidth: { minWidth },
         width: 'auto',
-        maxWidth: 450,
+        maxWidth: { maxWidth },
         bgcolor: 'initial',
         p: 0,
         mt: 4,
@@ -104,10 +104,10 @@ const ShopsCard = ({ data }) => {
         >
           <Typography level="body-sm">
             <CurrencyLira fontSize="small" />
-            {data.minOrderPrice}TL minimum • Pide & Lahmacun
+            {data.minOrderPrice}TL minimum {data.categories && (<>• {data.categories}</>)}
           </Typography>
           <Typography level="body-sm">
-            <QueryBuilder fontSize="small" /> 30dk &nbsp;•&nbsp; 0.3km &nbsp;•&nbsp;
+            <QueryBuilder fontSize="small" /> {data.deliveryTime}dk &nbsp;{/*•&nbsp; 0.3km &nbsp;*/}•&nbsp;
             <MopedOutlined color="primary" />
             <Typography component="span" color="primary">
               Ücretsiz

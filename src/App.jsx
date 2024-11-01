@@ -4,6 +4,7 @@ import SignInPage from "./pages/SignInPage"
 import React from "react"
 import '@fontsource/inter';
 import ShopsPage from "./pages/ShopsPage"
+import ShopPage from "./pages/ShopPage";
 import BasketPage from "./pages/BasketPage"
 import PaymentPage from "./pages/PaymentPage"
 import LoginPage from "./pages/LoginPage"
@@ -38,6 +39,12 @@ import ShopApplicationPage from "./pages/ShopApplicationPage"
 import AdminRegisterUser from "./pages/admin/AdminRegisterUser"
 import AdminUserViewPage from "./pages/admin/AdminUserViewPage"
 import '@fontsource/inter';
+import AdminSupportTicketPage from "./pages/admin/AdminSupportTicketPage";
+import CreateSupportPage from "./pages/CreateSupportPage";
+import SupportPage from "./pages/SupportPage";
+import SupportViewPage from "./pages/SupportViewPage";
+import AdminSupportViewPage from "./pages/admin/AdminSupportViewPage";
+
 
 function App() {
   const { expireDate, user, token } = useSelector((state) => state.user);
@@ -67,11 +74,15 @@ function App() {
             <Route path="/profil" element={<UserProfile />} />
             <Route path="/sifremi-unuttum" element={<ForgotPassword />} />
             <Route path="/sifre-sifirla/:token" element={<ResetPassword />} />
-            <Route path="/shop/:id" element={<ShopsPage />} />
+            <Route path="/shop/:id" element={<ShopPage />} />
+            <Route path="/shops/:type" element={<ShopsPage />} />
             <Route path="/sepet" element={<BasketPage />} />
             <Route path="/odeme" element={<PaymentPage />} />
             <Route path="/siparislerim" element={<OrdersPage />} />
             <Route path="/magaza-basvuru" element={<ShopApplicationPage />} />
+            <Route path="/destek" element={<SupportPage />} />
+            <Route path="/destek/:id" element={<SupportViewPage />} />
+            <Route path="/destek-olustur" element={<CreateSupportPage />} />
 
             {/* Yönetici */}
             <Route path="/manager" element={<ManagerLayout />}>
@@ -91,6 +102,8 @@ function App() {
               <Route path="kullanicilar" element={<AdminUserListPage />} />
               <Route path="kullanicilar/:id" element={<AdminUserViewPage />} />
               <Route path="magaza-basvuru" element={<AdminShopApplicationPage />} />
+              <Route path="destek-talepleri" element={<AdminSupportTicketPage/>} />
+              <Route path="destek-talepleri/:id" element={<AdminSupportViewPage />} />
             </Route>
 
             {/* Hata */}
