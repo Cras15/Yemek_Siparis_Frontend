@@ -177,7 +177,7 @@ const Navbar = () => {
                         Destek Taleplerim
                       </MenuItem>
                       <ListDivider />
-                      <MenuItem onClick={logout} color="primary" underline="none">
+                      <MenuItem onClick={logout} color="primary">
                         <ListItemDecorator>
                           <LogoutOutlined />
                         </ListItemDecorator>

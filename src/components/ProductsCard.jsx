@@ -42,6 +42,7 @@ const ProductsCard = ({ data }) => {
               : "https://images.deliveryhero.io/image/fd-tr/LH/h6km-listing.jpg?width=400&height=292&quot;"
           }
           loading="lazy"
+          style={{ objectFit: 'contain', width: '100%', height: '100%' }}
           alt=""
         />
       </AspectRatio>

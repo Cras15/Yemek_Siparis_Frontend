@@ -1,29 +1,21 @@
 import axios from 'axios';
-import React from 'react';
-import ShopsCard from '../components/ShopsCard';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
-  AspectRatio,
   Box,
-  Button,
-  Card,
-  CardActions,
-  CardContent,
   Container,
   Divider,
-  Grid,
-  Skeleton,
-  Typography,
 } from '@mui/joy';
-import { InfoOutlined, TuneRounded } from '@mui/icons-material';
-import HomePageFilterModal from '../components/HomePageFilterModal';
-import FilterChild from '../components/FilterChild';
-import { useLocation } from 'react-router-dom';
 import ScrollableSection from '../components/ScrollableSection';
+import useIsLogged from '../hooks/useIsLogged';
+import { useSelector, shallowEqual } from 'react-redux';
 
 const HomePage = () => {
-  const [shops, setShops] = React.useState([]);
+  const [shops, setShops] = useState([]);
+  const [favorites, setFavorites] = useState([]);
+  const isLogged = useIsLogged();
+  const token = useSelector((state) => state.user.token, shallowEqual);
 
-  const getShops = async () => {
+  const getShops = useCallback(async () => {
     try {
       const res = await axios.get('/shop/grouped');
       setShops(res.data);
@@ -31,16 +23,37 @@ const HomePage = () => {
     } catch (error) {
       console.error(error);
     }
-  };
+  }, []);
 
-  React.useEffect(() => {
+  const getFavorites = useCallback(async () => {
+    try {
+      const res = await axios.get('/shop/favorites', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setFavorites(res.data);
+    } catch (error) {
+      console.error(error);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    if (isLogged) {
+      getFavorites();
+    }
     getShops();
-  }
-    , []);
+  }, [isLogged, getFavorites, getShops]);
 
   return (
     <Container sx={{ py: 4 }}>
-      {shops && shops.map((shop, index) => (
+      {isLogged && favorites.length > 0 && (
+        <>
+          <ScrollableSection title="Favorilerin" items={favorites} />
+          <Divider sx={{ my: 3 }} />
+        </>
+      )}
+      {shops.map((shop, index) => (
         <React.Fragment key={shop.shopType}>
           <ScrollableSection title={shop.shopType} items={shop.shops} />
           {index !== shops.length - 1 && <Divider sx={{ my: 3 }} />}
@@ -50,4 +63,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default React.memo(HomePage);

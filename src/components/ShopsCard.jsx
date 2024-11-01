@@ -1,8 +1,5 @@
-import * as React from 'react';
-import AspectRatio from '@mui/joy/AspectRatio';
-import Box from '@mui/joy/Box';
-import Card from '@mui/joy/Card';
-import Typography from '@mui/joy/Typography';
+import React, { useMemo } from 'react';
+import { AspectRatio, Box, Card, Typography } from '@mui/joy';
 import { StarRounded, CurrencyLira, QueryBuilder, MopedOutlined } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { capitalizeFirstLetter } from './Utils';
@@ -12,8 +9,8 @@ const ShopsCard = ({ data, maxWidth = 450, minWidth = 220 }) => {
   const navigate = useNavigate();
   const { showErrorSnackbar } = useUI();
 
-  // isOpen hesaplaması
-  const isOpen = React.useMemo(() => {
+  // Mağazanın açık olup olmadığını hesaplama
+  const isOpen = useMemo(() => {
     if (!data.openTime || !data.closeTime) return false;
 
     const now = new Date();
@@ -38,10 +35,10 @@ const ShopsCard = ({ data, maxWidth = 450, minWidth = 220 }) => {
     <Card
       variant="outlined"
       sx={{
-        minWidth: { minWidth },
+        minWidth: minWidth,
         width: 'auto',
-        maxWidth: { maxWidth },
-        bgcolor: 'initial',
+        maxWidth: maxWidth,
+        //bgcolor: 'background.level1',
         p: 0,
         mt: 4,
         cursor: isOpen ? 'pointer' : 'not-allowed',
@@ -59,14 +56,12 @@ const ShopsCard = ({ data, maxWidth = 450, minWidth = 220 }) => {
       <Box>
         <Box sx={{ position: 'relative', width: '100%', mb: 1 }}>
           <AspectRatio ratio="16/9" sx={{ borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }}>
-            <figure>
-              <img
-                src={data.imageUrl}
-                srcSet={`${data.imageUrl}; 2x`}
-                loading="lazy"
-                alt={data.shopName} // Erişilebilirlik için
-              />
-            </figure>
+            <img
+              src={data.imageUrl}
+              loading="lazy"
+              style={{ objectFit: 'cover', width: '100%', height: '100%', borderRadius: 'inherit' }}
+              alt={data.shopName}
+            />
           </AspectRatio>
         </Box>
         <Box
@@ -104,10 +99,10 @@ const ShopsCard = ({ data, maxWidth = 450, minWidth = 220 }) => {
         >
           <Typography level="body-sm">
             <CurrencyLira fontSize="small" />
-            {data.minOrderPrice}TL minimum {data.categories && (<>• {data.categories}</>)}
+            {data.minOrderPrice}TL minimum {data.categories && <>• {data.categories}</>}
           </Typography>
           <Typography level="body-sm">
-            <QueryBuilder fontSize="small" /> {data.deliveryTime}dk &nbsp;{/*•&nbsp; 0.3km &nbsp;*/}•&nbsp;
+            <QueryBuilder fontSize="small" /> {data.deliveryTime}dk &nbsp;•&nbsp;
             <MopedOutlined color="primary" />
             <Typography component="span" color="primary">
               Ücretsiz
@@ -150,4 +145,4 @@ const ShopsCard = ({ data, maxWidth = 450, minWidth = 220 }) => {
   );
 };
 
-export default ShopsCard;
+export default React.memo(ShopsCard);
