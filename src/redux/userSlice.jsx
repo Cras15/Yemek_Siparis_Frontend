@@ -52,6 +52,7 @@ const userSlice = createSlice({
         errorMessage: "",
         user: [],
         token: '',
+        refreshToken: '',
         expireDate: '',
     },
     reducers: {
@@ -71,7 +72,8 @@ const userSlice = createSlice({
             })
             .addCase(userLogin.fulfilled, (state, action) => {
                 state.status = STATUS.COMPLETED;
-                state.token = action.payload.data;
+                state.token = action.payload.data.accessToken;
+                state.refreshToken = action.payload.data.refreshToken;
                 state.expireDate = new Date().getTime() + 1000 * 60 * 60 * 24;
                 console.log("act", action.payload)
                 console.log("token", state.token)
