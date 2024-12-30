@@ -1,7 +1,8 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { Box, Typography, IconButton, Link, Stack } from '@mui/joy';
+import { Box, Typography, IconButton, Link, Stack, Button } from '@mui/joy';
 import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
 import ShopsCard from './ShopsCard';
+import { ShopTypeTitle } from './Utils';
 
 const ScrollableSection = ({ title, items }) => {
   const scrollRef = useRef(null);
@@ -43,10 +44,10 @@ const ScrollableSection = ({ title, items }) => {
   return (
     <Box sx={{ mb: 4 }}>
       <Stack direction="row" sx={{ mb: 2 }}>
-        <Typography level="h4" color='primary'>
-          {title}
+        <Typography level="h2" color='black'>
+          {ShopTypeTitle[title] || title}
         </Typography>
-        <Link href={`/shops/${title.toLowerCase()}`} underline="always" sx={{ ml: 'auto' }}>Tümünü Gör</Link>
+        <Button component={Link} href={`/shops/${title.toLowerCase()}`} underline="none" sx={{ ml: 'auto' }}>Tümünü Gör</Button>
       </Stack>
       <Box sx={{ position: 'relative' }}>
         {canScrollLeft && (

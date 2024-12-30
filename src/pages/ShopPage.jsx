@@ -100,14 +100,16 @@ const ShopPage = () => {
               direction="row"
               sx={{ position: 'absolute', top: 0, width: '100%', p: 1 }}
             >
-              <Chip
-                variant="soft"
-                color="success"
-                startDecorator={<WorkspacePremiumRounded />}
-                size="md"
-              >
-                Ödüllü Restoran
-              </Chip>
+              {shop?.awarded &&
+                <Chip
+                  variant="soft"
+                  color="success"
+                  startDecorator={<WorkspacePremiumRounded />}
+                  size="md"
+                >
+                  Ödüllü Restoran
+                </Chip>
+              }
               <IconButton
                 variant="soft"
                 size="sm"
@@ -158,7 +160,7 @@ const ShopPage = () => {
             flexWrap="wrap"
             sx={{ my: 0.25 }}
           >
-            <Chip color='danger' variant='soft'>%40 İndirim</Chip>
+            {shop?.discountPercent !==0 && <Chip color='danger' variant='soft'>%{shop?.discountPercent} İndirim</Chip>}
             <Typography level="body-xs" startDecorator={<MopedOutlined />}>
               Ücretsiz Teslimat
             </Typography>
@@ -181,7 +183,7 @@ const ShopPage = () => {
           shop != "" && shop.products.length > 0 ? (
             shop.products.map((res) => (
               <Grid xs={12} md={6} lg={4} key={res.productsId}>
-                <ProductsCard data={res} />
+                <ProductsCard data={res} discount={shop?.discountPercent} />
               </Grid>
             ))
           ) : (

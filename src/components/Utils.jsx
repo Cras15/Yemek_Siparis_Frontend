@@ -38,6 +38,11 @@ export const OrderStatusColor = {
   CANCELED: "danger"
 };
 
+export const ShopTypeTitle={
+  MARKET: "Marketler",
+  RESTAURANT: "Restorantlar"
+}
+
 export async function getCoordinates(address) {
   const apiKey = 'AIzaSyAn7jrZBPBwXrELrF6vu2d0UaFYikEdZVg';
   const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;

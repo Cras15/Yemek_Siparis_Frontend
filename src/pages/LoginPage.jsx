@@ -69,7 +69,7 @@ const LoginPage = () => {
   });
   return (
     <Container component="main" maxWidth="xs">
-      <CssBaseline />
+
       {user == "" &&
         <Box
           sx={{

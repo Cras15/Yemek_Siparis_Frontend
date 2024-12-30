@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
-import { AspectRatio, Box, Card, Typography } from '@mui/joy';
-import { StarRounded, CurrencyLira, QueryBuilder, MopedOutlined } from '@mui/icons-material';
+import { AspectRatio, Box, Card, Chip, Stack, Typography } from '@mui/joy';
+import { StarRounded, CurrencyLira, QueryBuilder, MopedOutlined, WorkspacePremiumRounded } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { capitalizeFirstLetter } from './Utils';
 import { useUI } from '../utils/UIContext';
@@ -9,7 +9,6 @@ const ShopsCard = ({ data, maxWidth = 450, minWidth = 220 }) => {
   const navigate = useNavigate();
   const { showErrorSnackbar } = useUI();
 
-  // Mağazanın açık olup olmadığını hesaplama
   const isOpen = useMemo(() => {
     if (!data.openTime || !data.closeTime) return false;
 
@@ -23,10 +22,8 @@ const ShopsCard = ({ data, maxWidth = 450, minWidth = 220 }) => {
     const closeTimeMinutes = closeHour * 60 + closeMinute;
 
     if (openTimeMinutes < closeTimeMinutes) {
-      // Aynı gün içerisinde kapanış
       return currentMinutes >= openTimeMinutes && currentMinutes <= closeTimeMinutes;
     } else {
-      // Gece yarısını geçen kapanış (örneğin, 18:00 - 02:00)
       return currentMinutes >= openTimeMinutes || currentMinutes <= closeTimeMinutes;
     }
   }, [data.openTime, data.closeTime]);
@@ -62,6 +59,28 @@ const ShopsCard = ({ data, maxWidth = 450, minWidth = 220 }) => {
               style={{ objectFit: 'cover', width: '100%', height: '100%', borderRadius: 'inherit' }}
               alt={data.shopName}
             />
+            <Stack sx={{ marginTop: 1, ml: 0.5, position: 'absolute', top: 0 }} direction="column" spacing={0.5}>
+              {data.awarded &&
+                <Chip
+                  variant="soft"
+                  color="success"
+                  startDecorator={<WorkspacePremiumRounded />}
+                  size="md"
+                >
+                  Ödüllü Restoran
+                </Chip>
+              }
+              {data.discountPercent !== 0 &&
+                <Chip
+                  variant="soft"
+                  color="danger"
+                  startDecorator={<WorkspacePremiumRounded />}
+                  size="md"
+                >
+                  %{data.discountPercent} İndirim
+                </Chip>
+              }
+            </Stack>
           </AspectRatio>
         </Box>
         <Box

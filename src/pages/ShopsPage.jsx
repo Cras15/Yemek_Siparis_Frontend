@@ -16,12 +16,16 @@ import { InfoOutlined, TuneRounded } from '@mui/icons-material';
 import HomePageFilterModal from '../components/HomePageFilterModal';
 import FilterChild from '../components/FilterChild';
 import { useLocation, useParams } from 'react-router-dom';
+import useIsLogged from '../hooks/useIsLogged';
+import { shallowEqual, useSelector } from 'react-redux';
 
 const ShopsPage = () => {
     const [shops, setShops] = React.useState([]);
     const [status, setStatus] = React.useState('');
     const [modalOpen, setModalOpen] = React.useState(false);
     const [categories, setCategories] = React.useState([]);
+    const isLogged = useIsLogged();
+    const token = useSelector((state) => state.user.token, shallowEqual);
 
     const location = useLocation();
     const type = useParams().type;
@@ -42,10 +46,17 @@ const ShopsPage = () => {
 
         try {
             const res = await axios.get(
-                queryParams.toString()
-                    ? `/shop/filter/${type?.toUpperCase()}?${queryParams.toString()}`
-                    : `/shop/type/${type?.toUpperCase()}`
-            );
+                type !== "favorilerin" ?
+                    queryParams.toString()
+                        ? `/shop/filter/${type?.toUpperCase()}?${queryParams.toString()}`
+                        : `/shop/type/${type?.toUpperCase()}`
+                    :
+                    `/shop/favorites`
+                , {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
             setShops(res.data);
             setStatus('success');
         } catch (error) {
@@ -146,7 +157,7 @@ const ShopsPage = () => {
                                     level="h3"
                                     sx={{ gridColumn: '1/-1' }} // Tüm sütunlara yayılması için eklendi.
                                 >
-                                    Bu bölgede henüz hizmet veremiyoruz.
+                                    Aradığınız restorant bulunamadı.
                                 </Typography>
                             )}
                         </Box>

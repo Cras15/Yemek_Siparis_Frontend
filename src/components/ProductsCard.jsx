@@ -1,12 +1,12 @@
 import { Add } from '@mui/icons-material';
-import { AspectRatio, Card, CardContent, CircularProgress, IconButton, Typography } from '@mui/joy';
+import { AspectRatio, Box, Card, CardContent, CircularProgress, IconButton, Typography } from '@mui/joy';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addBasketItem, getBasket } from '../redux/basketSlice';
 import { STATUS } from './Status';
 import { useUI } from '../utils/UIContext';
 
-const ProductsCard = ({ data }) => {
+const ProductsCard = ({ data, discount }) => {
   const status = useSelector((state) => state.basket.status);
   const token = useSelector((state) => state.user.token);
   const { showSnackbar, showErrorSnackbar } = useUI();
@@ -61,7 +61,10 @@ const ProductsCard = ({ data }) => {
         >
           {data.productName}
         </Typography>
-        <Typography level="body-md">{data.price} TL</Typography>
+        <Box sx={{display:'flex', flexDirection:'row', gap:1}}>
+          <Typography level={discount === 0 ? "body-sm" : "body-sm"} sx={{ textDecoration: discount === 0 ? 'none' : 'line-through' }}>{(data.price).toFixed(2)} TL</Typography>
+          {discount !== 0 && <Typography level="body-md">{((data.price) * (100 - discount) / 100).toFixed(2)} TL</Typography>}
+        </Box>
         <Typography
           level="body-sm"
           aria-describedby="card-description"

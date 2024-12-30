@@ -52,8 +52,8 @@ const ManagerSidebar = () => {
             { title: "Ürünler", link: "/manager/urunler", icon: <RestaurantRoundedIcon /> },
         ],
         footer: [
-            { title: "Destek", icon: <SupportRoundedIcon />, link: "/support" },
-            { title: "Ayarlar", icon: <SettingsRoundedIcon />, link: "/settings" },
+            //{ title: "Destek", icon: <SupportRoundedIcon />, link: "/support" },
+            //{ title: "Ayarlar", icon: <SettingsRoundedIcon />, link: "/settings" },
             { title: "Ana Sayfaya Dön", icon: <PeopleRoundedIcon />, link: "/" },
         ]
     };
