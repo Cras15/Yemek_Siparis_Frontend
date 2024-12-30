@@ -24,46 +24,9 @@ const HomePage = () => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
 
-  // Örnek statik kampanya verisi (şimdilik kullanılmıyor)
-  const promotions = [
-    {
-      shopId: 'promo1',
-      shopName: 'Kampanya Restoranı',
-      shopDesc: 'Büyük indirimler sizi bekliyor!',
-      imageUrl: 'https://picsum.photos/id/1011/800/450',
-      openTime: '09:00',
-      closeTime: '23:00',
-      shopDeliveryRating: 5,
-      shopServiceRating: 4,
-      shopTasteRating: 4,
-      reviewCount: 124,
-      minOrderPrice: 20,
-      deliveryTime: 30,
-      categories: 'Kampanyalı Menüler',
-    },
-    {
-      shopId: 'promo2',
-      shopName: 'İndirimli Market',
-      shopDesc: 'Bu hafta sepette ekstra indirim!',
-      imageUrl: 'https://picsum.photos/id/1012/800/450',
-      openTime: '08:00',
-      closeTime: '22:00',
-      shopDeliveryRating: 4,
-      shopServiceRating: 5,
-      shopTasteRating: 3,
-      reviewCount: 89,
-      minOrderPrice: 15,
-      deliveryTime: 45,
-      categories: 'Market Ürünleri',
-    },
-  ];
-
   const isLogged = useIsLogged();
   const token = useSelector((state) => state.user.token, shallowEqual);
 
-  /**
-   * Mağazaları getirir
-   */
   const getShops = useCallback(async () => {
     try {
       const res = await axios.get('/shop/grouped');
@@ -73,9 +36,6 @@ const HomePage = () => {
     }
   }, []);
 
-  /**
-   * Kategorileri getirir
-   */
   const getCategories = useCallback(async () => {
     try {
       const res = await axios.get('/category');
@@ -85,9 +45,6 @@ const HomePage = () => {
     }
   }, []);
 
-  /**
-   * Favorileri getirir (kullanıcı giriş yaptıysa)
-   */
   const getFavorites = useCallback(async () => {
     if (!isLogged) return;
     try {
@@ -102,9 +59,6 @@ const HomePage = () => {
     }
   }, [token, isLogged]);
 
-  /**
-   * Arama çubuğundaki değişiklikleri yönetir
-   */
   const handleSearch = useCallback(
     (e) => {
       const value = e.target.value;
@@ -115,8 +69,6 @@ const HomePage = () => {
         return;
       }
 
-      // Tüm shops verisini arama için filtrele
-      // shopType.shops -> bir dizi olduğu için flatMap ile hepsini tek dizide topluyoruz
       const filteredResults = shops?.flatMap((shopType) =>
         shopType.shops.filter(
           (shop) =>
@@ -129,24 +81,23 @@ const HomePage = () => {
     [shops]
   );
 
-  /**
-   * Sayfa yüklendiğinde yapılacak ilk istekler
-   */
   useEffect(() => {
     getShops();
     getCategories();
   }, [getShops, getCategories]);
 
-  /**
-   * Kullanıcı giriş yaptıysa favorileri çek
-   */
   useEffect(() => {
     getFavorites();
   }, [getFavorites]);
 
   return (
-    <Container sx={{ py: { xs: 2, md: 4 } }}>
-      {/* HERO / BANNER ALANI */}
+    <Box
+      sx={{
+        py: { xs: 2, md: 4 },
+        px: { xs: 2, sm: 4, md: 10 }, // Farklı ekran boyutları için yatay padding
+      }}
+    >
+      {/* Hero Alanı */}
       <Box
         sx={{
           backgroundImage:
@@ -154,7 +105,7 @@ const HomePage = () => {
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           borderRadius: 'lg',
-          minHeight: { xs: 180, sm: 220, md: 300 }, // Responsive yükseklik
+          minHeight: { xs: 180, sm: 220, md: 300 },
           display: 'flex',
           flexDirection: 'column',
           alignItems: { xs: 'center', sm: 'flex-start' },
@@ -167,10 +118,10 @@ const HomePage = () => {
       >
         <Typography
           level="h1"
-          sx={{ 
-            fontSize: { xs: '1.8rem', sm: '2.2rem', md: '2.5rem' }, 
-            fontWeight: 'bold', 
-            mb: 1
+          sx={{
+            fontSize: { xs: '1.8rem', sm: '2.2rem', md: '2.5rem' },
+            fontWeight: 'bold',
+            mb: 1,
           }}
           color="black"
         >
@@ -178,9 +129,9 @@ const HomePage = () => {
         </Typography>
         <Typography
           level="body-lg"
-          sx={{ 
-            mb: 2, 
-            fontSize: { xs: '0.9rem', sm: '1rem' } 
+          sx={{
+            mb: 2,
+            fontSize: { xs: '0.9rem', sm: '1rem' },
           }}
           color="black"
         >
@@ -198,7 +149,7 @@ const HomePage = () => {
         </Button>
       </Box>
 
-      {/* ARAMA ALANI */}
+      {/* Arama Kutusu Alanı */}
       <Box
         sx={{
           width: '100%',
@@ -274,7 +225,7 @@ const HomePage = () => {
         </Box>
       </Box>
 
-      {/* KATEGORİLER */}
+      {/* Kategoriler (Mutfaklar) */}
       <Box sx={{ mb: 3 }}>
         <Typography level="h2" color="black" sx={{ mb: 2, fontSize: '1.5rem' }}>
           Mutfaklar
@@ -323,20 +274,20 @@ const HomePage = () => {
         </Grid>
       </Box>
 
-      {/* FAVORİLER (Kullanıcı giriş yaptıysa) */}
+      {/* Favoriler */}
       {isLogged && favorites.length > 0 && (
         <ScrollableSection title="Favorilerin" items={favorites} />
       )}
 
-      {/* DİĞER MAĞAZALAR */}
+      {/* Mağaza Grupları */}
       {shops.map((shopGroup, index) => (
         <ScrollableSection
-          title={shopGroup.shopType} // Örnek: shopGroup.shopType'ı başlık formatına çeviren bir fonksiyon olabilir.
+          title={shopGroup.shopType}
           items={shopGroup.shops}
           key={index}
         />
       ))}
-    </Container>
+    </Box>
   );
 };
 

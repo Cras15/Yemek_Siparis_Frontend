@@ -21,9 +21,9 @@ const indir = [
 ];
 
 const kesfet = [
-    createData("Hakkımızda", "#"),
-    createData("Kariyer", "#"),
-    createData("Teknoloji Kariyeri", "#"),
+    createData("Hakkımızda", "/hakkimizda"),
+    //createData("Kariyer", "#"),
+    //createData("Teknoloji Kariyeri", "#"),
     createData("Mağaza Başvurusu", "/magaza-basvuru"),
 ];
 
@@ -51,9 +51,9 @@ export default function Footer() {
 
     const toggleTheme = () => {
         console.log(mode);
-        if(mode === 'dark') setMode('light');
+        if (mode === 'dark') setMode('light');
         else setMode('dark');
-      };
+    };
 
     return (
         <Sheet
@@ -110,8 +110,6 @@ export default function Footer() {
                     gap: 2,
                 }}
             >
-
-
                 <div className='m-auto '>
                     <List
                         size="sm"

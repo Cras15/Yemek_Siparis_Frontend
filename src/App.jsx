@@ -44,6 +44,7 @@ import CreateSupportPage from "./pages/CreateSupportPage";
 import SupportPage from "./pages/SupportPage";
 import SupportViewPage from "./pages/SupportViewPage";
 import AdminSupportViewPage from "./pages/admin/AdminSupportViewPage";
+import AboutUsPage from "./pages/footer/AboutUsPage";
 
 
 function App() {
@@ -83,6 +84,7 @@ function App() {
             <Route path="/destek" element={<SupportPage />} />
             <Route path="/destek/:id" element={<SupportViewPage />} />
             <Route path="/destek-olustur" element={<CreateSupportPage />} />
+            <Route path="/hakkimizda" element={<AboutUsPage />} />
 
             {/* Yönetici */}
             <Route path="/manager" element={<ManagerLayout />}>
@@ -102,7 +104,7 @@ function App() {
               <Route path="kullanicilar" element={<AdminUserListPage />} />
               <Route path="kullanicilar/:id" element={<AdminUserViewPage />} />
               <Route path="magaza-basvuru" element={<AdminShopApplicationPage />} />
-              <Route path="destek-talepleri" element={<AdminSupportTicketPage/>} />
+              <Route path="destek-talepleri" element={<AdminSupportTicketPage />} />
               <Route path="destek-talepleri/:id" element={<AdminSupportViewPage />} />
             </Route>
 

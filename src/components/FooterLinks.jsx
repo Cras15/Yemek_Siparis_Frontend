@@ -8,9 +8,8 @@ const FooterLinks = (props) => {
             <List sx={{ '--ListItemDecorator-size': '32px' }}>
                 {props.data.map((row, i) => (
                     <ListItem key={i}>
-                        <ListItemButton component={Link} underline='none' href={row.link}>{row.name}</ListItemButton>
+                        <ListItemButton component={Link} underline='none' target='_blank' href={row.link}>{row.name}</ListItemButton>
                     </ListItem>
-
                 ))}
             </List>
         </ListItem>
