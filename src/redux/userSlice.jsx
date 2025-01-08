@@ -10,25 +10,32 @@ export const userLogin = createAsyncThunk(
                 username: data.username,
                 password: data.password
             });
-            return response; // Başarılı yanıtı döndür
+            return response;
         } catch (error) {
-            // Hata yanıtını kontrol edin ve rejectWithValue ile geri iletin
             if (error.response && error.response.data) {
                 return rejectWithValue(error.response.data);
             } else {
-                // Beklenmeyen hatalar için genel bir mesaj döndürün
                 return rejectWithValue({ message: 'Bir hata oluştu' });
             }
         }
     }
 );
 
-export const userRegister = createAsyncThunk("auth/register", async (data) => {
-    const res = await axios.post("/auth/register", data).then(function (response) {
-        return response;
-    })
-    return res;
-});
+export const userRegister = createAsyncThunk(
+    "auth/register",
+    async (data, { rejectWithValue }) => {
+        try {
+            const res = await axios.post("/auth/register", data);
+            return res;
+        } catch (error) {
+            if (error.response && error.response.data) {
+                return rejectWithValue(error.response.data);
+            } else {
+                return rejectWithValue({ message: 'Bir hata oluştu' });
+            }
+        }
+    }
+);
 
 export const getUserProfile = createAsyncThunk("auth/user/profile", async (data, thunkAPI) => {
     const token = thunkAPI.getState().user.token;
@@ -83,18 +90,19 @@ const userSlice = createSlice({
                 state.status = STATUS.ERROR;
                 state.error = action.payload.message || 'Giriş sırasında bir hata oluştu';
             });
-        builder
+            builder
             .addCase(userRegister.pending, (state) => {
-                state.status = "loading";
+                state.status = STATUS.LOADING;
             })
             .addCase(userRegister.fulfilled, (state, action) => {
-                state.status = "completed";
-                console.log(action)
+                state.status = STATUS.COMPLETED;
+                console.log(action);
             })
             .addCase(userRegister.rejected, (state, action) => {
-                state.status = "error";
-                console.log(action.error);
-            });
+                state.status = STATUS.ERROR;
+                state.error = action.payload?.message || 'Kayıt sırasında bir hata oluştu';
+                console.log(action.payload);
+            });        
         builder
             .addCase(getUserProfile.pending, (state) => {
                 state.status = "loading";

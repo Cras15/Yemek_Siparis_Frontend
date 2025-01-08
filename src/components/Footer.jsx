@@ -28,24 +28,19 @@ const kesfet = [
 ];
 
 const yardim = [
-    createData("Sıkça Sorulan Sorular", "#"),
-    createData("Kişisel Verilerin Korunması", "#"),
-    createData("Gizlilik ve Çerez Politikası", "#"),
-    createData("Kullanıcı Sözleşmesi", "#"),
-    createData("Kullanım Koşulları", "#"),
-    createData("İade ve İptal Koşulları", "#"),
-    createData("Çerez Politikası", "#"),
+    //createData("Sıkça Sorulan Sorular", "#"),
+    createData("Kullanım Koşulları", "/kullanim-kosullari"),
+    createData("İade ve İptal Koşulları", "/iptal-iade"),
 ];
 
 const bilgi = [
-    createData("Kullanıcı Sözleşmesi", "#"),
-    createData("Kişisel Verilerin Korunması", "#"),
-    createData("Gizlilik ve Çerez Politikası", "#"),
+    createData("Kullanıcı Sözleşmesi", "/kullanici-sozlesmesi"),
+    createData("Kişisel Verilerin Korunması", "/kvkk"),
+    createData("Gizlilik ve Çerez Politikası", "/gizlilik-cerez"),
 ];
 
 
 export default function Footer() {
-    const [color, setColor] = React.useState('neutral');
     const instaLink = "https://www.instagram.com/ayagima.gelsin";
     const { mode, setMode } = useColorScheme();
 
@@ -86,18 +81,6 @@ export default function Footer() {
                 <IconButton variant="plain" color='primary'>
                     <Twitter />
                 </IconButton>
-                {/*<Input
-                    variant="soft"
-                    placeholder="Ara"
-                    type="email"
-                    name="email"
-                    endDecorator={
-                        <IconButton variant="soft" aria-label="subscribe">
-                            <SendIcon />
-                        </IconButton>
-                    }
-                    sx={{ ml: 'auto', display: { xs: 'none', md: 'flex' } }}
-                />*/}
             </Box>
             <Divider sx={{ my: 2 }} />
             <Box
@@ -129,8 +112,8 @@ export default function Footer() {
                         <FooterLinks title="Yardım" data={yardim} md={240} />
                     </List>
                 </div>
-
-            </Box><Divider sx={{ mb: 3, mt: 2 }} />
+            </Box>
+            <Divider sx={{ mb: 3, mt: 2 }} />
             <Copyright />
         </Sheet>
     );

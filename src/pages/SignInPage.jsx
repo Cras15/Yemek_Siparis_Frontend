@@ -29,13 +29,33 @@ const SignInPage = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    if (data.get('firstname') && data.get('lastname') && data.get('email') != "" && data.get('password') != "") {
-      dispatch(userRegister({ firstname: data.get('firstname'), lastname: data.get('lastname'), email: data.get('email'), password: data.get('password') })).then((res => {
-        showSnackbar({ children: res.payload != undefined ? res.payload.data : "Hata oluştu", color: res.payload?.status == 200 ? 'success' : 'danger' });
-        if (res.payload?.status == 200) navigate('/giris');
-      }));
+    const firstname = data.get('firstname');
+    const lastname = data.get('lastname');
+    const email = data.get('email');
+    const password = data.get('password');
+
+    if (firstname && lastname && email && password) {
+      dispatch(userRegister({ firstname, lastname, email, password }))
+        .then((res) => {
+          if (res.payload.status === 200) {
+            // Başarılı durumda
+            showSnackbar({
+              children: res.payload.data,
+              color: res.payload.status === 200 ? 'success' : 'danger'
+            });
+            if (res.payload.status === 200) navigate('/giris');
+          } else {
+            let errorMessage = res.payload;
+            if (errorMessage.length == undefined) errorMessage = Object.values(res.payload).join(', ');
+            showSnackbar({
+              children: errorMessage || "Hata oluştu",
+              color: 'danger'
+            });
+          }
+        });
     }
   };
+
 
   const loginWithGoogle = useGoogleLogin({
     onSuccess: async tokenResponse => {

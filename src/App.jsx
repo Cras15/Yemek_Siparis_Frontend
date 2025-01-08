@@ -45,6 +45,11 @@ import SupportPage from "./pages/SupportPage";
 import SupportViewPage from "./pages/SupportViewPage";
 import AdminSupportViewPage from "./pages/admin/AdminSupportViewPage";
 import AboutUsPage from "./pages/footer/AboutUsPage";
+import UserAgreementPage from "./pages/footer/UserAgreementPage";
+import PrivicyAndPolicyPage from "./pages/footer/PrivicyAndPolicyPage";
+import ReturnAndCollectionPage from "./pages/footer/ReturnAndCollectionPage";
+import TermsOfUsePage from "./pages/footer/TermsOfUsePage";
+import PersonalDataPage from "./pages/footer/PersonalDataPage";
 
 
 function App() {
@@ -85,6 +90,11 @@ function App() {
             <Route path="/destek/:id" element={<SupportViewPage />} />
             <Route path="/destek-olustur" element={<CreateSupportPage />} />
             <Route path="/hakkimizda" element={<AboutUsPage />} />
+            <Route path="/kullanici-sozlesmesi" element={<UserAgreementPage />} />
+            <Route path="/gizlilik-cerez" element={<PrivicyAndPolicyPage />} />
+            <Route path="/iptal-iade" element={<ReturnAndCollectionPage />} />
+            <Route path="/kullanim-kosullari" element={<TermsOfUsePage />} />
+            <Route path="/kvkk" element={<PersonalDataPage />} />
 
             {/* Yönetici */}
             <Route path="/manager" element={<ManagerLayout />}>

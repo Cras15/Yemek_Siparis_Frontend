@@ -40,8 +40,7 @@ const LoginPage = () => {
         console.log(error);
         let errorMessage = "Girilen bilgiler hatalı";
 
-        // rejectWithValue ile döndürülen payload'a eriş
-        if (error.message) { // API'den gelen özel hata mesajı
+        if (error.message) { 
           errorMessage = error.message;
         }
 
